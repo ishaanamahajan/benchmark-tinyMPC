@@ -161,6 +161,31 @@ def tinympc_export_data_to_c(xbar, A, B, Q, Qf, R, umin, umax, xmin, xmax, nx, n
     f.write(Quu_inv_string)
     f.write(AmBKt_string)
     f.write(coeff_d2p_list_string)
+
+    # Add benchmark configuration
+    f = open('random_problems/prob_nx_'+str(nx)+'/benchmark_config.hpp','w')
+    f.write("#pragma once\n\n")
+    f.write('#include "types.hpp"\n\n')
+    
+    # Benchmark parameters matching Python implementation
+    f.write("#define BENCH_INITIAL_RHO 85.0f\n")  # Initial rho from TinyMPC
+    f.write(f"#define BENCH_NX {nx}\n")          # State dimension
+    f.write(f"#define BENCH_NU {nu}\n")          # Input dimension
+    f.write(f"#define BENCH_NH {Nh}\n\n")        # Horizon length
+    
+    # Export matrices needed for cache computation
+    A_bench_string = export_mat_to_c("const PROGMEM tinytype A_bench["+str(nx)+"*"+str(nx)+"] ", A) + "\n\n"
+    B_bench_string = export_mat_to_c("const PROGMEM tinytype B_bench["+str(nx)+"*"+str(nu)+"] ", B) + "\n\n"
+    Q_bench_string = export_mat_to_c("const PROGMEM tinytype Q_bench["+str(nx)+"*"+str(nx)+"] ", Q) + "\n\n"
+    R_bench_string = export_mat_to_c("const PROGMEM tinytype R_bench["+str(nu)+"*"+str(nu)+"] ", R) + "\n\n"
+    
+    f.write(A_bench_string)
+    f.write(B_bench_string)
+    f.write(Q_bench_string)
+    f.write(R_bench_string)
+    f.close()
+
+
     f.close()
 
 def osqp_export_data_to_python(xbar, A, B, Q, Qf, R, umin, umax, xmin, xmax, nx, nu, Nh, Nsim):
