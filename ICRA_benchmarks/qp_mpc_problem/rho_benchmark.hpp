@@ -1,7 +1,11 @@
 #pragma once
 #include <stdint.h>
 
-// Simple structure to hold benchmark results
+// Problem dimensions
+#define BENCH_NX 12  // State dimension
+#define BENCH_NU 4   // Input dimension
+
+// Structure to hold benchmark results
 struct RhoBenchmarkResult {
     float initial_rho;     // Starting rho value (85.0)
     float final_rho;       // What rho adapted to
@@ -10,9 +14,6 @@ struct RhoBenchmarkResult {
     uint32_t time_us;      // Time taken for adaptation computation
 };
 
-// Main benchmark function
-void benchmark_rho_adaptation(
-    float pri_res,         // Current primal residual
-    float dual_res,        // Current dual residual
-    RhoBenchmarkResult* result
-);
+// Main benchmark functions
+void benchmark_rho_adaptation(float pri_res, float dual_res, RhoBenchmarkResult* result);
+void update_cache_taylor(float new_rho, float old_rho);
