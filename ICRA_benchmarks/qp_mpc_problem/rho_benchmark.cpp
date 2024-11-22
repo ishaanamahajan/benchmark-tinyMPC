@@ -96,6 +96,14 @@ void benchmark_rho_adaptation(float pri_res, float dual_res, RhoBenchmarkResult*
     float u_k[BENCH_NU];  // input (4x1)
     float z_k[BENCH_NX];  // slack (12x1)
     float y_k[BENCH_NX + BENCH_NU];  // [x;u] (16x1)
+
+    memcpy(x_k, x_prev, BENCH_NX * sizeof(float));
+    memcpy(u_k, u_prev, BENCH_NU * sizeof(float));
+    memcpy(z_k, z_prev, BENCH_NX * sizeof(float));
+    
+    // Build y_k = [x_k; u_k]
+    memcpy(y_k, x_k, BENCH_NX * sizeof(float));
+    memcpy(y_k + BENCH_NX, u_k, BENCH_NU * sizeof(float));
     
     // Compute primal scaling
     float Ax_norm = 0.0f;
