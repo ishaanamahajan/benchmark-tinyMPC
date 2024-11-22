@@ -53,6 +53,129 @@ const float dC2_drho[BENCH_NX][BENCH_NX] = {
     { 0.0000, -0.0000, -0.0000,  0.0000,  0.0001,  0.0011,  0.0000, -0.0000, -0.0000,  0.0000,  0.0000,  0.0003}
 };
 
+static bool cache_initialized = false;
+
+void initialize_benchmark_cache() {
+    if (!cache_initialized) {
+        // Use recompute_cache to populate initial values at rho = 85.0
+        recompute_cache(85.0f);
+        cache_initialized = true;
+    }
+}
+
+
+
+// Helper function to recompute cache matrices
+void recompute_cache(float rho) {
+    // 1. Compute Q_rho and R_rho
+    float Q_rho[BENCH_NX][BENCH_NX];
+    float R_rho[BENCH_NU][BENCH_NU];
+    
+    // Q_rho = Q + rho * I
+    for(int i = 0; i < BENCH_NX; i++) {
+        for(int j = 0; j < BENCH_NX; j++) {
+            Q_rho[i][j] = Q[i][j] + (i == j ? rho : 0.0f);
+        }
+    }
+    
+    // R_rho = R + rho * I
+    for(int i = 0; i < BENCH_NU; i++) {
+        for(int j = 0; j < BENCH_NU; j++) {
+            R_rho[i][j] = R[i][j] + (i == j ? rho : 0.0f);
+        }
+    }
+    
+    // 2. Initialize Kinf and Pinf
+    float Kinf_prev[BENCH_NU][BENCH_NX] = {0};  // For convergence check
+    
+    // Pinf starts as Q_rho
+    for(int i = 0; i < BENCH_NX; i++) {
+        for(int j = 0; j < BENCH_NX; j++) {
+            Pinf[i][j] = Q_rho[i][j];
+        }
+    }
+    
+    // 3. Iterate until convergence (max 5000 iterations)
+    for(int k = 0; k < 5000; k++) {
+        // Store previous Kinf for convergence check
+        for(int i = 0; i < BENCH_NU; i++) {
+            for(int j = 0; j < BENCH_NX; j++) {
+                Kinf_prev[i][j] = Kinf[i][j];
+            }
+        }
+        
+        // Compute BTPinfB (BENCH_NU x BENCH_NU)
+        float BTPinfB[BENCH_NU][BENCH_NU] = {0};
+        for(int i = 0; i < BENCH_NU; i++) {
+            for(int j = 0; j < BENCH_NU; j++) {
+                float sum = 0;
+                for(int k = 0; k < BENCH_NX; k++) {
+                    for(int l = 0; l < BENCH_NX; l++) {
+                        sum += B[l][i] * Pinf[l][k] * B[k][j];
+                    }
+                }
+                BTPinfB[i][j] = sum;
+            }
+        }
+        
+        // Compute BTPinfA (BENCH_NU x BENCH_NX)
+        float BTPinfA[BENCH_NU][BENCH_NX] = {0};
+        for(int i = 0; i < BENCH_NU; i++) {
+            for(int j = 0; j < BENCH_NX; j++) {
+                float sum = 0;
+                for(int k = 0; k < BENCH_NX; k++) {
+                    for(int l = 0; l < BENCH_NX; l++) {
+                        sum += B[l][i] * Pinf[l][k] * A[k][j];
+                    }
+                }
+                BTPinfA[i][j] = sum;
+            }
+        }
+        
+        // Compute Kinf = inv(R_rho + BTPinfB) * BTPinfA
+        float temp[BENCH_NU][BENCH_NU];
+        for(int i = 0; i < BENCH_NU; i++) {
+            for(int j = 0; j < BENCH_NU; j++) {
+                temp[i][j] = R_rho[i][j] + BTPinfB[i][j];
+            }
+        }
+        // Need matrix inverse here
+        float temp_inv[BENCH_NU][BENCH_NU];
+        matrix_inverse(temp, temp_inv, BENCH_NU);
+        
+        // Multiply temp_inv * BTPinfA to get Kinf
+        matrix_multiply(temp_inv, BTPinfA, Kinf, BENCH_NU, BENCH_NU, BENCH_NX);
+        
+        // Update Pinf = Q_rho + AT * Pinf * (A - B*Kinf)
+        float BK[BENCH_NX][BENCH_NX] = {0};
+        matrix_multiply(B, Kinf, BK, BENCH_NX, BENCH_NU, BENCH_NX);
+        
+        float AmBK[BENCH_NX][BENCH_NX];
+        matrix_subtract(A, BK, AmBK, BENCH_NX, BENCH_NX);
+        
+        float new_Pinf[BENCH_NX][BENCH_NX];
+        matrix_multiply(Pinf, AmBK, new_Pinf, BENCH_NX, BENCH_NX, BENCH_NX);
+        matrix_multiply_transpose_left(A, new_Pinf, Pinf, BENCH_NX, BENCH_NX, BENCH_NX);
+        matrix_add(Pinf, Q_rho, Pinf, BENCH_NX, BENCH_NX);
+        
+        // Check convergence
+        float diff_norm = matrix_norm(Kinf, Kinf_prev, BENCH_NU, BENCH_NX);
+        if(diff_norm < 1e-10) break;
+    }
+    
+    // 4. Compute C1 = inv(R_rho + BTPinfB)
+    float BTPinfB[BENCH_NU][BENCH_NU] = {0};
+    compute_BTPinfB(B, Pinf, BTPinfB);
+    matrix_add(R_rho, BTPinfB, temp, BENCH_NU, BENCH_NU);
+    matrix_inverse(temp, C1, BENCH_NU);
+    
+    // 5. Compute C2 = (A - B*Kinf)T
+    float BK[BENCH_NX][BENCH_NX] = {0};
+    matrix_multiply(B, Kinf, BK, BENCH_NX, BENCH_NU, BENCH_NX);
+    matrix_subtract(A, BK, C2, BENCH_NX, BENCH_NX);
+    matrix_transpose(C2, C2, BENCH_NX, BENCH_NX);
+}
+
 void update_cache_taylor(float new_rho, float old_rho) {
     float delta_rho = new_rho - old_rho;
     
@@ -86,6 +209,8 @@ void update_cache_taylor(float new_rho, float old_rho) {
 }
 
 void benchmark_rho_adaptation(float pri_res, float dual_res, RhoBenchmarkResult* result) {
+    initialize_benchmark_cache();
+
     result->initial_rho = 85.0f;
     
     uint32_t start = micros();
