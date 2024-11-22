@@ -15,5 +15,13 @@ struct RhoBenchmarkResult {
 };
 
 // Main benchmark functions
-void benchmark_rho_adaptation(float pri_res, float dual_res, RhoBenchmarkResult* result);
+void benchmark_rho_adaptation(
+    const float* x_prev,    // Previous state (nx x 1)
+    const float* u_prev,    // Previous input (nu x 1)
+    const float* z_prev,    // Previous slack (nx x 1)
+    float pri_res,          // Primal residual
+    float dual_res,         // Dual residual
+    RhoBenchmarkResult* result
+);
+
 void update_cache_taylor(float new_rho, float old_rho);
