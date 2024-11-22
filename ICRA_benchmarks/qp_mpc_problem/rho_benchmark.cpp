@@ -87,13 +87,66 @@ void update_cache_taylor(float new_rho, float old_rho) {
 
 void benchmark_rho_adaptation(float pri_res, float dual_res, RhoBenchmarkResult* result) {
     result->initial_rho = 85.0f;
-    result->pri_res = pri_res;
-    result->dual_res = dual_res;
     
     uint32_t start = micros();
     
-    // Compute new rho
-    float ratio = pri_res / dual_res;
+    // Get state and input from previous iteration
+    // Assuming x_prev, u_prev, z_prev, y_k are stored somewhere
+    float x_k[BENCH_NX];  // state (12x1)
+    float u_k[BENCH_NU];  // input (4x1)
+    float z_k[BENCH_NX];  // slack (12x1)
+    float y_k[BENCH_NX + BENCH_NU];  // [x;u] (16x1)
+    
+    // Compute primal scaling
+    float Ax_norm = 0.0f;
+    // Compute A_stacked @ x_bar
+    for(int i = 0; i < BENCH_NX + BENCH_NU; i++) {
+        float sum = 0.0f;
+        for(int j = 0; j < BENCH_NX + BENCH_NU; j++) {
+            sum += A_stacked[i][j] * (j < BENCH_NX ? x_k[j] : u_k[j-BENCH_NX]);
+        }
+        Ax_norm = max(Ax_norm, abs(sum));
+    }
+    
+    // Compute |z_k|_∞
+    float z_norm = 0.0f;
+    for(int i = 0; i < BENCH_NX; i++) {
+        z_norm = max(z_norm, abs(z_k[i]));
+    }
+    
+    float prim_scaling = pri_res / max(Ax_norm, z_norm);
+    
+    // Compute dual scaling
+    float Px_norm = 0.0f;
+    // Compute |Pinf @ x_k|_∞
+    for(int i = 0; i < BENCH_NX; i++) {
+        float sum = 0.0f;
+        for(int j = 0; j < BENCH_NX; j++) {
+            sum += Pinf[i][j] * x_k[j];
+        }
+        Px_norm = max(Px_norm, abs(sum));
+    }
+    
+    float ATy_norm = 0.0f;
+    // Compute |A_stacked.T @ y_k|_∞
+    for(int i = 0; i < BENCH_NX + BENCH_NU; i++) {
+        float sum = 0.0f;
+        for(int j = 0; j < BENCH_NX + BENCH_NU; j++) {
+            sum += A_stacked[j][i] * y_k[j];
+        }
+        ATy_norm = max(ATy_norm, abs(sum));
+    }
+    
+    float q_norm = 0.0f;
+    // Compute |q|_∞
+    for(int i = 0; i < BENCH_NX + BENCH_NU; i++) {
+        q_norm = max(q_norm, abs(q[i]));
+    }
+    
+    float dual_scaling = dual_res / max(max(Px_norm, ATy_norm), q_norm);
+    
+    // Update rho
+    float ratio = prim_scaling / dual_scaling;
     ratio = min(max(ratio, 0.001f), 1.0f);
     float new_rho = result->initial_rho * sqrt(ratio);
     new_rho = min(max(new_rho, 70.0f), 100.0f);
