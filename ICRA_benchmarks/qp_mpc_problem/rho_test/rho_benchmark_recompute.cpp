@@ -1,156 +1,198 @@
-#include "rho_benchmark_recompute.hpp"
+#include "rho_benchmark.hpp"
 #include <Arduino.h>
 
-// Cache matrices that get recomputed
+// Cache matrices that get updated
 static float Kinf[BENCH_NU][BENCH_NX];
 static float Pinf[BENCH_NX][BENCH_NX];
 static float C1[BENCH_NU][BENCH_NU];
 static float C2[BENCH_NX][BENCH_NX];
 
-// System matrices (from your generated problem)
-const float A[BENCH_NX][BENCH_NX] = { /* Your A matrix */ };
-const float B[BENCH_NX][BENCH_NU] = { /* Your B matrix */ };
-const float Q[BENCH_NX][BENCH_NX] = { /* Your Q matrix */ };
-const float R[BENCH_NU][BENCH_NU] = { /* Your R matrix */ };
-const float A_stacked[BENCH_NX + BENCH_NU][BENCH_NX + BENCH_NU] = { /* Your A_stacked */ };
-const float q[BENCH_NX + BENCH_NU] = { /* Your q vector */ };
-
-// Helper function to recompute cache matrices
-void recompute_cache(float rho) {
-    // 1. Compute Q_rho and R_rho
-    float Q_rho[BENCH_NX][BENCH_NX];
-    float R_rho[BENCH_NU][BENCH_NU];
-    
-    // Q_rho = Q + rho * I
-    for(int i = 0; i < BENCH_NX; i++) {
-        for(int j = 0; j < BENCH_NX; j++) {
-            Q_rho[i][j] = Q[i][j] + (i == j ? rho : 0.0f);
-        }
-    }
-    
-    // R_rho = R + rho * I
-    for(int i = 0; i < BENCH_NU; i++) {
-        for(int j = 0; j < BENCH_NU; j++) {
-            R_rho[i][j] = R[i][j] + (i == j ? rho : 0.0f);
-        }
-    }
-    
-    // 2. Initialize Kinf and Pinf
-    float Kinf_prev[BENCH_NU][BENCH_NX] = {0};  // For convergence check
-    
-    // Pinf starts as Q_rho
-    for(int i = 0; i < BENCH_NX; i++) {
-        for(int j = 0; j < BENCH_NX; j++) {
-            Pinf[i][j] = Q_rho[i][j];
-        }
-    }
-    
-    // 3. Iterate until convergence (max 5000 iterations)
-    for(int k = 0; k < 5000; k++) {
-        // Store previous Kinf for convergence check
-        for(int i = 0; i < BENCH_NU; i++) {
-            for(int j = 0; j < BENCH_NX; j++) {
-                Kinf_prev[i][j] = Kinf[i][j];
-            }
-        }
-        
-        // Compute BTPinfB (BENCH_NU x BENCH_NU)
-        float BTPinfB[BENCH_NU][BENCH_NU] = {0};
-        for(int i = 0; i < BENCH_NU; i++) {
-            for(int j = 0; j < BENCH_NU; j++) {
-                float sum = 0;
-                for(int k = 0; k < BENCH_NX; k++) {
-                    for(int l = 0; l < BENCH_NX; l++) {
-                        sum += B[l][i] * Pinf[l][k] * B[k][j];
-                    }
-                }
-                BTPinfB[i][j] = sum;
-            }
-        }
-        
-        // Compute BTPinfA (BENCH_NU x BENCH_NX)
-        float BTPinfA[BENCH_NU][BENCH_NX] = {0};
-        for(int i = 0; i < BENCH_NU; i++) {
-            for(int j = 0; j < BENCH_NX; j++) {
-                float sum = 0;
-                for(int k = 0; k < BENCH_NX; k++) {
-                    for(int l = 0; l < BENCH_NX; l++) {
-                        sum += B[l][i] * Pinf[l][k] * A[k][j];
-                    }
-                }
-                BTPinfA[i][j] = sum;
-            }
-        }
-        
-        // Compute Kinf = inv(R_rho + BTPinfB) * BTPinfA
-        float temp[BENCH_NU][BENCH_NU];
-        for(int i = 0; i < BENCH_NU; i++) {
-            for(int j = 0; j < BENCH_NU; j++) {
-                temp[i][j] = R_rho[i][j] + BTPinfB[i][j];
-            }
-        }
-        // Need matrix inverse here
-        float temp_inv[BENCH_NU][BENCH_NU];
-        matrix_inverse(temp, temp_inv, BENCH_NU);
-        
-        // Multiply temp_inv * BTPinfA to get Kinf
-        matrix_multiply(temp_inv, BTPinfA, Kinf, BENCH_NU, BENCH_NU, BENCH_NX);
-        
-        // Update Pinf = Q_rho + AT * Pinf * (A - B*Kinf)
-        float BK[BENCH_NX][BENCH_NX] = {0};
-        matrix_multiply(B, Kinf, BK, BENCH_NX, BENCH_NU, BENCH_NX);
-        
-        float AmBK[BENCH_NX][BENCH_NX];
-        matrix_subtract(A, BK, AmBK, BENCH_NX, BENCH_NX);
-        
-        float new_Pinf[BENCH_NX][BENCH_NX];
-        matrix_multiply(Pinf, AmBK, new_Pinf, BENCH_NX, BENCH_NX, BENCH_NX);
-        matrix_multiply_transpose_left(A, new_Pinf, Pinf, BENCH_NX, BENCH_NX, BENCH_NX);
-        matrix_add(Pinf, Q_rho, Pinf, BENCH_NX, BENCH_NX);
-        
-        // Check convergence
-        float diff_norm = matrix_norm(Kinf, Kinf_prev, BENCH_NU, BENCH_NX);
-        if(diff_norm < 1e-10) break;
-    }
-    
-    // 4. Compute C1 = inv(R_rho + BTPinfB)
-    float BTPinfB[BENCH_NU][BENCH_NU] = {0};
-    compute_BTPinfB(B, Pinf, BTPinfB);
-    matrix_add(R_rho, BTPinfB, temp, BENCH_NU, BENCH_NU);
-    matrix_inverse(temp, C1, BENCH_NU);
-    
-    // 5. Compute C2 = (A - B*Kinf)T
-    float BK[BENCH_NX][BENCH_NX] = {0};
-    matrix_multiply(B, Kinf, BK, BENCH_NX, BENCH_NU, BENCH_NX);
-    matrix_subtract(A, BK, C2, BENCH_NX, BENCH_NX);
-    matrix_transpose(C2, C2, BENCH_NX, BENCH_NX);
+void initialize_benchmark_cache() {
+    memcpy(Kinf, KINF_INIT, sizeof(Kinf));
+    memcpy(Pinf, PINF_INIT, sizeof(Pinf));
+    memcpy(C1, C1_INIT, sizeof(C1));
+    memcpy(C2, C2_INIT, sizeof(C2));
 }
 
-void benchmark_rho_recompute(
-    const float* x_prev,
-    const float* u_prev,
-    const float* z_prev,
-    float pri_res,
-    float dual_res,
-    RhoBenchmarkResult* result
-) {
+
+// Helper: Matrix multiplication C = A * B
+void matrix_multiply(const float* A, const float* B, float* C, 
+                    int A_rows, int A_cols, int B_cols) {
+    for(int i = 0; i < A_rows; i++) {
+        for(int j = 0; j < B_cols; j++) {
+            C[i * B_cols + j] = 0;
+            for(int k = 0; k < A_cols; k++) {
+                C[i * B_cols + j] += A[i * A_cols + k] * B[k * B_cols + j];
+            }
+        }
+    }
+}
+
+// Helper: Matrix transpose
+void matrix_transpose(const float* A, float* At, int rows, int cols) {
+    for(int i = 0; i < rows; i++) {
+        for(int j = 0; j < cols; j++) {
+            At[j * rows + i] = A[i * cols + j];
+        }
+    }
+}
+
+// Helper: Matrix addition C = A + B
+void matrix_add(const float* A, const float* B, float* C, int rows, int cols) {
+    for(int i = 0; i < rows * cols; i++) {
+        C[i] = A[i] + B[i];
+    }
+}
+
+// Helper: Matrix subtraction C = A - B
+void matrix_subtract(const float* A, const float* B, float* C, int rows, int cols) {
+    for(int i = 0; i < rows * cols; i++) {
+        C[i] = A[i] - B[i];
+    }
+}
+
+// Helper: Matrix inverse using Gaussian elimination
+void matrix_inverse(const float* A, float* Ainv, int n) {
+    // Create augmented matrix [A|I]
+    float aug[n][2*n];
+    float temp;
+    
+    // Initialize augmented matrix
+    for(int i = 0; i < n; i++) {
+        for(int j = 0; j < n; j++) {
+            aug[i][j] = A[i * n + j];
+            aug[i][j+n] = (i == j) ? 1.0f : 0.0f;
+        }
+    }
+    
+    // Gaussian elimination
+    for(int i = 0; i < n; i++) {
+        // Find pivot
+        temp = aug[i][i];
+        for(int j = 0; j < 2*n; j++) {
+            aug[i][j] /= temp;
+        }
+        
+        // Eliminate column
+        for(int j = 0; j < n; j++) {
+            if(i != j) {
+                temp = aug[j][i];
+                for(int k = 0; k < 2*n; k++) {
+                    aug[j][k] -= aug[i][k] * temp;
+                }
+            }
+        }
+    }
+    
+    // Extract inverse
+    for(int i = 0; i < n; i++) {
+        for(int j = 0; j < n; j++) {
+            Ainv[i * n + j] = aug[i][j+n];
+        }
+    }
+}
+
+void recompute_cache(float rho) {
+    // Temporary matrices
+    float Q_rho[BENCH_NX][BENCH_NX];
+    float R_rho[BENCH_NU][BENCH_NU];
+    float BT[BENCH_NU][BENCH_NX];
+    float AT[BENCH_NX][BENCH_NX];
+    float temp1[BENCH_NU][BENCH_NX];
+    float temp2[BENCH_NU][BENCH_NU];
+    float temp3[BENCH_NX][BENCH_NX];
+    
+    // 1. Add rho*I to Q and R
+    memcpy(Q_rho, Q, sizeof(Q_rho));
+    memcpy(R_rho, R, sizeof(R_rho));
+    for(int i = 0; i < BENCH_NX; i++) Q_rho[i][i] += rho;
+    for(int i = 0; i < BENCH_NU; i++) R_rho[i][i] += rho;
+    
+    // 2. Compute matrix transposes
+    matrix_transpose((float*)B, (float*)BT, BENCH_NX, BENCH_NU);
+    matrix_transpose((float*)A, (float*)AT, BENCH_NX, BENCH_NX);
+    
+    // 3. Initialize Pinf = Q_rho
+    memcpy(Pinf, Q_rho, sizeof(Pinf));
+    
+    // 4. Iterative computation
+    float Kinf_prev[BENCH_NU][BENCH_NX];
+    float diff = 1.0f;
+    int iter = 0;
+    const int max_iter = 5000;
+    const float tolerance = 1e-10f;
+    
+    while(diff > tolerance && iter < max_iter) {
+        memcpy(Kinf_prev, Kinf, sizeof(Kinf));
+        
+        // Compute Kinf = inv(R_rho + B'PB)B'PA
+        matrix_multiply((float*)BT, (float*)Pinf, (float*)temp1, BENCH_NU, BENCH_NX, BENCH_NX);
+        matrix_multiply((float*)temp1, (float*)B, (float*)temp2, BENCH_NU, BENCH_NX, BENCH_NU);
+        matrix_add((float*)R_rho, (float*)temp2, (float*)temp2, BENCH_NU, BENCH_NU);
+        matrix_multiply((float*)temp1, (float*)A, (float*)temp1, BENCH_NU, BENCH_NX, BENCH_NX);
+        matrix_inverse((float*)temp2, (float*)temp2, BENCH_NU);
+        matrix_multiply((float*)temp2, (float*)temp1, (float*)Kinf, BENCH_NU, BENCH_NU, BENCH_NX);
+        
+        // Compute Pinf = Q_rho + A'P(A - BK)
+        matrix_multiply((float*)B, (float*)Kinf, (float*)temp3, BENCH_NX, BENCH_NU, BENCH_NX);
+        matrix_subtract((float*)A, (float*)temp3, (float*)temp3, BENCH_NX, BENCH_NX);
+        matrix_multiply((float*)AT, (float*)Pinf, (float*)temp1, BENCH_NX, BENCH_NX, BENCH_NX);
+        matrix_multiply((float*)temp1, (float*)temp3, (float*)temp3, BENCH_NX, BENCH_NX, BENCH_NX);
+        matrix_add((float*)Q_rho, (float*)temp3, (float*)Pinf, BENCH_NX, BENCH_NX);
+        
+        // Compute difference
+        diff = 0;
+        for(int i = 0; i < BENCH_NU * BENCH_NX; i++) {
+            float d = ((float*)Kinf)[i] - ((float*)Kinf_prev)[i];
+            diff += d*d;
+        }
+        diff = sqrt(diff);
+        
+        iter++;
+    }
+    
+    // 5. Compute C1 = inv(R_rho + B'PB)
+    matrix_multiply((float*)BT, (float*)Pinf, (float*)temp1, BENCH_NU, BENCH_NX, BENCH_NX);
+    matrix_multiply((float*)temp1, (float*)B, (float*)temp2, BENCH_NU, BENCH_NX, BENCH_NU);
+    matrix_add((float*)R_rho, (float*)temp2, (float*)temp2, BENCH_NU, BENCH_NU);
+    matrix_inverse((float*)temp2, (float*)C1, BENCH_NU);
+    
+    // 6. Compute C2 = (A - BK)'
+    matrix_multiply((float*)B, (float*)Kinf, (float*)temp3, BENCH_NX, BENCH_NU, BENCH_NX);
+    matrix_subtract((float*)A, (float*)temp3, (float*)temp3, BENCH_NX, BENCH_NX);
+    matrix_transpose((float*)temp3, (float*)C2, BENCH_NX, BENCH_NX);
+}
+
+
+
+
+
+
+
+
+void benchmark_rho_adaptation(float pri_res, float dual_res, RhoBenchmarkResult* result) {
+    initialize_benchmark_cache();
+
     result->initial_rho = 85.0f;
     
     uint32_t start = micros();
     
-    // Copy previous values
-    float x_k[BENCH_NX];
-    float u_k[BENCH_NU];
-    float z_k[BENCH_NX];
-    float y_k[BENCH_NX + BENCH_NU];
-    
+    // Get state and input from previous iteration
+    // Assuming x_prev, u_prev, z_prev, y_k are stored somewhere
+    float x_k[BENCH_NX];  // state (12x1)
+    float u_k[BENCH_NU];  // input (4x1)
+    float z_k[BENCH_NX];  // slack (12x1)
+    float y_k[BENCH_NX + BENCH_NU];  // [x;u] (16x1)
+
     memcpy(x_k, x_prev, BENCH_NX * sizeof(float));
     memcpy(u_k, u_prev, BENCH_NU * sizeof(float));
     memcpy(z_k, z_prev, BENCH_NX * sizeof(float));
+    
+    // Build y_k = [x_k; u_k]
     memcpy(y_k, x_k, BENCH_NX * sizeof(float));
     memcpy(y_k + BENCH_NX, u_k, BENCH_NU * sizeof(float));
     
-    / Compute primal scaling
+    // Compute primal scaling
     float Ax_norm = 0.0f;
     // Compute A_stacked @ x_bar
     for(int i = 0; i < BENCH_NX + BENCH_NU; i++) {
@@ -204,7 +246,7 @@ void benchmark_rho_recompute(
     float new_rho = result->initial_rho * sqrt(ratio);
     new_rho = min(max(new_rho, 70.0f), 100.0f);
     
-    // Recompute cache with new rho
+    // Update cache using Full Recomputation
     recompute_cache(new_rho);
     
     result->time_us = micros() - start;
