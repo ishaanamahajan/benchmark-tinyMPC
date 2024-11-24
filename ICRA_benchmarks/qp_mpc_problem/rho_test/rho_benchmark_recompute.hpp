@@ -1,5 +1,9 @@
 #pragma once
-#include <Arduino.h>
+#include <cstdint>  // for uint32_t
+#include <cstring>  // for memcpy
+#include <cmath>    // for sqrt, abs
+#include <algorithm> // for min, max
+//#include <Arduino.h>
 
 // Dimensions
 #define BENCH_NX 12
@@ -79,10 +83,10 @@ extern float z_prev[BENCH_NX];
 extern const float A_stacked[BENCH_NX + BENCH_NU][BENCH_NX + BENCH_NU];
 extern const float q[BENCH_NX + BENCH_NU];
 
-// Function declarations
-void update_cache_taylor(float new_rho, float old_rho);
-void initialize_benchmark_cache();  // This needs to be implemented
-void benchmark_rho_adaptation(float pri_res, float dual_res, RhoBenchmarkResult* result);\
+
+void initialize_benchmark_cache();
+void recompute_cache(float rho);  // This declaration was missing
+void benchmark_rho_adaptation(float pri_res, float dual_res, RhoBenchmarkResult* result);
 
 
 

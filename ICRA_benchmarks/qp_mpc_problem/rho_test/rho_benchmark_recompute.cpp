@@ -1,11 +1,11 @@
-#include "rho_benchmark.hpp"
-#include <Arduino.h>
+#include "rho_benchmark_recompute.hpp"
+//#include <Arduino.h>
 
 // Cache matrices that get updated
-static float Kinf[BENCH_NU][BENCH_NX];
-static float Pinf[BENCH_NX][BENCH_NX];
-static float C1[BENCH_NU][BENCH_NU];
-static float C2[BENCH_NX][BENCH_NX];
+float Kinf[BENCH_NU][BENCH_NX];
+float Pinf[BENCH_NX][BENCH_NX];
+float C1[BENCH_NU][BENCH_NU];
+float C2[BENCH_NX][BENCH_NX];
 
 void initialize_benchmark_cache() {
     memcpy(Kinf, KINF_INIT, sizeof(Kinf));
@@ -200,16 +200,16 @@ void benchmark_rho_adaptation(float pri_res, float dual_res, RhoBenchmarkResult*
         for(int j = 0; j < BENCH_NX + BENCH_NU; j++) {
             sum += A_stacked[i][j] * (j < BENCH_NX ? x_k[j] : u_k[j-BENCH_NX]);
         }
-        Ax_norm = max(Ax_norm, abs(sum));
+        Ax_norm = std::max(Ax_norm, std::abs(sum));
     }
     
     // Compute |z_k|_∞
     float z_norm = 0.0f;
     for(int i = 0; i < BENCH_NX; i++) {
-        z_norm = max(z_norm, abs(z_k[i]));
+        z_norm = std::max(z_norm, std::abs(z_k[i]));
     }
     
-    float prim_scaling = pri_res / max(Ax_norm, z_norm);
+    float prim_scaling = pri_res / std::max(Ax_norm, z_norm);
     
     // Compute dual scaling
     float Px_norm = 0.0f;
@@ -219,7 +219,7 @@ void benchmark_rho_adaptation(float pri_res, float dual_res, RhoBenchmarkResult*
         for(int j = 0; j < BENCH_NX; j++) {
             sum += Pinf[i][j] * x_k[j];
         }
-        Px_norm = max(Px_norm, abs(sum));
+        Px_norm = std::max(Px_norm, std::abs(sum));
     }
     
     float ATy_norm = 0.0f;
@@ -229,22 +229,22 @@ void benchmark_rho_adaptation(float pri_res, float dual_res, RhoBenchmarkResult*
         for(int j = 0; j < BENCH_NX + BENCH_NU; j++) {
             sum += A_stacked[j][i] * y_k[j];
         }
-        ATy_norm = max(ATy_norm, abs(sum));
+        ATy_norm = std::max(ATy_norm, std::abs(sum));
     }
     
     float q_norm = 0.0f;
     // Compute |q|_∞
     for(int i = 0; i < BENCH_NX + BENCH_NU; i++) {
-        q_norm = max(q_norm, abs(q[i]));
+        q_norm = std::max(q_norm, std::abs(q[i]));
     }
     
-    float dual_scaling = dual_res / max(max(Px_norm, ATy_norm), q_norm);
+    float dual_scaling = dual_res / std::max(std::max(Px_norm, ATy_norm), q_norm);
     
     // Update rho
     float ratio = prim_scaling / dual_scaling;
-    ratio = min(max(ratio, 0.001f), 1.0f);
-    float new_rho = result->initial_rho * sqrt(ratio);
-    new_rho = min(max(new_rho, 70.0f), 100.0f);
+    ratio = std::min(std::max(ratio, 0.001f), 1.0f);
+    float new_rho = result->initial_rho * std::sqrt(ratio);
+    new_rho = std::min(std::max(new_rho, 70.0f), 100.0f);
     
     // Update cache using Full Recomputation
     recompute_cache(new_rho);
