@@ -1,6 +1,10 @@
 // rho_benchmark.hpp
 #pragma once
-#include <Arduino.h>
+#include <cstdint>  // for uint32_t
+#include <cstring>  // for memcpy
+#include <cmath>    // for sqrt, abs
+#include <algorithm> // for min, max
+//#include <Arduino.h>
 
 // Dimensions
 #define BENCH_NX 12
