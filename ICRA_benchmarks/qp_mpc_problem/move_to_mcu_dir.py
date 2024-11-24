@@ -15,8 +15,8 @@ from gen_code_osqp import generate_osqp_solver
 
 from gen_mpc_problem import *
 
-# SOLVER = 'TinyMPC'
-SOLVER = 'OSQP'
+SOLVER = 'TinyMPC'
+#SOLVER = 'OSQP'
 
 # num_tests = 24
 # timings = np.zeros(num_tests)

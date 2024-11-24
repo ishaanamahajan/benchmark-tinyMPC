@@ -2,6 +2,8 @@
 
 #include "admm.hpp"
 
+#include "rho_benchmark_recompute.hpp"
+
 #define DEBUG_MODULE "TINYALG"
 
 extern "C" {
@@ -88,6 +90,13 @@ void solve_admm(struct tiny_problem *problem, const struct tiny_params *params) 
         }
 
         // TODO: add rho scaling
+        RhoBenchmarkResult result;
+        float pri_res = max(problem->primal_residual_state, problem->primal_residual_input);
+        float dual_res = max(problem->dual_residual_state, problem->dual_residual_input);
+        benchmark_rho_adaptation(pri_res, dual_res, &result);
+        
+        // Update rho in the solver
+        params->cache.rho[problem->cache_level] = result.final_rho;
 
 
         // std::cout << problem->primal_residual_state << std::endl;
