@@ -78,6 +78,8 @@ struct tiny_params {
  * Problem variables
 */
 struct tiny_problem {
+    uint32_t solve_time;
+
     // State and input
     tiny_MatrixNxNh x;
     tiny_MatrixNuNhm1 u;

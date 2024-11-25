@@ -2,7 +2,7 @@
 
 #include "admm.hpp"
 
-#include "rho_benchmark_recompute.hpp"
+#include "rho_benchmark.hpp"
 
 #define DEBUG_MODULE "TINYALG"
 
@@ -32,10 +32,12 @@ void solve_admm(struct tiny_problem *problem, const struct tiny_params *params) 
     //     // (problem->d.col(i)).noalias() = params->cache.Quu_inv[problem->cache_level] * (params->cache.Bdyn[problem->cache_level].transpose() * problem->p.col(i+1) + problem->r.col(i));
     //     // (problem->p.col(i)).noalias() = problem->q.col(i) + params->cache.AmBKt[problem->cache_level].lazyProduct(problem->p.col(i+1)) - (params->cache.Kinf[problem->cache_level].transpose()).lazyProduct(problem->r.col(i)); // + params->cache.coeff_d2p * problem->d.col(i); // coeff_d2p always appears to be zeros
     // }
-    
+    startTimestamp = micros();
 
     problem->status = 0;
     problem->iter = 0;
+
+
 
     forward_pass(problem, params);
     update_slack(problem, params);
@@ -104,6 +106,7 @@ void solve_admm(struct tiny_problem *problem, const struct tiny_params *params) 
         // std::cout << problem->primal_residual_input << std::endl;
         // std::cout << problem->dual_residual_input << "\n" << std::endl;
     }
+    problem->solve_time = micros() - startTimestamp;
 }
 
 /**
