@@ -10,14 +10,14 @@ extern "C" {
 
 // #include "debug.h"
 
-static uint64_t startTimestamp;
+static uint32_t startTimestamp;
 
 void solve_lqr(struct tiny_problem *problem, const struct tiny_params *params) {
     problem->u.col(0) = -params->cache.Kinf[problem->cache_level] * (problem->x.col(0) - params->Xref.col(0));
 }
 
 
-void solve_admm(struct tiny_problem *problem, const struct tiny_params *params) {
+void solve_admm(struct tiny_problem *problem,  struct tiny_params *params) {
 
     // for (int i=NHORIZON-2; i>=0; i--) {
     //     // problem->Qu.noalias() = params->cache.Bdyn.transpose().lazyProduct(problem->p.col(i+1));
@@ -98,7 +98,9 @@ void solve_admm(struct tiny_problem *problem, const struct tiny_params *params) 
         benchmark_rho_adaptation(pri_res, dual_res, &result);
         
         // Update rho in the solver
-        params->cache.rho[problem->cache_level] = result.final_rho;
+        //params->cache.rho[problem->cache_level] = result.final_rho;
+
+
 
 
         // std::cout << problem->primal_residual_state << std::endl;
