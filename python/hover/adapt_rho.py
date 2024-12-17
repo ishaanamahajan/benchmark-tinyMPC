@@ -148,76 +148,81 @@ class RhoAdapter:
 
 
     def predict_rho(self, pri_res, dual_res, iterations, current_rho, cache, x_prev, u_prev, v_prev, z_prev, g_prev, y_prev):
-        """Predict rho using proper ADMM scaling"""
+        """Predict rho using their formulation"""
         try:
-            eps = 1e-8
+            # 1. Stack states and inputs
+            x_curr = x_prev[:, 0].reshape(-1, 1)  # (12,1)
+            u_curr = u_prev[:, 0].reshape(-1, 1)  # (4,1)
+            x_bar = np.vstack([x_curr, u_curr])   # (16,1)
             
+            # 2. Form [A B] matrix
+            A = cache['A']  # (12,12)
+            B = cache['B']  # (12,4)
+            A_stacked = np.block([A, B])  # (12,16)
             
+            # 3. Stack costs
+            Pinf_stacked = np.block([
+                [cache['Pinf'], np.zeros((12, 4))],
+                [np.zeros((4, 12)), cache['R']]
+            ])  # (16,16)
             
-            # Reshape vectors properly
-            x_k = x_prev[:, 0].reshape(-1, 1)  
-            z_k = z_prev[:, 0].reshape(-1, 1)  
-            u_k = u_prev[:, 0].reshape(-1, 1)  
+            # Debug dimensions before operations
+            print("\nInput dimensions:")
+            print(f"A_stacked: {A_stacked.shape}")  # (12,16)
+            print(f"x_bar: {x_bar.shape}")         # (16,1)
+            print(f"z_prev: {z_prev.shape}")       # Should be (4,10)
             
-            # Stack and compute norms
-            y_k = np.vstack([x_k, u_k])
-            x_bar = np.vstack([x_k, u_k])
+            # 4. Compute residuals
+            Ax = A_stacked @ x_bar  # (12,1)
+            print(f"Ax shape: {Ax.shape}")  # Should be (12,1)
             
-            # Debug primal scaling
-            Ax_norm = np.linalg.norm(cache['A_stacked'] @ x_bar, np.inf) + eps
-            z_norm = np.linalg.norm(z_k, np.inf) + eps
-            print(f"Ax_norm: {Ax_norm}")
-            print(f"z_norm: {z_norm}")
-            prim_scaling = pri_res / max(Ax_norm, z_norm)
-            print(f"Primal scaling: {prim_scaling}")
+            # Create z vector that matches Ax dimensions
+            z = np.vstack([
+                np.zeros((8, 1)),  # Pad with zeros for state part
+                z_prev[:, 0].reshape(-1, 1)  # Input constraints part (4,1)
+            ])  # Now should be (12,1)
+            print(f"z shape: {z.shape}")
             
-            # Debug dual scaling
-            Px_norm = np.linalg.norm(cache['Pinf'] @ x_k, np.inf) + eps
-            ATy_norm = np.linalg.norm(cache['A_stacked'].T @ y_k, np.inf) + eps
-            q_norm = np.linalg.norm(cache['q'], np.inf) + eps
-            print(f"Px_norm: {Px_norm}")
-            print(f"ATy_norm: {ATy_norm}")
-            print(f"q_norm: {q_norm}")
-            dual_scaling = dual_res / max(Px_norm, ATy_norm, q_norm)
-            print(f"Dual scaling: {dual_scaling}")
+            # Now compute residuals with matching dimensions
+            primal_res = np.linalg.norm(Ax - z, ord=np.inf)
             
-            # Debug ratio and new rho
-            ratio = prim_scaling / dual_scaling
-            print(f"Ratio: {ratio}")
-
-            # if iterations < 5:
-            #     new_rho = current_rho * (1+0.1 * (np.sqrt(ratio) - 1))
-            # else:
-            #     new_rho = current_rho * np.sqrt(ratio)
-
+            # Rest of residual computation
+            Hx = Pinf_stacked @ x_bar  # (16,1)
+            lam = y_prev[:, 0].reshape(-1, 1)  # (4,1)
+            lam_stacked = np.vstack([
+                np.zeros((12, 1)),
+                lam
+            ])  # (16,1)
+            
+            A_T_lam = A_stacked.T @ lam_stacked[:12]
+            
+            # Stack costs
+            q = cache['Q'] @ x_curr  # (12,1)
+            r = cache['R'] @ u_curr  # (4,1)
+            g = np.vstack([q, r])    # (16,1)
+            
+            dual_res = np.linalg.norm(Hx + A_T_lam + g, ord=np.inf)
+            
+            print(f"\nResiduals:")
+            print(f"primal_res: {primal_res}")
+            print(f"dual_res: {dual_res}")
+            
+            # Update rho
+            ratio = primal_res / (dual_res + 1e-6)
             ideal_rho = current_rho * np.sqrt(ratio)
-
             
-
-            # Find closest pre-computed rho
             self.current_idx = np.argmin(np.abs(self.rhos - ideal_rho))
             new_rho = self.rhos[self.current_idx]
-
-            #new_rho = current_rho * np.sqrt(ratio)
-
-            #new_rho = np.clip(ideal_rho, self.rho_min, self.rho_max)
-
-
             
-            print(f"New rho before clip: {new_rho}")
-            
-            #new_rho = np.clip(new_rho, 1e-6, 1e+6)
             self.rho_history.append(new_rho)
-            
-            print(f"New rho after clip: {new_rho}")
-            
             return new_rho
             
         except Exception as e:
             print(f"Error in rho prediction: {str(e)}")
+            print(f"Error occurred at line: {e.__traceback__.tb_lineno}")
+            exit()
             return current_rho
-
-    
+        
     
 
 
