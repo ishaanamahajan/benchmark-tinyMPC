@@ -8,6 +8,8 @@ from autograd import jacobian
 from autograd.test_util import check_grads
 np.set_printoptions(precision=4, suppress=True)
 
+import time
+
 
 def generate_figure8_reference(t):
     """Generate figure-8 reference with smooth start"""
@@ -122,12 +124,14 @@ def quad_dynamics_rk4(x, u):
 
 class RhoAdapter:
     def __init__(self):
-
-        self.rho_base = 85.0  # Center of our rho range
         self.tolerance = 1.1 
 
-        self.rho_min = 60.0
-        self.rho_max = 100.0
+
+
+        self.rho_base = 5.0   # Start lower
+        self.tolerance = 1.1  # Slightly larger steps
+        self.rho_min = 1.0
+        self.rho_max = 20.0
         
         
 
@@ -138,6 +142,8 @@ class RhoAdapter:
         # For paper comparison/analysis
         self.rho_history = []
         self.residual_history = []
+
+        self.start_time = time.time()  
 
 
     def setup_rho_sequence(self):
@@ -158,82 +164,91 @@ class RhoAdapter:
         
    
 
-    def predict_rho(self, pri_res, dual_res, iterations, current_rho, cache, x_prev, u_prev, v_prev, z_prev, g_prev, y_prev):
-        """Predict rho using proper ADMM scaling"""
+    def predict_rho(self, pri_res, dual_res, iterations, current_rho, cache, x_prev, u_prev, v_prev, z_prev, g_prev, y_prev, current_time=None):
+        """Predict rho for trajectory tracking"""
         try:
-            eps = 1e-8
+            print("\nShape check:")
+            print(f"x_prev shape: {x_prev.shape}")  # (12, 25)
+            print(f"u_prev shape: {u_prev.shape}")  # (4, 25)
+            print(f"v_prev shape: {v_prev.shape}")  # Should be (12, 25)
+            print(f"z_prev shape: {z_prev.shape}")  # (4, 25)
             
-            
-            
-            # Reshape vectors properly
-            x_k = x_prev[:, 0].reshape(-1, 1)  
-            z_k = z_prev[:, 0].reshape(-1, 1)  
-            u_k = u_prev[:, 0].reshape(-1, 1)  
-            
-            # Stack and compute norms
-            y_k = np.vstack([x_k, u_k])
-            x_bar = np.vstack([x_k, u_k])
-            
-            # Debug primal scaling
-            Ax_norm = np.linalg.norm(cache['A_stacked'] @ x_bar, np.inf) + eps
-            z_norm = np.linalg.norm(z_k, np.inf) + eps
-            print(f"Ax_norm: {Ax_norm}")
-            print(f"z_norm: {z_norm}")
-            prim_scaling = pri_res / max(Ax_norm, z_norm)
-            print(f"Primal scaling: {prim_scaling}")
-            
-            # Debug dual scaling
-            Px_norm = np.linalg.norm(cache['Pinf'] @ x_k, np.inf) + eps
-            ATy_norm = np.linalg.norm(cache['A_stacked'].T @ y_k, np.inf) + eps
-            q_norm = np.linalg.norm(cache['q'], np.inf) + eps
-            print(f"Px_norm: {Px_norm}")
-            print(f"ATy_norm: {ATy_norm}")
-            print(f"q_norm: {q_norm}")
-            dual_scaling = dual_res / max(Px_norm, ATy_norm, q_norm)
-            print(f"Dual scaling: {dual_scaling}")
-            
-            # Debug ratio and new rho
-            ratio = prim_scaling / dual_scaling
-            print(f"Ratio: {ratio}")
+            # 1. Get current state and input
+            x_curr = x_prev[:, 0].reshape(-1, 1)  # (12,1)
+            u_curr = u_prev[:, 0].reshape(-1, 1)  # (4,1)
+            x_bar = np.vstack([x_curr, u_curr])   # (16,1)
 
-            # if iterations < 5:
-            #     new_rho = current_rho * (1+0.1 * (np.sqrt(ratio) - 1))
-            # else:
-            #     new_rho = current_rho * np.sqrt(ratio)
+            # 2. Form system matrices
+            A = cache['A']  # (12,12)
+            B = cache['B']  # (12,4)
+            AB = np.block([A, B])  # (12,16)
 
+            # 3. Compute Ax
+            Ax = AB @ x_bar  # (12,1)
+
+            # 4. Form z vector with correct dimensions
+            # We only need the first 12 rows to match Ax dimensions
+            z = np.zeros((12, 1))  # Initialize z with correct size
+            z[:12, :] = v_prev[:, 0].reshape(-1, 1)  # First 12 elements from v_prev
+            
+            # 5. Compute primal residual
+            primal_res = np.linalg.norm(Ax - z, ord=np.inf)
+
+            # 6. Form cost matrices
+            Q = cache['Q']  # (12,12)
+            R = cache['R']  # (4,4)
+            P_aug = np.block([
+                [Q, np.zeros((12, 4))],
+                [np.zeros((4, 12)), R]
+            ])  # (16,16)
+
+            # 7. Compute dual residual components
+            y_aug = np.zeros((12, 1))  # Initialize with correct size
+            y_aug[:12, :] = g_prev[:, 0].reshape(-1, 1)  # State duals
+
+            Hx = P_aug @ x_bar  # (16,1)
+            ATy = AB.T @ y_aug  # (16,1)
+
+            # Get reference and compute cost gradient
+            t = current_time if current_time is not None else 0
+            x_ref = generate_figure8_reference(t)
+            delta_x = x_curr.flatten() - x_ref[:12]
+            
+            q = Q @ delta_x.reshape(-1, 1)  # (12,1)
+            r = R @ u_curr  # (4,1)
+            g = np.vstack([q, r])  # (16,1)
+
+            # 8. Compute dual residual
+            dual_res = np.linalg.norm(Hx + ATy + g, ord=np.inf)
+
+            print("\nDimension check:")
+            print(f"Ax shape: {Ax.shape}")  # Should be (12,1)
+            print(f"z shape: {z.shape}")    # Should be (12,1)
+            print(f"Hx shape: {Hx.shape}")  # Should be (16,1)
+            print(f"ATy shape: {ATy.shape}")# Should be (16,1)
+            print(f"g shape: {g.shape}")    # Should be (16,1)
+
+            # 9. Update rho
+            ratio = primal_res / (dual_res + 1e-6)
             ideal_rho = current_rho * np.sqrt(ratio)
-
             
-
-            # Find closest pre-computed rho
-
-
-            #############################################
-            # WOULD BE INTERESTING TO SEE HOW THE NUMBER OF PRE_COMPUTED RHOS AFFECTS ANYTHING
-            ######################################################################
-
-
             self.current_idx = np.argmin(np.abs(self.rhos - ideal_rho))
             new_rho = self.rhos[self.current_idx]
-
-            #new_rho = current_rho * np.sqrt(ratio)
-
-            #new_rho = np.clip(ideal_rho, self.rho_min, self.rho_max)
-
-
             
-            print(f"New rho before clip: {new_rho}")
+            print(f"\nResiduals:")
+            print(f"primal_res: {primal_res}")
+            print(f"dual_res: {dual_res}")
+            print(f"new_rho: {new_rho}")
             
-            #new_rho = np.clip(new_rho, 1e-6, 1e+6)
             self.rho_history.append(new_rho)
-            
-            print(f"New rho after clip: {new_rho}")
-            
             return new_rho
-            
+
         except Exception as e:
-            print(f"Error in rho prediction: {str(e)}")
+            print(f"Error in predict_rho: {e}")
+            import traceback
+            traceback.print_exc()
             return current_rho
+        
 
 
     
@@ -261,11 +276,11 @@ class TinyMPC:
         nu = self.cache['B'].shape[1]  # Input dimension
 
 
-        # Create stacked system matrix for trajectory tracking
-        self.cache['A_stacked'] = np.block([
-            [A, B],  # [12x12, 12x4]
-            [-np.eye((Nu, Nx)), -np.eye(Nu)]  # [4x12, 4x4]
-        ])  # Final size: (12+4)x(12+4) = 16x16
+        # # Create stacked system matrix for trajectory tracking
+        # self.cache['A_stacked'] = np.block([
+        #     [A, B],  # [12x12, 12x4]
+        #     [-np.eye((Nu, Nx)), -np.eye(Nu)]  # [4x12, 4x4]
+        # ])  # Final size: (12+4)x(12+4) = 16x16
 
 
 
@@ -465,7 +480,7 @@ class TinyMPC:
         self.cache['C2'] +=  delta_rho * self.cache['dC2_drho']
         
             
-    def solve_admm(self, x_init, u_init, x_ref = None, u_ref = None):
+    def solve_admm(self, x_init, u_init, x_ref=None, u_ref=None, current_time=None):
         status = 0
         x = np.copy(x_init)
         u = np.copy(u_init)
@@ -529,8 +544,9 @@ class TinyMPC:
             dual_res = max(dua_res_input, dua_res_state)
 
 
-            if k == 0:
-                new_rho = self.rho_adapter.predict_rho(
+            
+            
+            new_rho = self.rho_adapter.predict_rho(
                     pri_res, 
                     dual_res, 
                     k, 
@@ -541,8 +557,9 @@ class TinyMPC:
                     v,
                     z,  # current z
                     g,
-                    y   # current y
-                )
+                    y,   # current y
+                    current_time=current_time
+            )
                 
                 # With this code, stats are  - 
                 # Final position error: 0.8228 m
@@ -557,7 +574,7 @@ class TinyMPC:
 
                 
                 # With this code, stats are exactly the same as above
-                self.update_rho(new_rho)
+            self.update_rho(new_rho)
 
             z_prev = np.copy(z)
             v_prev = np.copy(v)
@@ -619,7 +636,7 @@ def tinympc_controller(x_curr, t):
     x_init[:,0] = delta_x
     u_init = np.copy(tinympc.u_prev)
 
-    x_out, u_out, status, k = tinympc.solve_admm(x_init, u_init, x_ref, u_ref)
+    x_out, u_out, status, k = tinympc.solve_admm(x_init, u_init, x_ref, u_ref, current_time=t)
     
     return uhover + u_out[:,0], k
 
