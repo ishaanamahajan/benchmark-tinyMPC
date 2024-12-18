@@ -122,132 +122,7 @@ def quad_dynamics_rk4(x, u):
     return np.hstack([xn[0:3], xnormalized, xn[7:13]])
 
 
-class RhoAdapter:
-    def __init__(self):
-        self.tolerance = 1.1 
 
-
-
-        self.rho_base = 5.0   # Start lower
-        self.tolerance = 1.1  # Slightly larger steps
-        self.rho_min = 1.0
-        self.rho_max = 20.0
-        
-        
-
-        self.rhos = self.setup_rho_sequence()
-        self.current_idx = len(self.rhos)//2  # Start in middle
-
-
-        # For paper comparison/analysis
-        self.rho_history = []
-        self.residual_history = []
-
-        self.start_time = time.time()  
-
-
-    def setup_rho_sequence(self):
-        """Generate geometric sequence of rhos (like ReLU-QP)"""
-        rhos = [self.rho_base]
-        # Generate smaller rhos
-        rho = self.rho_base
-        while rho >= self.rho_min:
-            rho = rho / self.tolerance
-            rhos.append(rho)
-        # Generate larger rhos
-        rho = self.rho_base
-        while rho <= self.rho_max:
-            rho = rho * self.tolerance
-            rhos.append(rho)
-        return np.sort(rhos)
-        
-        
-   
-
-    def predict_rho(self, pri_res, dual_res, iterations, current_rho, cache, x_prev, u_prev, v_prev, z_prev, g_prev, y_prev, current_time=None):
-        """Predict rho for trajectory tracking"""
-        try:
-            print("\nShape check:")
-            print(f"x_prev shape: {x_prev.shape}")  # (12, 25)
-            print(f"u_prev shape: {u_prev.shape}")  # (4, 25)
-            print(f"v_prev shape: {v_prev.shape}")  # Should be (12, 25)
-            print(f"z_prev shape: {z_prev.shape}")  # (4, 25)
-            
-            # 1. Get current state and input
-            x_curr = x_prev[:, 0].reshape(-1, 1)  # (12,1)
-            u_curr = u_prev[:, 0].reshape(-1, 1)  # (4,1)
-            x_bar = np.vstack([x_curr, u_curr])   # (16,1)
-
-            # 2. Form system matrices
-            A = cache['A']  # (12,12)
-            B = cache['B']  # (12,4)
-            AB = np.block([A, B])  # (12,16)
-
-            # 3. Compute Ax
-            Ax = AB @ x_bar  # (12,1)
-
-            # 4. Form z vector with correct dimensions
-            # We only need the first 12 rows to match Ax dimensions
-            z = np.zeros((12, 1))  # Initialize z with correct size
-            z[:12, :] = v_prev[:, 0].reshape(-1, 1)  # First 12 elements from v_prev
-            
-            # 5. Compute primal residual
-            primal_res = np.linalg.norm(Ax - z, ord=np.inf)
-
-            # 6. Form cost matrices
-            Q = cache['Q']  # (12,12)
-            R = cache['R']  # (4,4)
-            P_aug = np.block([
-                [Q, np.zeros((12, 4))],
-                [np.zeros((4, 12)), R]
-            ])  # (16,16)
-
-            # 7. Compute dual residual components
-            y_aug = np.zeros((12, 1))  # Initialize with correct size
-            y_aug[:12, :] = g_prev[:, 0].reshape(-1, 1)  # State duals
-
-            Hx = P_aug @ x_bar  # (16,1)
-            ATy = AB.T @ y_aug  # (16,1)
-
-            # Get reference and compute cost gradient
-            t = current_time if current_time is not None else 0
-            x_ref = generate_figure8_reference(t)
-            delta_x = x_curr.flatten() - x_ref[:12]
-            
-            q = Q @ delta_x.reshape(-1, 1)  # (12,1)
-            r = R @ u_curr  # (4,1)
-            g = np.vstack([q, r])  # (16,1)
-
-            # 8. Compute dual residual
-            dual_res = np.linalg.norm(Hx + ATy + g, ord=np.inf)
-
-            print("\nRho Adaptation Debug:")
-            print(f"Iteration: {iterations}")
-            print(f"Current rho: {current_rho}")
-            print(f"Primal residual: {pri_res}")
-            print(f"Dual residual: {dual_res}")
-
-            # 9. Update rho
-            ratio = primal_res / (dual_res + 1e-6)
-            ideal_rho = current_rho * np.sqrt(ratio)
-            
-            self.current_idx = np.argmin(np.abs(self.rhos - ideal_rho))
-            new_rho = self.rhos[self.current_idx]
-            
-            print(f"\nResiduals:")
-            print(f"primal_res: {primal_res}")
-            print(f"dual_res: {dual_res}")
-            print(f"new_rho: {new_rho}")
-            
-            self.rho_history.append(new_rho)
-            return new_rho
-
-        except Exception as e:
-            print(f"Error in predict_rho: {e}")
-            import traceback
-            traceback.print_exc()
-            return current_rho
-        
 
 
     
@@ -285,12 +160,12 @@ class TinyMPC:
 
     
         self.compute_cache_terms()
-        self.compute_lqr_sensitivity()
+        
         self.set_tols_iters()
         self.x_prev = np.zeros((self.cache['A'].shape[0],Nsteps))
         self.u_prev = np.zeros((self.cache['B'].shape[1],Nsteps))
         self.N = Nsteps
-        self.rho_adapter = RhoAdapter()
+        
 
     def compute_cache_terms(self):
         Q_rho = self.cache['Q']
@@ -380,104 +255,7 @@ class TinyMPC:
         self.abs_pri_tol = abs_pri_tol
         self.abs_dua_tol = abs_dua_tol
 
-
-    
-    def compute_lqr_sensitivity(self):
-        print("Computing LQR sensitivity")
-        def lqr_direct(rho):
-            R_rho = self.cache['R'] + rho * np.eye(self.cache['R'].shape[0])
-            A, B = self.cache['A'], self.cache['B']
-            Q = self.cache['Q']
-            
-            # Compute fresh P for this rho
-            P = Q  # Start with Q
-            for _ in range(10):  # Few iterations for fresh P
-                K = np.linalg.inv(R_rho + B.T @ P @ B) @ B.T @ P @ A
-                P = Q + A.T @ P @ (A - B @ K)
-            
-            # Rest using fresh P
-            K = np.linalg.inv(R_rho + B.T @ P @ B) @ B.T @ P @ A
-            C1 = np.linalg.inv(R_rho + B.T @ P @ B)
-            C2 = A - B @ K
-            
-            return np.concatenate([K.flatten(), P.flatten(), C1.flatten(), C2.flatten()])
-        
-        # Get derivatives using autodiff on the direct equations
-        m, n = self.cache['Kinf'].shape
-        derivs = jacobian(lqr_direct)(self.cache['rho'])
-        
-        # Reshape into respective matrices
-        k_size = m * n
-        p_size = n * n
-        c1_size = m * m
-        c2_size = n * n
-        
-        self.cache['dKinf_drho'] = derivs[:k_size].reshape(m, n)
-        self.cache['dPinf_drho'] = derivs[k_size:k_size+p_size].reshape(n, n)
-        self.cache['dC1_drho'] = derivs[k_size+p_size:k_size+p_size+c1_size].reshape(m, m)
-        self.cache['dC2_drho'] = derivs[k_size+p_size+c1_size:].reshape(n, n)
-
-
-    # def compute_lqr_sensitivity(self):
-    #     print("Computing LQR sensitivity using numerical differentiation")
-        
-    #     # Small perturbation for finite difference
-    #     eps = 1e-4
-    #     rho = self.cache['rho']
-        
-    #     # Helper function to compute LQR matrices for a given rho
-    #     def compute_lqr(rho_val):
-    #         R_rho = self.cache['R'] + rho_val * np.eye(self.cache['R'].shape[0])
-    #         A, B = self.cache['A'], self.cache['B']
-    #         Q = self.cache['Q']
-            
-    #         # Compute P
-    #         P = np.copy(Q)
-    #         for _ in range(10):
-    #             K = np.linalg.inv(R_rho + B.T @ P @ B) @ B.T @ P @ A
-    #             P = Q + A.T @ P @ (A - B @ K)
-            
-    #         # Compute final matrices
-    #         K = np.linalg.inv(R_rho + B.T @ P @ B) @ B.T @ P @ A
-    #         C1 = np.linalg.inv(R_rho + B.T @ P @ B)
-    #         C2 = A - B @ K
-            
-    #         return K, P, C1, C2
-        
-    #     # Compute at rho + eps
-    #     K_plus, P_plus, C1_plus, C2_plus = compute_lqr(rho + eps)
-        
-    #     # Compute at rho - eps
-    #     K_minus, P_minus, C1_minus, C2_minus = compute_lqr(rho - eps)
-        
-    #     # Central difference approximation of derivatives
-    #     self.cache['dKinf_drho'] = (K_plus - K_minus) / (2 * eps)
-    #     self.cache['dPinf_drho'] = (P_plus - P_minus) / (2 * eps)
-    #     self.cache['dC1_drho'] = (C1_plus - C1_minus) / (2 * eps)
-    #     self.cache['dC2_drho'] = (C2_plus - C2_minus) / (2 * eps)
-        
-    #     # Print max derivatives for debugging
-    #     print(f"Max derivative magnitudes:")
-    #     print(f"dKinf_drho: {np.max(np.abs(self.cache['dKinf_drho']))}")
-    #     print(f"dPinf_drho: {np.max(np.abs(self.cache['dPinf_drho']))}")
-    #     print(f"dC1_drho: {np.max(np.abs(self.cache['dC1_drho']))}")
-    #     print(f"dC2_drho: {np.max(np.abs(self.cache['dC2_drho']))}")
-    
-    
-    
-    def update_rho(self, new_rho):
-       
-        old_rho = self.cache['rho']
-        delta_rho = new_rho - old_rho
-
-        print(f"Delta rho: {delta_rho}")
-        
-        self.cache['rho'] = new_rho
-        self.cache['Kinf'] +=  delta_rho * self.cache['dKinf_drho']
-        self.cache['Pinf'] +=  delta_rho * self.cache['dPinf_drho']
-        self.cache['C1'] +=  delta_rho * self.cache['dC1_drho']
-        self.cache['C2'] +=  delta_rho * self.cache['dC2_drho']
-        
+ 
             
     def solve_admm(self, x_init, u_init, x_ref=None, u_ref=None, current_time=None):
         status = 0
@@ -543,38 +321,6 @@ class TinyMPC:
             dual_res = max(dua_res_input, dua_res_state)
 
 
-            
-            # if k% 1000 == 0:
-            
-            #     new_rho = self.rho_adapter.predict_rho(
-            #             pri_res, 
-            #             dual_res, 
-            #             k, 
-            #             self.cache['rho'],
-            #             self.cache,
-            #             x,  # current x
-            #             u,
-            #             v,
-            #             z,  # current z
-            #             g,
-            #             y,   # current y
-            #             current_time=current_time
-            #     )
-                
-            #     # With this code, stats are  - 
-            #     # Final position error: 0.8228 m
-            #     # Average position error: 0.7367 m
-            #     # Average control effort: 0.5232
-            #     # Total iterations: 36119
-
-            #     # if abs(new_rho - self.cache['rho']) > 1e-6:
-            #     #     # print(f"\nRho update at k={k}:")
-            #     #     # print(f"Old rho: {self.cache['rho']}, New rho: {new_rho}")
-            #     #     self.update_rho(new_rho)
-
-                
-            #     # With this code, stats are exactly the same as above
-            #     self.update_rho(new_rho)
 
             z_prev = np.copy(z)
             v_prev = np.copy(v)
@@ -659,11 +405,6 @@ def visualize_trajectory(x_all, u_all):
     plt.subplot(131)
     plt.plot(x_all[:, 0], x_all[:, 2], 'b-', label='Actual')
     
-    # # Plot reference figure-8 (matching Julia)
-    # t_ref = np.linspace(0, 8.0, 100)  # Longer time range
-    # x_ref = np.sin(2*t_ref)           # Julia's x reference
-    # z_ref = np.cos(t_ref)/2           # Julia's z reference
-    # plt.plot(x_ref, z_ref, 'r--', label='Reference')
 
     t_ref = np.linspace(0, 5.0, 100)
     x_ref = A * np.sin(w*t_ref)
@@ -678,17 +419,6 @@ def visualize_trajectory(x_all, u_all):
     plt.grid(True)
     plt.legend()
     
-    # # Plot 2: Position vs Time
-    # plt.subplot(132)
-    # plt.plot(t, x_all[:, 0], 'b-', label='x')
-    # plt.plot(t, x_all[:, 2], 'r-', label='z')
-    # plt.plot(t, np.sin(2*t), 'b--', label='x_ref')
-    # plt.plot(t, np.cos(t)/2, 'r--', label='z_ref')
-    # plt.title('Position vs Time')
-    # plt.xlabel('Time [s]')
-    # plt.ylabel('Position [m]')
-    # plt.grid(True)
-    # plt.legend()
 
     plt.subplot(132)
     plt.plot(t, x_all[:, 0], 'b-', label='x')
@@ -757,7 +487,7 @@ if __name__ == "__main__":
 
     # Modify MPC parameters for better tracking
     N = 25  # horizon length
-    rho = 5.0 # initial rho (Julia starts at 5 and multiplies by 5)
+    rho = 1.0 # initial rho (Julia starts at 5 and multiplies by 5)
     
     # Much tighter weights for better tracking
     max_dev_x = np.array([
@@ -851,15 +581,15 @@ if __name__ == "__main__":
     plt.grid(True)
     plt.legend()
 
-    # Plot rho values
-    plt.subplot(212)
-    #plt.scatter(range(len(rho_history)), rho_history, label='Rho')
-    plt.plot(tinympc.rho_adapter.rho_history, label='Rho')
-    #plt.step(range(len(rho_history)), rho_history, label='Rho')
-    plt.xlabel('Time Step')
-    plt.ylabel('Rho Value')
-    plt.grid(True)
-    plt.legend()
+    # # Plot rho values
+    # plt.subplot(212)
+    # #plt.scatter(range(len(rho_history)), rho_history, label='Rho')
+    # plt.plot(tinympc.rho_adapter.rho_history, label='Rho')
+    # #plt.step(range(len(rho_history)), rho_history, label='Rho')
+    # plt.xlabel('Time Step')
+    # plt.ylabel('Rho Value')
+    # plt.grid(True)
+    # plt.legend()
 
 
     plt.show()

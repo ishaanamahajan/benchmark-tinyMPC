@@ -133,7 +133,7 @@ class RhoAdapter:
         self.rho_base = 5.0   # Start lower
         self.tolerance = 1.1  # Slightly larger steps
         self.rho_min = 1.0
-        self.rho_max = 20.0
+        self.rho_max = 10.0
         
         
 
@@ -167,6 +167,7 @@ class RhoAdapter:
 
     def predict_rho(self, pri_res, dual_res, iterations, current_rho, cache, x_prev, u_prev, v_prev, z_prev, g_prev, y_prev, current_time=None):
         try:
+
             # Get dimensions
             N = x_prev.shape[1]  # Horizon length (25)
             nx = x_prev.shape[0]  # State dimension (12)
@@ -275,6 +276,13 @@ class RhoAdapter:
             normalized_dual = dual_res / (dual_norm + 1e-10)
             rho_new = current_rho * np.sqrt(normalized_pri / (normalized_dual + 1e-10))
             rho_new = np.clip(rho_new, self.rho_min, self.rho_max)
+
+
+            #ideal_rho = current_rho * np.sqrt(normalized_pri / (normalized_dual + 1e-10))
+
+            # Find closest rho in sequence
+            # self.current_idx = np.argmin(np.abs(self.rhos - ideal_rho))
+            # rho_new = self.rhos[self.current_idx]
             
             print(f"\nResiduals and normalizations:")
             print(f"||r_prim||_∞: {pri_res}, pri_norm: {pri_norm}")
@@ -592,6 +600,7 @@ class TinyMPC:
             dual_res = max(dua_res_input, dua_res_state)
 
 
+            
             
             
             new_rho = self.rho_adapter.predict_rho(
