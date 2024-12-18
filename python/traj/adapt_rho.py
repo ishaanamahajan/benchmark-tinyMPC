@@ -6,6 +6,8 @@ from autograd.numpy.linalg import norm
 from autograd.numpy.linalg import inv
 from autograd import jacobian
 from autograd.test_util import check_grads
+from scipy.linalg import block_diag
+
 np.set_printoptions(precision=4, suppress=True)
 
 import time
@@ -15,7 +17,7 @@ def generate_figure8_reference(t):
     """Generate figure-8 reference with smooth start"""
     # Figure 8 parameters
     A = 0.5 # amplitude
-    w = 2*np.pi/7 # frequency
+    w = 2*np.pi/6 # frequency
     
     # Smooth start factor (ramps up in first second)
     smooth_start = min(t/1.0, 1.0)
@@ -160,94 +162,140 @@ class RhoAdapter:
             rho = rho * self.tolerance
             rhos.append(rho)
         return np.sort(rhos)
-        
-        
-   
+
+    
 
     def predict_rho(self, pri_res, dual_res, iterations, current_rho, cache, x_prev, u_prev, v_prev, z_prev, g_prev, y_prev, current_time=None):
-        """Predict rho for trajectory tracking"""
         try:
-            print("\nShape check:")
-            print(f"x_prev shape: {x_prev.shape}")  # (12, 25)
-            print(f"u_prev shape: {u_prev.shape}")  # (4, 25)
-            print(f"v_prev shape: {v_prev.shape}")  # Should be (12, 25)
-            print(f"z_prev shape: {z_prev.shape}")  # (4, 25)
+            # Get dimensions
+            N = x_prev.shape[1]  # Horizon length (25)
+            nx = x_prev.shape[0]  # State dimension (12)
+            nu = u_prev.shape[0]  # Input dimension (4)
             
-            # 1. Get current state and input
-            x_curr = x_prev[:, 0].reshape(-1, 1)  # (12,1)
-            u_curr = u_prev[:, 0].reshape(-1, 1)  # (4,1)
-            x_bar = np.vstack([x_curr, u_curr])   # (16,1)
-
-            # 2. Form system matrices
-            A = cache['A']  # (12,12)
-            B = cache['B']  # (12,4)
-            AB = np.block([A, B])  # (12,16)
-
-            # 3. Compute Ax
-            Ax = AB @ x_bar  # (12,1)
-
-            # 4. Form z vector with correct dimensions
-            # We only need the first 12 rows to match Ax dimensions
-            z = np.zeros((12, 1))  # Initialize z with correct size
-            z[:12, :] = v_prev[:, 0].reshape(-1, 1)  # First 12 elements from v_prev
+            print(f"N={N}, nx={nx}, nu={nu}")
             
-            # 5. Compute primal residual
-            primal_res = np.linalg.norm(Ax - z, ord=np.inf)
-
-            # 6. Form cost matrices
-            Q = cache['Q']  # (12,12)
-            R = cache['R']  # (4,4)
-            P_aug = np.block([
-                [Q, np.zeros((12, 4))],
-                [np.zeros((4, 12)), R]
-            ])  # (16,16)
-
-            # 7. Compute dual residual components
-            y_aug = np.zeros((12, 1))  # Initialize with correct size
-            y_aug[:12, :] = g_prev[:, 0].reshape(-1, 1)  # State duals
-
-            Hx = P_aug @ x_bar  # (16,1)
-            ATy = AB.T @ y_aug  # (16,1)
-
-            # Get reference and compute cost gradient
-            t = current_time if current_time is not None else 0
-            x_ref = generate_figure8_reference(t)
-            delta_x = x_curr.flatten() - x_ref[:12]
+            # 1. Form decision variable x = [x_0; u_0; x_1; u_1; ...; x_N] 
+            x_decision = []
+            for i in range(N):
+                x_decision.append(x_prev[:, i].reshape(-1, 1))  # state
+                if i < N-1:  # Don't append input for last timestep
+                    x_decision.append(u_prev[:, i].reshape(-1, 1))  # input
+            x = np.vstack(x_decision)  # Paper's x variable
+            print(f"x shape: {x.shape}")  # Should be (396, 1)
             
-            q = Q @ delta_x.reshape(-1, 1)  # (12,1)
-            r = R @ u_curr  # (4,1)
-            g = np.vstack([q, r])  # (16,1)
-
-            # 8. Compute dual residual
-            dual_res = np.linalg.norm(Hx + ATy + g, ord=np.inf)
-
-            print("\nDimension check:")
-            print(f"Ax shape: {Ax.shape}")  # Should be (12,1)
-            print(f"z shape: {z.shape}")    # Should be (12,1)
-            print(f"Hx shape: {Hx.shape}")  # Should be (16,1)
-            print(f"ATy shape: {ATy.shape}")# Should be (16,1)
-            print(f"g shape: {g.shape}")    # Should be (16,1)
-
-            # 9. Update rho
-            ratio = primal_res / (dual_res + 1e-6)
-            ideal_rho = current_rho * np.sqrt(ratio)
+            # 2. Form constraint matrix A for dynamics
+            A_base = cache['A']  # System A matrix
+            B_base = cache['B']  # System B matrix
             
-            self.current_idx = np.argmin(np.abs(self.rhos - ideal_rho))
-            new_rho = self.rhos[self.current_idx]
+            # Build A matrix that enforces x_{k+1} = Ax_k + Bu_k
+            A_blocks = []
+            for i in range(N-1):
+                row_block = np.zeros((nx, (nx+nu)*(N-1) + nx))
+                col_idx = i*(nx+nu)
+                row_block[:, col_idx:col_idx+nx] = A_base
+                row_block[:, col_idx+nx:col_idx+nx+nu] = B_base
+                row_block[:, col_idx+nx+nu:col_idx+2*nx+nu] = -np.eye(nx)
+                A_blocks.append(row_block)
+            A = np.vstack(A_blocks)  # Paper's A matrix
+            print(f"A shape: {A.shape}")  # Should be (288, 396)
+
+            # 3. Form constrained variable z
+            z_blocks = []
+            for i in range(N-1):
+                z_blocks.append(v_prev[:, i].reshape(-1, 1))
+            z = np.vstack(z_blocks)
+            print(f"z shape: {z.shape}")  # Should be (288, 1)
+
+            print(f"y_prev shape: {y_prev.shape}")  # Debug y_prev shape
             
-            print(f"\nResiduals:")
-            print(f"primal_res: {primal_res}")
-            print(f"dual_res: {dual_res}")
-            print(f"new_rho: {new_rho}")
+            # 4. Form cost matrix P
+            Q = cache['Q']
+            R = cache['R']
+            P_blocks = []
+            for i in range(N):
+                if i < N-1:
+                    P_block = np.block([
+                        [Q, np.zeros((nx, nu))],
+                        [np.zeros((nu, nx)), R]
+                    ])
+                else:
+                    P_block = Q
+                P_blocks.append(P_block)
+            P = block_diag(*P_blocks)
+            print(f"P shape: {P.shape}")  # Should be (396, 396)
+
+            # 5. Form cost gradient q
+            q_blocks = []
+            for i in range(N):
+                t = current_time if current_time is not None else 0
+                x_ref = generate_figure8_reference(t)
+                delta_x = x_prev[:, i] - x_ref[:12]
+                q_x = Q @ delta_x.reshape(-1, 1)
+                if i < N-1:
+                    q_u = R @ u_prev[:, i].reshape(-1, 1)
+                    q_blocks.extend([q_x, q_u])
+                else:
+                    q_blocks.append(q_x)
+            q = np.vstack(q_blocks)
+            print(f"q shape: {q.shape}")  # Should be (396, 1)
+
             
-            self.rho_history.append(new_rho)
-            return new_rho
+        
+      
+            # 6. Form dual variable y (only for dynamics constraints)
+            y_blocks = []
+            for i in range(N-1):
+                y_blocks.append(v_prev[:, i].reshape(-1, 1))
+            y = np.vstack(y_blocks)  # Using only dynamics duals
+            print(f"y shape: {y.shape}")  # Should be (288, 1)
+
+            # 7. Compute residuals
+            # Primal residual
+            Ax = A @ x
+            r_prim = Ax - z
+            pri_res = np.linalg.norm(r_prim, ord=np.inf)
+            pri_norm = max(np.linalg.norm(Ax, ord=np.inf), 
+                          np.linalg.norm(z, ord=np.inf))
+
+            # Dual residual
+            r_dual = P @ x + q + A.T @ y
+            dual_res = np.linalg.norm(r_dual, ord=np.inf)
+            
+            # Normalization terms
+            Px = P @ x
+            ATy = A.T @ y
+            dual_norm = max(
+                np.linalg.norm(Px, ord=np.inf),
+                np.linalg.norm(ATy, ord=np.inf),
+                np.linalg.norm(q, ord=np.inf)
+            )
+
+            # 8. Compute new rho
+            normalized_pri = pri_res / (pri_norm + 1e-10)
+            normalized_dual = dual_res / (dual_norm + 1e-10)
+            rho_new = current_rho * np.sqrt(normalized_pri / (normalized_dual + 1e-10))
+            rho_new = np.clip(rho_new, self.rho_min, self.rho_max)
+            
+            print(f"\nResiduals and normalizations:")
+            print(f"||r_prim||_∞: {pri_res}, pri_norm: {pri_norm}")
+            print(f"||r_dual||_∞: {dual_res}, dual_norm: {dual_norm}")
+            print(f"normalized ||r_prim||: {normalized_pri}")
+            print(f"normalized ||r_dual||: {normalized_dual}")
+            print(f"ρ_new: {rho_new}")
+            
+            self.rho_history.append(rho_new)
+            return rho_new
 
         except Exception as e:
             print(f"Error in predict_rho: {e}")
             import traceback
             traceback.print_exc()
             return current_rho
+        
+        
+   
+
+    
         
 
 
@@ -650,7 +698,7 @@ def visualize_trajectory(x_all, u_all):
     
     # Figure 8 parameters
     A = 1.0  # amplitude
-    w = 2*np.pi/7  # frequency
+    w = 2*np.pi/6  # frequency
     
     # Create figure
     plt.figure(figsize=(15, 5))
