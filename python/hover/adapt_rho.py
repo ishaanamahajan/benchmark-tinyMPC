@@ -181,6 +181,8 @@ class RhoAdapter:
                 np.zeros((8, 1)),  # Pad with zeros for state part
                 z_prev[:, 0].reshape(-1, 1)  # Input constraints part (4,1)
             ])  # Now should be (12,1)
+
+            print(f"z: {z}")
             print(f"z shape: {z.shape}")
             
             # Now compute residuals with matching dimensions
