@@ -8,6 +8,8 @@ from autograd import jacobian
 from autograd.test_util import check_grads
 import torch
 import time
+
+from scipy.linalg import block_diag
    
 from autograd import jacobian
 
@@ -261,17 +263,17 @@ class RhoAdapter:
             # 5. Form cost gradient q
             q_blocks = []
             for i in range(N):
-                t = current_time if current_time is not None else 0
-                x_ref = generate_figure8_reference(t)
-                delta_x = x_prev[:, i] - x_ref[:12]
+                # For hover, reference is just xg (equilibrium)
+                delta_x = x_prev[:, i] - xg[:12]  # Use xg instead of figure8 reference
                 q_x = Q @ delta_x.reshape(-1, 1)
                 if i < N-1:
-                    q_u = R @ u_prev[:, i].reshape(-1, 1)
+                    # For hover, reference input is uhover
+                    delta_u = u_prev[:, i] - uhover  # Use uhover as reference
+                    q_u = R @ delta_u.reshape(-1, 1)
                     q_blocks.extend([q_x, q_u])
                 else:
                     q_blocks.append(q_x)
             q = np.vstack(q_blocks)
-            print(f"q shape: {q.shape}")  # Should be (396, 1)
 
             
         
@@ -688,7 +690,7 @@ class TinyMPC:
                     y   # current y
                 )
 
-                self.update_rho(new_rho)
+                #self.update_rho(new_rho)
 
                 
                 # With this code, exactly the same as below
