@@ -6,20 +6,39 @@ from autograd.numpy.linalg import norm
 from autograd.numpy.linalg import inv
 from autograd import jacobian
 from autograd.test_util import check_grads
-import torch
-import time
-
 from scipy.linalg import block_diag
-   
-from autograd import jacobian
-
-
-#DEFINING INITIAL RHO
-initial_rho = 85.0
 
 np.set_printoptions(precision=4, suppress=True)
 
-# Quaternion functions (same as fixed version)
+import time
+
+
+def generate_figure8_reference(t):
+    """Generate figure-8 reference with smooth start"""
+    # Figure 8 parameters
+    A = 0.5 # amplitude
+    w = 2*np.pi/6 # frequency
+    
+    # Smooth start factor (ramps up in first second)
+    smooth_start = min(t/1.0, 1.0)
+    
+    x_ref = np.zeros(12)
+    
+    # Positions with smooth start
+    x_ref[0] = A * np.sin(w*t) * smooth_start
+    x_ref[2] = A * np.sin(2*w*t)/2 * smooth_start
+    
+    # Velocities (derivatives with smooth start)
+    x_ref[6] = A * w * np.cos(w*t) * smooth_start 
+    x_ref[8] = A * w * np.cos(2*w*t) * smooth_start
+    
+    # Zero attitude and angular velocity
+    x_ref[3:6] = np.zeros(3)
+    x_ref[9:12] = np.zeros(3)
+    
+    return x_ref
+
+# Quaternion functions
 def hat(v):
     return np.array([[0, -v[2], v[1]],
                      [v[2], 0, -v[0]],
@@ -55,11 +74,11 @@ def E(q):
     E = np.vstack([up, mid, down])
     return E
 
-# Quadrotor parameters (same as fixed version)
+# Quadrotor parameters
 mass = 0.035
-J = np.array([[1.66e-5, 0.83e-6, 0.72e-6], 
-              [0.83e-6, 1.66e-5, 1.8e-6], 
-              [0.72e-6, 1.8e-6, 2.93e-5]])
+J = np.array([[16.6e-6, 0.83e-6, 0.72e-6],
+              [0.83e-6, 16.6e-6, 1.8e-6],
+              [0.72e-6, 1.8e-6, 29.3e-6]])
 g = 9.81
 thrustToTorque = 0.0008
 el = 0.046/1.414213562
@@ -68,14 +87,15 @@ kt = 2.245365e-6*scale
 km = kt*thrustToTorque
 
 freq = 50.0
+
+
 h = 1/freq
 
 Nx1 = 13
 Nx = 12
 Nu = 4
 
-# Dynamics functions with wind disturbances
-def quad_dynamics(x, u, wind = np.array([0.0, 0.0, 0.0])):
+def quad_dynamics(x, u):
     r = x[0:3]
     q = x[3:7]/norm(x[3:7])
     v = x[7:10]
@@ -86,15 +106,13 @@ def quad_dynamics(x, u, wind = np.array([0.0, 0.0, 0.0])):
     dq = 0.5*L(q)@H@omg
     dv = np.array([0, 0, -g]) + (1/mass)*Q@np.array([[0, 0, 0, 0], 
                                                      [0, 0, 0, 0], 
-                                                     [kt, kt, kt, kt]])@u + wind
+                                                     [kt, kt, kt, kt]])@u
     domg = inv(J)@(-hat(omg)@J@omg + 
                    np.array([[-el*kt, -el*kt, el*kt, el*kt], 
                             [-el*kt, el*kt, el*kt, -el*kt], 
                             [-km, km, -km, km]])@u)
 
     return np.hstack([dr, dq, dv, domg])
-
-#
 
 def quad_dynamics_rk4(x, u):
     f1 = quad_dynamics(x, u)
@@ -106,31 +124,28 @@ def quad_dynamics_rk4(x, u):
     return np.hstack([xn[0:3], xnormalized, xn[7:13]])
 
 
-# global variable for rhos 
-
-
-
-
 class RhoAdapter:
-    def __init__(self, min_rho=70.0, max_rho=100.0):
-        self.min_rho = min_rho
-        self.max_rho = max_rho
+    def __init__(self):
+        self.tolerance = 1.1 
 
-        self.rho_base = 85.0  # Center of our rho range
-        self.tolerance = 1.1  # Growth factor between rho values
 
-        self.rho_min = 60.0
+
+        self.rho_base = 5.0   # Start lower
+        self.tolerance = 1.1  # Slightly larger steps
+        self.rho_min = 1.0
         self.rho_max = 100.0
         
         
-        # Pre-compute sequence of rhos and associated matrices
+
         self.rhos = self.setup_rho_sequence()
         self.current_idx = len(self.rhos)//2  # Start in middle
-        
+
+
         # For paper comparison/analysis
         self.rho_history = []
         self.residual_history = []
 
+        self.start_time = time.time()  
 
 
     def setup_rho_sequence(self):
@@ -148,6 +163,7 @@ class RhoAdapter:
             rhos.append(rho)
         return np.sort(rhos)
 
+    
 
     def predict_rho(self, pri_res, dual_res, iterations, current_rho, cache, x_prev, u_prev, v_prev, z_prev, g_prev, y_prev, current_time=None):
         try:
@@ -248,6 +264,8 @@ class RhoAdapter:
             Q = cache['Q']
             R = cache['R']
             P_blocks = []
+            QT = cache['Pinf'] 
+
             for i in range(N):
                 if i < N-1:
                     P_block = np.block([
@@ -263,17 +281,17 @@ class RhoAdapter:
             # 5. Form cost gradient q
             q_blocks = []
             for i in range(N):
-                # For hover, reference is just xg (equilibrium)
-                delta_x = x_prev[:, i] - xg[:12]  # Use xg instead of figure8 reference
+                t = current_time if current_time is not None else 0
+                x_ref = generate_figure8_reference(t)
+                delta_x = x_prev[:, i] - x_ref[:12]
                 q_x = Q @ delta_x.reshape(-1, 1)
                 if i < N-1:
-                    # For hover, reference input is uhover
-                    delta_u = u_prev[:, i] - uhover  # Use uhover as reference
-                    q_u = R @ delta_u.reshape(-1, 1)
+                    q_u = R @ u_prev[:, i].reshape(-1, 1)
                     q_blocks.extend([q_x, q_u])
                 else:
                     q_blocks.append(q_x)
             q = np.vstack(q_blocks)
+            print(f"q shape: {q.shape}")  # Should be (396, 1)
 
             
         
@@ -312,12 +330,6 @@ class RhoAdapter:
             rho_new = current_rho * np.sqrt(normalized_pri / (normalized_dual + 1e-10))
             rho_new = np.clip(rho_new, self.rho_min, self.rho_max)
 
-
-            #ideal_rho = current_rho * np.sqrt(normalized_pri / (normalized_dual + 1e-10))
-
-            # Find closest rho in sequence
-            # self.current_idx = np.argmin(np.abs(self.rhos - ideal_rho))
-            # rho_new = self.rhos[self.current_idx]
             
             print(f"\nResiduals and normalizations:")
             print(f"||r_prim||_∞: {pri_res}, pri_norm: {pri_norm}")
@@ -335,14 +347,10 @@ class RhoAdapter:
             traceback.print_exc()
             return current_rho
         
-    
-
-
-
 class TinyMPC:
     def __init__(self, input_data, Nsteps, mode = 0):
         self.cache = {}
-        self.cache['rho'] = input_data['rho']
+        self.cache['rho'] = input_data['rho']  # Fixed rho
         self.cache['A'] = input_data['A']
         self.cache['B'] = input_data['B']
         self.cache['Q'] = input_data['Q']
@@ -350,40 +358,26 @@ class TinyMPC:
 
         A = input_data['A']  # 12x12 
         B = input_data['B']  # 12x4
-        Q = input_data['Q']  # 12x12
-        R = input_data['R']  # 4x4
+        
+        # # Create stacked system matrix for trajectory tracking
+        # self.cache['A_stacked'] = np.block([
+        #     [A, B],  # [12x12, 12x4]
+        #     [np.zeros((Nu, Nx)), np.eye(Nu)]  # [4x12, 4x4]
+        # ])  # Final size: (12+4)x(12+4) = 16x16
+
 
         nx = self.cache['A'].shape[0]  # State dimension
         nu = self.cache['B'].shape[1]  # Input dimension
 
 
-        # A should be AB -I 
-
-        # q should be [q, r] 
-        
-
-        # # Create stacked system matrix
+        # # Create stacked system matrix for trajectory tracking
         # self.cache['A_stacked'] = np.block([
         #     [A, B],  # [12x12, 12x4]
-        #     [np.zeros((Nu, Nx)), -np.eye(Nu)]  # [4x12, 4x4]
+        #     [-np.eye((Nu, Nx)), -np.eye(Nu)]  # [4x12, 4x4]
         # ])  # Final size: (12+4)x(12+4) = 16x16
 
-        # self.cache['A_stacked'] = np.block([
-        #     [self.cache['A'], self.cache['B'], -np.eye(nx)],  # [A B -I]
-        #     [np.zeros((nu, nx)), np.eye(nu), -np.eye(nu)]     # [0 I -I]
-        #  ])
 
 
-
-        # self.cache['A_stacked'] = np.block([
-        #     [self.cache['A'], self.cache['B'], -np.eye(nx)]  # [A B -I]
-        # ])
-
-        # Stack cost matrices [Q 0; 0 R]
-    #     self.cache['q'] = np.block([
-    #         [self.cache['Q']],  # Q for states
-    #         [self.cache['R']]   # R for inputs
-    # ])
     
         self.compute_cache_terms()
         self.compute_lqr_sensitivity()
@@ -392,10 +386,7 @@ class TinyMPC:
         self.u_prev = np.zeros((self.cache['B'].shape[1],Nsteps))
         self.N = Nsteps
         self.rho_adapter = RhoAdapter()
-        self.last_k = float('inf')
-        self.cache['z'] = None
-        self.cache['z_prev'] = None
-        
+
     def compute_cache_terms(self):
         Q_rho = self.cache['Q']
         R_rho = self.cache['R']
@@ -405,7 +396,7 @@ class TinyMPC:
         A = self.cache['A']
         B = self.cache['B']
         Kinf = np.zeros(B.T.shape)
-        Pinf = np.copy(Q)  # Changed from Q to Q_rho
+        Pinf = np.copy(Q)
         
         for k in range(5000):
             Kinf_prev = np.copy(Kinf)
@@ -423,17 +414,6 @@ class TinyMPC:
         self.cache['C1'] = Quu_inv
         self.cache['C2'] = AmBKt
 
-        #print A, B, Q and R 
-        # print(f"A : {A}")
-        # print(f"B : {B}")
-        # print(f"Q : {Q}")
-        # print(f"R : {R}")
-
-        #self.compute_lqr_sensitivity()
-
-        
-
-
     def backward_pass_grad(self, d, p, q, r):
         for k in range(self.N-2, -1, -1):
             d[:, k] = np.dot(self.cache['C1'], np.dot(self.cache['B'].T, p[:, k + 1]) + r[:, k])
@@ -445,40 +425,23 @@ class TinyMPC:
             x[:, k + 1] = np.dot(self.cache['A'], x[:, k]) + np.dot(self.cache['B'], u[:, k])
 
     def update_primal(self, x, u, d, p, q, r):
-        """Update primal variables with checks"""
-        try:
-            self.backward_pass_grad(d, p, q, r)
-            # print("\nAfter backward pass:")
-            # print(f"d contains NaN: {np.any(np.isnan(d))}")
-            # print(f"p contains NaN: {np.any(np.isnan(p))}")
-            
-            self.forward_pass(x, u, d)
-            # print("\nAfter forward pass:")
-            # print(f"x contains NaN: {np.any(np.isnan(x))}")
-            # print(f"u contains NaN: {np.any(np.isnan(u))}")
-        except Exception as e:
-            print(f"Exception in primal update: {str(e)}")
+        self.backward_pass_grad(d, p, q, r)
+        self.forward_pass(x, u, d)
 
-    def update_slack(self, z, v, y, g, u, x):
-        """Update slack variables with checks"""
-        try:
-            # print("\nBefore slack update:")
-            # print(f"u shape: {u.shape}, z shape: {z.shape}")
-            # print(f"x shape: {x.shape}, v shape: {v.shape}")
-            
-            # Project onto constraint sets
-            z[:] = np.clip(u + (1/self.cache['rho'])*y, 
-                          self.umin.reshape(-1,1), 
-                          self.umax.reshape(-1,1))
-            v[:] = np.clip(x + (1/self.cache['rho'])*g,
-                          self.xmin.reshape(-1,1),
-                          self.xmax.reshape(-1,1))
-                      
-            # print("\nAfter slack update:")
-            # print(f"z contains NaN: {np.any(np.isnan(z))}")
-            # print(f"v contains NaN: {np.any(np.isnan(v))}")
-        except Exception as e:
-            print(f"Exception in slack update: {str(e)}")
+    def update_slack(self, z, v, y, g, u, x, umax = None, umin = None, xmax = None, xmin = None):
+        for k in range(self.N - 1):
+            z[:, k] = u[:, k] + y[:, k]
+            v[:, k] = x[:, k] + g[:, k]
+
+            if (umin is not None) and (umax is not None):
+                z[:, k] = np.clip(z[:, k], umin, umax)
+
+            if (xmin is not None) and (xmax is not None):
+                v[:, k] = np.clip(v[:, k], xmin, xmax)
+
+        v[:, self.N-1] = x[:, self.N-1] + g[:, self.N-1]
+        if (xmin is not None) and (xmax is not None):
+            v[:, self.N-1] = np.clip(v[:, self.N-1], xmin, xmax)
 
     def update_dual(self, y, g, u, x, z, v):
         for k in range(self.N - 1):
@@ -501,11 +464,11 @@ class TinyMPC:
 
     def set_bounds(self, umax = None, umin = None, xmax = None, xmin = None):
         if (umin is not None) and (umax is not None):
-            self.umin = np.array(umin)
-            self.umax = np.array(umax)
+            self.umin = umin
+            self.umax = umax
         if (xmin is not None) and (xmax is not None):
-            self.xmin = np.array(xmin)
-            self.xmax = np.array(xmax)
+            self.xmin = xmin
+            self.xmax = xmax
 
     def set_tols_iters(self, max_iter = 500, abs_pri_tol = 1e-2, abs_dua_tol = 1e-2):
         self.max_iter = max_iter
@@ -513,7 +476,7 @@ class TinyMPC:
         self.abs_dua_tol = abs_dua_tol
 
 
-
+    
     def compute_lqr_sensitivity(self):
         print("Computing LQR sensitivity")
         def lqr_direct(rho):
@@ -549,43 +512,69 @@ class TinyMPC:
         self.cache['dC1_drho'] = derivs[k_size+p_size:k_size+p_size+c1_size].reshape(m, m)
         self.cache['dC2_drho'] = derivs[k_size+p_size+c1_size:].reshape(n, n)
 
-        #print the values, not norms
 
-        # print(f"dKinf_drho: {self.cache['dKinf_drho']}")
-        # print(f"dPinf_drho: {self.cache['dPinf_drho']}")
-        # print(f"dC1_drho: {self.cache['dC1_drho']}")
-        # print(f"dC2_drho: {self.cache['dC2_drho']}")
+    # def compute_lqr_sensitivity(self):
+    #     print("Computing LQR sensitivity using numerical differentiation")
         
-
-
-
-   
+    #     # Small perturbation for finite difference
+    #     eps = 1e-4
+    #     rho = self.cache['rho']
+        
+    #     # Helper function to compute LQR matrices for a given rho
+    #     def compute_lqr(rho_val):
+    #         R_rho = self.cache['R'] + rho_val * np.eye(self.cache['R'].shape[0])
+    #         A, B = self.cache['A'], self.cache['B']
+    #         Q = self.cache['Q']
+            
+    #         # Compute P
+    #         P = np.copy(Q)
+    #         for _ in range(10):
+    #             K = np.linalg.inv(R_rho + B.T @ P @ B) @ B.T @ P @ A
+    #             P = Q + A.T @ P @ (A - B @ K)
+            
+    #         # Compute final matrices
+    #         K = np.linalg.inv(R_rho + B.T @ P @ B) @ B.T @ P @ A
+    #         C1 = np.linalg.inv(R_rho + B.T @ P @ B)
+    #         C2 = A - B @ K
+            
+    #         return K, P, C1, C2
+        
+    #     # Compute at rho + eps
+    #     K_plus, P_plus, C1_plus, C2_plus = compute_lqr(rho + eps)
+        
+    #     # Compute at rho - eps
+    #     K_minus, P_minus, C1_minus, C2_minus = compute_lqr(rho - eps)
+        
+    #     # Central difference approximation of derivatives
+    #     self.cache['dKinf_drho'] = (K_plus - K_minus) / (2 * eps)
+    #     self.cache['dPinf_drho'] = (P_plus - P_minus) / (2 * eps)
+    #     self.cache['dC1_drho'] = (C1_plus - C1_minus) / (2 * eps)
+    #     self.cache['dC2_drho'] = (C2_plus - C2_minus) / (2 * eps)
+        
+    #     # Print max derivatives for debugging
+    #     print(f"Max derivative magnitudes:")
+    #     print(f"dKinf_drho: {np.max(np.abs(self.cache['dKinf_drho']))}")
+    #     print(f"dPinf_drho: {np.max(np.abs(self.cache['dPinf_drho']))}")
+    #     print(f"dC1_drho: {np.max(np.abs(self.cache['dC1_drho']))}")
+    #     print(f"dC2_drho: {np.max(np.abs(self.cache['dC2_drho']))}")
     
-
-
-
+    
+    
     def update_rho(self, new_rho):
-        start_time = time.time()
+       
         old_rho = self.cache['rho']
         delta_rho = new_rho - old_rho
 
         print(f"Delta rho: {delta_rho}")
         
         self.cache['rho'] = new_rho
-        self.cache['Kinf'] += delta_rho * self.cache['dKinf_drho']
-        self.cache['Pinf'] += delta_rho * self.cache['dPinf_drho']
-        self.cache['C1'] += delta_rho * self.cache['dC1_drho']
-        self.cache['C2'] += delta_rho * self.cache['dC2_drho']
-
+        self.cache['Kinf'] +=  delta_rho * self.cache['dKinf_drho']
+        self.cache['Pinf'] +=  delta_rho * self.cache['dPinf_drho']
+        self.cache['C1'] +=  delta_rho * self.cache['dC1_drho']
+        self.cache['C2'] +=  delta_rho * self.cache['dC2_drho']
         
-
-        #print(f"Time taken to update rho: {time.time() - start_time} seconds")
-
-        # self.cache['rho'] = new_rho
-        # self.compute_cache_terms()
-
-    # Rest of the methods same as fixed version except solve_admm
-    def solve_admm(self, x_init, u_init, x_ref = None, u_ref = None):
+            
+    def solve_admm(self, x_init, u_init, x_ref=None, u_ref=None, current_time=None):
         status = 0
         x = np.copy(x_init)
         u = np.copy(u_init)
@@ -600,84 +589,60 @@ class TinyMPC:
         p = np.zeros(x.shape)
         d = np.zeros(u.shape)
 
-        x += np.random.normal(0, 1e-3, x.shape)
-        u += np.random.normal(0, 1e-3, u.shape)
-
-
-
-        # Add initial debug prints here
-        print("\nFirst iteration debug:")
-        print(f"Initial rho: {self.cache['rho']}")
-        print(f"Kinf norm: {np.linalg.norm(self.cache['Kinf'])}")
-        print(f"Pinf norm: {np.linalg.norm(self.cache['Pinf'])}")
-        print(f"C1 norm: {np.linalg.norm(self.cache['C1'])}")
-        print(f"C2 norm: {np.linalg.norm(self.cache['C2'])}")
-
-        self.cache['z'] = z
-        self.cache['z_prev'] = z_prev
-
         if (x_ref is None):
             x_ref = np.zeros(x.shape)
         if (u_ref is None):
             u_ref = np.zeros(u.shape)
 
         for k in range(self.max_iter):
-            # Store previous values
-            print("\nBefore primal update:")
+
+            # Check before primal update
+            print("Before primal update:")
             print(f"x contains NaN: {np.any(np.isnan(x))}")
             print(f"u contains NaN: {np.any(np.isnan(u))}")
-            print(f"z contains NaN: {np.any(np.isnan(z))}")
-            print(f"v contains NaN: {np.any(np.isnan(v))}")
             
-            # Primal update
             self.update_primal(x, u, d, p, q, r)
-            
-            print("\nAfter primal update:")
+
+            # Check after primal update
+            print("After primal update:")
             print(f"x contains NaN: {np.any(np.isnan(x))}")
             print(f"u contains NaN: {np.any(np.isnan(u))}")
             
-            # Slack update
-            self.update_slack(z, v, y, g, u, x)
-            
-            print("\nAfter slack update:")
-            print(f"z contains NaN: {np.any(np.isnan(z))}")
-            print(f"v contains NaN: {np.any(np.isnan(v))}")
-            
-            # Calculate residuals with checks
-            try:
-                pri_res_input = np.max(np.abs(u - z))
-                pri_res_state = np.max(np.abs(x - v))
-                print(f"\nResidual calculation:")
-                print(f"u-z max: {pri_res_input}")
-                print(f"x-v max: {pri_res_state}")
-            except Exception as e:
-                print(f"Exception in residual calculation: {str(e)}")
-            
+
+
+            self.update_slack(z, v, y, g, u, x, self.umax, self.umin, self.xmax, self.xmin)
+
+            # Check after primal update
+            print("After primal update:")
+            print(f"x contains NaN: {np.any(np.isnan(x))}")
+            print(f"u contains NaN: {np.any(np.isnan(u))}")
+        
+
             self.update_dual(y, g, u, x, z, v)
             self.update_linear_cost(r, q, p, z, v, y, g, u_ref, x_ref)
 
-            pri_res_u = np.max(np.abs(u - z))
-            pri_res_x = np.max(np.abs(x - v))
-            pri_res = max(pri_res_u, pri_res_x)
+            pri_res_input = np.max(np.abs(u - z))
+            pri_res_state = np.max(np.abs(x - v))
 
-            print(f"Pri Res ", pri_res)
-            
-            dual_res_u = np.max(np.abs(self.cache['rho'] * (z_prev - z)))
-            dual_res_x = np.max(np.abs(self.cache['rho'] * (v_prev - v)))
-            dual_res = max(dual_res_u, dual_res_x)
 
-            #Add first iteration residuals debug
-            
-                # print("\nFirst iteration residuals:")
-                # print(f"pri_res_u: {pri_res_u}")
-                # print(f"pri_res_x: {pri_res_x}")
-                # print(f"dual_res_u: {dual_res_u}")
-                # print(f"dual_res_x: {dual_res_x}")
-                # print(f"rho: {self.cache['rho']}")
+            print(f"Residuals:")
+            print(f"pri_res_input: {pri_res_input}")
+            print(f"pri_res_state: {pri_res_state}")
+            print(f"Current rho: {self.cache['rho']}")
+
+            dua_res_input = np.max(np.abs(self.cache['rho'] * (z_prev - z)))
+            dua_res_state = np.max(np.abs(self.cache['rho'] * (v_prev - v)))
+
+
+            pri_res = max(pri_res_input, pri_res_state)
+            dual_res = max(dua_res_input, dua_res_state)
+
 
             
             
-            new_rho = self.rho_adapter.predict_rho(
+            
+            if k % 10 == 0:
+                new_rho = self.rho_adapter.predict_rho(
                     pri_res, 
                     dual_res, 
                     k, 
@@ -688,51 +653,24 @@ class TinyMPC:
                     v,
                     z,  # current z
                     g,
-                    y   # current y
-            )
-
-            self.update_rho(new_rho)
-
+                    y,   # current y
+                    current_time=current_time
+                )
                 
-                # With this code, exactly the same as below
+                # With this code, stats are  - 
+                # Final position error: 0.8228 m
+                # Average position error: 0.7367 m
+                # Average control effort: 0.5232
+                # Total iterations: 36119
+
                 # if abs(new_rho - self.cache['rho']) > 1e-6:
-                #     print(f"\nRho update at k={k}:")
-                #     print(f"Old rho: {self.cache['rho']}, New rho: {new_rho}")
+                #     # print(f"\nRho update at k={k}:")
+                #     # print(f"Old rho: {self.cache['rho']}, New rho: {new_rho}")
                 #     self.update_rho(new_rho)
 
-
-            #     self.update_rho(new_rho)
-
-            # new_rho = self.rho_adapter.predict_rho(
-            #         pri_res, 
-            #         dual_res, 
-            #         k, 
-            #         self.cache['rho'],
-            #         self.cache,
-            #         x,  # current x
-            #         u,
-            #         v,
-            #         z,  # current z
-            #         g,
-            #         y   # current y
-            #     )
                 
-            #     # With this code, exactly the same as below
-            #     # if abs(new_rho - self.cache['rho']) > 1e-6:
-            #     #     print(f"\nRho update at k={k}:")
-            #     #     print(f"Old rho: {self.cache['rho']}, New rho: {new_rho}")
-            #     #     self.update_rho(new_rho)
-
-
-
-            
-            #With this code - 
-            # Trajectory Statistics:
-            # Final position error: 0.0026 m
-            # Final attitude error: 0.0061
-            # Average control effort: 0.1167
-            # Total iterations: 2235
-            #self.update_rho(new_rho)
+                # With this code, stats are exactly the same as above
+                self.update_rho(new_rho)
 
             z_prev = np.copy(z)
             v_prev = np.copy(v)
@@ -741,196 +679,157 @@ class TinyMPC:
                 status = 1
                 break
 
-            # # Check if we're actually converging
-            # pri_res = max(pri_res_u, pri_res_x)
-            # dual_res = max(dual_res_u, dual_res_x)
-            
-            # Add debug prints
-            # if k < 10:  # Print first few iterations
-            #     print(f"Iteration {k}:")
-            #     print(f"Primal residual: {pri_res}")
-            #     print(f"Dual residual: {dual_res}")
-            #     print(f"Tolerance: {self.abs_pri_tol}, {self.abs_dua_tol}")
-
         self.x_prev = x
         self.u_prev = u
         return x, u, status, k
 
 
-def vec(X):
-    """Vectorize a matrix"""
-    return X.flatten()
 
-def reshape(x, shape):
-    """Reshape vector to matrix"""
-    return x.reshape(shape)
 
-def vec(X):
-    """Vectorize a matrix"""
-    return X.reshape(-1, 1)
 
-def reshape(x, shape):
-    """Reshape vector to matrix"""
-    return x.reshape(shape)
-
+def delta_x_quat(x_curr, t):
+    """Compute error between current state and reference"""
+    x_ref = generate_figure8_reference(t)
     
-
-
-def delta_x_quat(x_curr):
+    # Current quaternion
     q = x_curr[3:7]
-    phi = qtorp(L(qg).T @ q)
-    delta_x = np.hstack([x_curr[0:3]-rg, phi, x_curr[7:10]-vg, x_curr[10:13]-omgg])
+    
+    # Reference quaternion (hover)
+    q_ref = np.array([1.0, 0.0, 0.0, 0.0])
+    
+    # Quaternion error
+    phi = qtorp(L(q_ref).T @ q)
+    
+    # Full state error (12 dimensions)
+    delta_x = np.hstack([
+        x_curr[0:3] - x_ref[0:3],    # position error
+        phi,                          # attitude error (3 components)
+        x_curr[7:10] - x_ref[6:9],   # velocity error
+        x_curr[10:13] - x_ref[9:12]  # angular velocity error
+    ])
     return delta_x
 
-def tinympc_controller(x_curr, x_nom, u_nom):
-    delta_x = delta_x_quat(x_curr)
-    #noise = np.random.normal(0, 0.01, (Nx,))*0
+def tinympc_controller(x_curr, t):
+    """MPC controller with time-varying reference"""
+    # Generate reference trajectory for horizon
+    x_ref = np.zeros((Nx, N))
+    u_ref = np.zeros((Nu, N-1))
     
-    # zero noise
-    noise = np.zeros(Nx)
+    for i in range(N):
+        x_ref[:,i] = generate_figure8_reference(t + i*h)
+    u_ref[:] = uhover.reshape(-1,1)
 
-    delta_x_noise = (delta_x + noise).reshape(Nx).tolist()
-
+    delta_x = delta_x_quat(x_curr, t)
+    
+    # Debug prints
+    if t < 0.1:  # Print only at start
+        print("\nInitial tracking error:")
+        print(f"Position error: {np.linalg.norm(delta_x[0:3]):.4f}")
+        print(f"Attitude error: {np.linalg.norm(delta_x[3:6]):.4f}")
+        print(f"Velocity error: {np.linalg.norm(delta_x[6:9]):.4f}")
+    
     x_init = np.copy(tinympc.x_prev)
-    x_init[:,0] = delta_x_noise
+    x_init[:,0] = delta_x
     u_init = np.copy(tinympc.u_prev)
 
-    x_out, u_out, status, k = tinympc.solve_admm(x_init, u_init, x_nom, u_nom)
-    print(f"Solved with status {status} and k {k}")
+    x_out, u_out, status, k = tinympc.solve_admm(x_init, u_init, x_ref, u_ref, current_time=t)
+    
+    return uhover + u_out[:,0], k
 
-    return uhover+u_out[:,0], k
 
 def visualize_trajectory(x_all, u_all):
-    # Convert lists to numpy arrays for easier handling
+    # Convert lists to numpy arrays
     x_all = np.array(x_all)
     u_all = np.array(u_all)
     nsteps = len(x_all)
-    steps = np.arange(nsteps)
-
-    # Create subplots
-    fig = plt.figure(figsize=(15, 12))
+    t = np.arange(nsteps) * h
     
-    # Position plot
-    ax1 = fig.add_subplot(311)
-    ax1.plot(steps, x_all[:, 0], label="x", linewidth=2)
-    ax1.plot(steps, x_all[:, 1], label="y", linewidth=2)
-    ax1.plot(steps, x_all[:, 2], label="z", linewidth=2)
-    ax1.plot(steps, [rg[0]]*nsteps, 'r--', label="x_goal")
-    ax1.plot(steps, [rg[1]]*nsteps, 'g--', label="y_goal")
-    ax1.plot(steps, [rg[2]]*nsteps, 'b--', label="z_goal")
-    ax1.set_ylabel('Position [m]')
-    ax1.legend()
-    ax1.grid(True)
-    ax1.set_title("Position Trajectories")
+    # Figure 8 parameters
+    A = 1.0  # amplitude
+    w = 2*np.pi/6  # frequency
+    
+    # Create figure
+    plt.figure(figsize=(15, 5))
+    
+    # Plot 1: 2D Trajectory
+    plt.subplot(131)
+    plt.plot(x_all[:, 0], x_all[:, 2], 'b-', label='Actual')
+    
+    # # Plot reference figure-8 (matching Julia)
+    # t_ref = np.linspace(0, 8.0, 100)  # Longer time range
+    # x_ref = np.sin(2*t_ref)           # Julia's x reference
+    # z_ref = np.cos(t_ref)/2           # Julia's z reference
+    # plt.plot(x_ref, z_ref, 'r--', label='Reference')
 
-    # Attitude plot
-    ax2 = fig.add_subplot(312)
-    ax2.plot(steps, x_all[:, 3], label="q0", linewidth=2)
-    ax2.plot(steps, x_all[:, 4], label="q1", linewidth=2)
-    ax2.plot(steps, x_all[:, 5], label="q2", linewidth=2)
-    ax2.plot(steps, x_all[:, 6], label="q3", linewidth=2)
-    ax2.plot(steps, [qg[0]]*nsteps, 'r--', label="q0_goal")
-    ax2.set_ylabel('Quaternion')
-    ax2.legend()
-    ax2.grid(True)
-    ax2.set_title("Attitude Trajectories")
+    t_ref = np.linspace(0, 5.0, 100)
+    x_ref = A * np.sin(w*t_ref)
+    z_ref = A * np.sin(2*w*t_ref)/2
+    plt.plot(x_ref, z_ref, 'r--', label='Reference')
 
-    # Control inputs plot
-    ax3 = fig.add_subplot(313)
-    ax3.plot(steps, u_all[:, 0], label="u1", linewidth=2)
-    ax3.plot(steps, u_all[:, 1], label="u2", linewidth=2)
-    ax3.plot(steps, u_all[:, 2], label="u3", linewidth=2)
-    ax3.plot(steps, u_all[:, 3], label="u4", linewidth=2)
-    ax3.plot(steps, [uhover[0]]*nsteps, 'k--', label="hover_thrust")
-    ax3.set_xlabel('Time steps')
-    ax3.set_ylabel('Motor commands')
-    ax3.legend()
-    ax3.grid(True)
-    ax3.set_title("Control Inputs")
+    
+    plt.title('Figure-8 Trajectory')
+    plt.xlabel('X Position')
+    plt.ylabel('Z Position')
+    plt.axis('equal')
+    plt.grid(True)
+    plt.legend()
+    
+    # # Plot 2: Position vs Time
+    # plt.subplot(132)
+    # plt.plot(t, x_all[:, 0], 'b-', label='x')
+    # plt.plot(t, x_all[:, 2], 'r-', label='z')
+    # plt.plot(t, np.sin(2*t), 'b--', label='x_ref')
+    # plt.plot(t, np.cos(t)/2, 'r--', label='z_ref')
+    # plt.title('Position vs Time')
+    # plt.xlabel('Time [s]')
+    # plt.ylabel('Position [m]')
+    # plt.grid(True)
+    # plt.legend()
 
+    plt.subplot(132)
+    plt.plot(t, x_all[:, 0], 'b-', label='x')
+    plt.plot(t, x_all[:, 2], 'r-', label='z')
+    plt.plot(t, A*np.sin(w*t), 'b--', label='x_ref')
+    plt.plot(t, A*np.sin(2*w*t)/2, 'r--', label='z_ref')
+    plt.title('Position vs Time')
+    plt.xlabel('Time [s]')
+    plt.ylabel('Position [m]')
+    plt.grid(True)
+    plt.legend()
+    
+    # Plot 3: Control Inputs
+    plt.subplot(133)
+    plt.plot(t, u_all)
+    plt.plot(t, [uhover[0]]*nsteps, 'k--', label='hover')
+    plt.title('Control Inputs')
+    plt.xlabel('Time [s]')
+    plt.ylabel('Motor Commands')
+    plt.grid(True)
+    
     plt.tight_layout()
     plt.show()
-
-    # Print some statistics
+    
+    # Calculate final reference position
+    final_t = t[-1]
+    final_ref_x = A * np.sin(w*final_t)
+    final_ref_z = A * np.sin(2*w*final_t)/2
+    
+    # Print statistics
     print("\nTrajectory Statistics:")
-    print(f"Final position error: {np.linalg.norm(x_all[-1, :3] - rg):.4f} m")
-    print(f"Final attitude error: {np.linalg.norm(x_all[-1, 3:7] - qg):.4f}")
+    print(f"Final position error: {np.linalg.norm([x_all[-1,0] - final_ref_x, x_all[-1,2] - final_ref_z]):.4f} m")
+    
+    # Calculate average error over trajectory
+    avg_error = np.mean([np.linalg.norm([x_all[i,0] - A*np.sin(w*t[i]), 
+                                        x_all[i,2] - A*np.sin(2*w*t[i])/2]) 
+                        for i in range(len(t))])
+    print(f"Average position error: {avg_error:.4f} m")
     print(f"Average control effort: {np.mean(np.linalg.norm(u_all - uhover.reshape(1,-1), axis=1)):.4f}")
 
-# Add after TinyMPC class, before if __name__ == "__main__":
-def dlqr(A, B, Q, R, n_steps = 500):
-    """Solve the discrete time lqr controller"""
-    P = Q
-    for i in range(n_steps):
-        K = inv(R + B.T @ P @ B) @ B.T @ P @ A
-        P = Q + A.T @ P @ (A - B @ K)
-    return K, P
-def test_fixed_vs_adaptive():
-    # Setup same parameters as main
-    rg = np.array([0.0, 0, 0.0])
-    qg = np.array([1.0, 0, 0, 0])
-    vg = np.zeros(3)
-    omgg = np.zeros(3)
-    xg = np.hstack([rg, qg, vg, omgg])
-    uhover = (mass*g/kt/4)*np.ones(4)
-    
-    # Get system matrices
-    A_jac = jacobian(quad_dynamics_rk4, 0)
-    B_jac = jacobian(quad_dynamics_rk4, 1)
-    Anp1 = A_jac(xg, uhover)
-    Bnp1 = B_jac(xg, uhover)
-    Anp = E(qg).T @ Anp1 @ E(qg)
-    Bnp = E(qg).T @ Bnp1
-
-    # Setup costs
-    max_dev_x = np.array([0.1, 0.1, 0.1, 0.5, 0.5, 0.05, 0.5, 0.5, 0.5, 0.7, 0.7, 0.2])
-    max_dev_u = np.array([0.5, 0.5, 0.5, 0.5])/6
-    Q = np.diag(1./max_dev_x**2)
-    R = np.diag(1./max_dev_u**2)
-    K_lqr, P_lqr = dlqr(Anp, Bnp, Q, R)
-
-    print("\n=== TESTING FIXED VS ADAPTIVE ===")
-    
-    # Test 1: Fixed rho=100
-    input_data_fixed = {
-        'rho': 100.0,
-        'A': np.copy(Anp),
-        'B': np.copy(Bnp),
-        'Q': np.copy(P_lqr),
-        'R': np.copy(R)
-    }
-    fixed_controller = TinyMPC(input_data_fixed, Nsteps=10)
-    print("\nFIXED RHO TEST (rho=100)")
-    print(f"Kinf norm: {np.linalg.norm(fixed_controller.cache['Kinf'])}")
-    print(f"Pinf norm: {np.linalg.norm(fixed_controller.cache['Pinf'])}")
-    print(f"C1 norm: {np.linalg.norm(fixed_controller.cache['C1'])}")
-    print(f"C2 norm: {np.linalg.norm(fixed_controller.cache['C2'])}")
-
-    # Test 2: Adaptive starting at rho=70
-    input_data_adaptive = {
-        'rho': 70.0,
-        'A': np.copy(Anp),
-        'B': np.copy(Bnp),
-        'Q': np.copy(P_lqr),
-        'R': np.copy(R)
-    }
-    adaptive_controller = TinyMPC(input_data_adaptive, Nsteps=10)
-    
-    # Force rho to 100 using adaptive update
-    adaptive_controller.update_rho(100.0)
-    
-    print("\nADAPTIVE AFTER REACHING RHO=100")
-    print(f"Kinf norm: {np.linalg.norm(adaptive_controller.cache['Kinf'])}")
-    print(f"Pinf norm: {np.linalg.norm(adaptive_controller.cache['Pinf'])}")
-    print(f"C1 norm: {np.linalg.norm(adaptive_controller.cache['C1'])}")
-    print(f"C2 norm: {np.linalg.norm(adaptive_controller.cache['C2'])}")
-
-# Main execution code (same as fixed version but with adaptive controller)
 if __name__ == "__main__":
-
-
-    #test_fixed_vs_adaptive()
+    # Clear the rho file at start of simulation
+    #open('data/raw_rhos.txt', 'w').close()
     
+    # Initialize system
     rg = np.array([0.0, 0, 0.0])
     qg = np.array([1.0, 0, 0, 0])
     vg = np.zeros(3)
@@ -949,42 +848,54 @@ if __name__ == "__main__":
 
     # Initial state
     x0 = np.copy(xg)
-    x0[0:3] += rg + np.array([0.2, 0.2, -0.2])
-    x0[3:7] = rptoq(np.array([1.0, 0.0, 0.0]))
+    x0[0:3] = np.array([0.0, 0.0, 0.0])  # Start at origin
+    x0[3:7] = rptoq(np.array([0.0, 0.0, 0.0]))  # Zero attitude error
 
-    # Setup MPC
-    max_dev_x = np.array([0.1, 0.1, 0.1, 0.5, 0.5, 0.05, 0.5, 0.5, 0.5, 0.7, 0.7, 0.2])
-    max_dev_u = np.array([0.5, 0.5, 0.5, 0.5])/6
-    Q = np.diag(1./max_dev_x**2)
-    R = np.diag(1./max_dev_u**2)
-
-    def dlqr(A, B, Q, R, n_steps = 500):
-        P = Q
-        for i in range(n_steps):
-            K = inv(R + B.T @ P @ B) @ B.T @ P @ A
-            P = Q + A.T @ P @ (A - B @ K)
-        return K, P
-
-    K_lqr, P_lqr = dlqr(Anp, Bnp, Q, R)
-
-    # Setup TinyMPC
-    N = 10
-    rho = 85.0
+    # Modify MPC parameters for better tracking
+    N = 25  # horizon length
+    rho = 1.0 # initial rho (Julia starts at 5 and multiplies by 5)
+    
+    # Much tighter weights for better tracking
+    max_dev_x = np.array([
+        0.01, 0.01, 0.01,    # position (exactly as Julia)
+        0.5, 0.5, 0.05,      # attitude (asymmetric as Julia)
+        0.5, 0.5, 0.5,       # velocity
+        0.7, 0.7, 0.5        # angular velocity
+    ])
+    max_dev_u = np.array([0.1, 0.1, 0.1, 0.1])  # control bounds
+    
+    # Construct cost matrices exactly as Julia
+    Q = np.diag(1./(max_dev_x**2))  # No extra scaling
+    R = np.diag(1./(max_dev_u**2))
+    
+    # Setup TinyMPC with modified parameters
     input_data = {
         'rho': rho,
         'A': Anp,
         'B': Bnp,
-        'Q': P_lqr,
+        'Q': Q,
         'R': R
     }
-
+    
     tinympc = TinyMPC(input_data, N)
+    
+    # Wider control bounds for more authority
+    # u_max = np.array([0.5, 0.5, 0.5, 0.5])  # exactly as Julia
+    # u_min = -u_max
+    # # x_max = [float('inf')] * Nx
+    # # x_min = [-float('inf')] * Nx
+
+    # x_max = [3.0] * Nx
+    # x_min = [-3.0] * Nx
 
     u_max = [1.0-uhover[0]] * Nu
-    umin = [-1*uhover[0]] * Nu
-    x_max = [1000.] * Nx
-    x_min = [-1000.0] * Nx
-    tinympc.set_bounds(u_max, umin, x_max, x_min)
+    u_min = [-1*uhover[0]] * Nu
+    x_max = [2.] * Nx
+    x_min = [-2.0] * Nx
+    tinympc.set_bounds(u_max, u_min, x_max, x_min)
+
+
+    tinympc.set_bounds(u_max, u_min, x_max, x_min)
 
     # Set nominal trajectory
     from scipy.spatial.transform import Rotation as spRot
@@ -993,8 +904,9 @@ if __name__ == "__main__":
     xg_euler = np.hstack((eulerg,xg[4:]))
     x_nom_tinyMPC = np.tile(0*xg_euler,(N,1)).T
     u_nom_tinyMPC = np.tile(uhover,(N-1,1)).T
-    
-    def simulate_with_controller(x0, x_nom, u_nom, controller, NSIM = 100):
+
+    # Run simulation
+    def simulate_with_controller(x0, controller, NSIM=200):  # Longer simulation
         x_all = []
         u_all = []
         x_curr = np.copy(x0)
@@ -1002,32 +914,29 @@ if __name__ == "__main__":
         rho_vals = []
         
         for i in range(NSIM):
-            u_curr, k = controller(x_curr, x_nom, u_nom)
-            u_curr_clipped = np.clip(u_curr, 0, 1)
-            #x_curr = quad_dynamics_rk4(x_curr, u_curr_clipped)
-
+            t = i * h
+            u_curr, k = controller(x_curr, t)
+            #u_curr_clipped = np.clip(u_curr, 0, 1)
             x_curr = quad_dynamics_rk4(x_curr, u_curr)
-            x_curr = x_curr.reshape(x_curr.shape[0]).tolist()
-            u_curr = u_curr.reshape(u_curr.shape[0]).tolist()
+            
+            # Reshape and store
+            x_curr = np.array(x_curr).reshape(-1)
+            u_curr = np.array(u_curr).reshape(-1)
+            
             x_all.append(x_curr)
             u_all.append(u_curr)
             iterations.append(k)
             rho_vals.append(tinympc.cache['rho'])
+            
         return x_all, u_all, iterations, rho_vals
 
-    
-   
-    # Create single controller instance
-    tinympc = TinyMPC(input_data, N)
-    tinympc.set_bounds(u_max, umin, x_max, x_min)
+    # Run simulation with modified parameters
+    x_all, u_all, iterations, rho_vals = simulate_with_controller(x0, tinympc_controller, NSIM=400)
 
-    # Run simulation with online rho adaptation
-    x_all, u_all, iterations, rho_vals = simulate_with_controller(x0, x_nom_tinyMPC, u_nom_tinyMPC, tinympc_controller)
-
-    #np.savetxt('data/iterations_stacked_OSQP.txt', iterations)
-
-    # Visualization (keep existing visualization code)
+    # Visualize trajectory
     visualize_trajectory(x_all, u_all)
+
+    #np.savetxt('data/iterations_traj_adapt_OSQP.txt', iterations)
 
     plt.figure(figsize=(10, 8))
     plt.subplot(211)
@@ -1047,5 +956,6 @@ if __name__ == "__main__":
     plt.ylabel('Rho Value')
     plt.grid(True)
     plt.legend()
+
 
     plt.show()

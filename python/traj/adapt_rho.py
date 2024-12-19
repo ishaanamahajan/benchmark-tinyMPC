@@ -133,7 +133,7 @@ class RhoAdapter:
         self.rho_base = 1.0   # Start lower
         self.tolerance = 1.1  # Slightly larger steps
         self.rho_min = 1.0
-        self.rho_max = 10.0
+        self.rho_max = 10000.0
         
         
 
@@ -167,6 +167,19 @@ class RhoAdapter:
 
     def predict_rho(self, pri_res, dual_res, iterations, current_rho, cache, x_prev, u_prev, v_prev, z_prev, g_prev, y_prev, current_time=None):
         try:
+
+            print("\nInitial variable checks:")
+            print(f"x_prev shape: {x_prev.shape}, norm: {np.linalg.norm(x_prev)}")
+            print(f"u_prev shape: {u_prev.shape}, norm: {np.linalg.norm(u_prev)}")
+            print(f"v_prev shape: {v_prev.shape}, norm: {np.linalg.norm(v_prev)}")
+            print(f"z_prev shape: {z_prev.shape}, norm: {np.linalg.norm(z_prev)}")
+            print(f"g_prev shape: {g_prev.shape}, norm: {np.linalg.norm(g_prev)}")
+            print(f"y_prev shape: {y_prev.shape}, norm: {np.linalg.norm(y_prev)}")
+            
+            # Also check the passed-in residuals
+            print("\nPassed-in residuals:")
+            print(f"pri_res: {pri_res}")
+            print(f"dual_res: {dual_res}")
 
             # Get dimensions
             N = x_prev.shape[1]  # Horizon length (25)
@@ -205,6 +218,11 @@ class RhoAdapter:
             A_dynamics = []  # For x_{k+1} = Ax_k + Bu_k
             A_inputs = []    # For input bounds
 
+            print("\nA matrix components:")
+            print(f"A_base (system dynamics):\n{A_base}")
+            print(f"B_base (input matrix):\n{B_base}")
+
+
             for i in range(N-1):
                 # Dynamics block
                 dyn_block = np.zeros((nx, (nx+nu)*(N-1) + nx))
@@ -214,15 +232,26 @@ class RhoAdapter:
                 dyn_block[:, col_idx+nx+nu:col_idx+2*nx+nu] = -np.eye(nx)
                 A_dynamics.append(dyn_block)
                 
-                # Input block
+                # Input block (only once!)
                 input_block = np.zeros((nu, (nx+nu)*(N-1) + nx))
                 input_block[:, col_idx+nx:col_idx+nx+nu] = np.eye(nu)
                 A_inputs.append(input_block)
+
+                        
+
+            # Before stacking
+            print("\nBefore stacking:")
+            print(f"Dynamics block shape: {A_dynamics[0].shape}")  # Should be (12, 396)
+            print(f"Input block shape: {A_inputs[0].shape}")       # Should be (4, 396)
 
             A = np.vstack([
                 np.vstack(A_inputs),    # Input constraints first
                 np.vstack(A_dynamics)   # Then dynamics constraints
             ])
+
+            print(f"Final A shape: {A.shape}")
+
+
 
             # # 3. Form constrained variable z
             # z_blocks = []
@@ -291,6 +320,22 @@ class RhoAdapter:
             q = np.vstack(q_blocks)
             print(f"q shape: {q.shape}")  # Should be (396, 1)
 
+            print("\nInput value checks:")
+            print(f"x norm: {np.linalg.norm(x)}")
+            print(f"y norm: {np.linalg.norm(y)}")
+            print(f"z norm: {np.linalg.norm(z)}")
+
+            # Check first few values
+            print("\nFirst few values:")
+            print(f"x[:5]: {x[:5].flatten()}")
+            print(f"y[:5]: {y[:5].flatten()}")
+            print(f"z[:5]: {z[:5].flatten()}")
+
+            # Check A matrix
+            print("\nA matrix check:")
+            print(f"A non-zeros: {np.count_nonzero(A)}")
+            print(f"First non-zero in A: {A[A!=0][0] if np.any(A!=0) else 'all zeros'}")
+
             
         
       
@@ -309,6 +354,9 @@ class RhoAdapter:
             pri_norm = max(np.linalg.norm(Ax, ord=np.inf), 
                           np.linalg.norm(z, ord=np.inf))
 
+
+  
+
             # Dual residual
             r_dual = P @ x + q + A.T @ y
             dual_res = np.linalg.norm(r_dual, ord=np.inf)
@@ -322,16 +370,38 @@ class RhoAdapter:
                 np.linalg.norm(q, ord=np.inf)
             )
 
+            # Add debug prints
+            print("\nResidual components:")
+            print(f"Ax norm: {np.linalg.norm(Ax)}")
+            print(f"z norm: {np.linalg.norm(z)}")
+            print(f"P@x norm: {np.linalg.norm(P@x)}")
+            print(f"q norm: {np.linalg.norm(q)}")
+            print(f"A.T@y norm: {np.linalg.norm(A.T@y)}")
+
             # 8. Compute new rho
             normalized_pri = pri_res / (pri_norm + 1e-10)
             normalized_dual = dual_res / (dual_norm + 1e-10)
+
+            ratio = np.sqrt(normalized_pri / (normalized_dual + 1e-10))
+            print(f"ratio: {ratio}")
+
+            print(f"normalized_pri: {normalized_pri}")
+            print(f"normalized_dual: {normalized_dual}")
+
+
+            
+            
+
+
             rho_new = current_rho * np.sqrt(normalized_pri / (normalized_dual + 1e-10))
+
+            
             rho_new = np.clip(rho_new, self.rho_min, self.rho_max)
 
 
-            #ideal_rho = current_rho * np.sqrt(normalized_pri / (normalized_dual + 1e-10))
+            # ideal_rho = current_rho * np.sqrt(normalized_pri / (normalized_dual + 1e-10))
 
-            # Find closest rho in sequence
+            # #Find closest rho in sequence
             # self.current_idx = np.argmin(np.abs(self.rhos - ideal_rho))
             # rho_new = self.rhos[self.current_idx]
             
@@ -369,8 +439,12 @@ class TinyMPC:
         self.cache['Q'] = input_data['Q']
         self.cache['R'] = input_data['R']
 
+
+
         A = input_data['A']  # 12x12 
         B = input_data['B']  # 12x4
+
+        print(f"A: {A}")
         
         # # Create stacked system matrix for trajectory tracking
         # self.cache['A_stacked'] = np.block([
@@ -653,21 +727,26 @@ class TinyMPC:
 
             
             
+            if k>0 and k%10 == 0:
+
+
             
-            new_rho = self.rho_adapter.predict_rho(
-                    pri_res, 
-                    dual_res, 
-                    k, 
-                    self.cache['rho'],
-                    self.cache,
-                    x,  # current x
-                    u,
-                    v,
-                    z,  # current z
-                    g,
-                    y,   # current y
-                    current_time=current_time
-            )
+                new_rho = self.rho_adapter.predict_rho(
+                        pri_res, 
+                        dual_res, 
+                        k, 
+                        self.cache['rho'],
+                        self.cache,
+                        x,  # current x
+                        u,
+                        v,
+                        z,  # current z
+                        g,
+                        y,   # current y
+                        current_time=current_time
+                )
+
+                self.update_rho(new_rho)
                 
                 # With this code, stats are  - 
                 # Final position error: 0.8228 m
@@ -682,7 +761,8 @@ class TinyMPC:
 
                 
                 # With this code, stats are exactly the same as above
-            self.update_rho(new_rho)
+            # if k%10 == 0:
+            #     self.update_rho(new_rho)
 
             z_prev = np.copy(z)
             v_prev = np.copy(v)

@@ -1,3 +1,4 @@
+# tinyMPC_traj.py
 import math
 import matplotlib.pyplot as plt
 import autograd.numpy as np
@@ -8,14 +9,34 @@ from autograd import jacobian
 from autograd.test_util import check_grads
 np.set_printoptions(precision=4, suppress=True)
 
-import time
+
+# def generate_figure8_reference(t):
+#     """Generate figure-8 reference matching Julia exactly"""
+#     x_ref = np.zeros(12)
+    
+#     # Positions (exactly as Julia)
+#     x_ref[0] = np.sin(2*t)        # x position
+#     x_ref[1] = 0.0                # y position
+#     x_ref[2] = np.cos(t)/2        # z position
+    
+#     # Velocities (derivatives)
+#     w = 2*np.pi/5  # frequency
+#     x_ref[6] = 2 * w * np.cos(2*t)  # dx/dt
+#     x_ref[7] = 0.0                   # dy/dt
+#     x_ref[8] = -w * np.sin(t)/2      # dz/dt
+    
+#     # Zero attitude and angular velocity
+#     x_ref[3:6] = np.zeros(3)
+#     x_ref[9:12] = np.zeros(3)
+    
+#     return x_ref
 
 
 def generate_figure8_reference(t):
     """Generate figure-8 reference with smooth start"""
     # Figure 8 parameters
-    A = 0.5 # amplitude
-    w = 2*np.pi/6 # frequency
+    A = 0.5  # amplitude
+    w = 2*np.pi/6  # frequency
     
     # Smooth start factor (ramps up in first second)
     smooth_start = min(t/1.0, 1.0)
@@ -27,7 +48,7 @@ def generate_figure8_reference(t):
     x_ref[2] = A * np.sin(2*w*t)/2 * smooth_start
     
     # Velocities (derivatives with smooth start)
-    x_ref[6] = A * w * np.cos(w*t) * smooth_start 
+    x_ref[6] = A * w * np.cos(w*t) * smooth_start
     x_ref[8] = A * w * np.cos(2*w*t) * smooth_start
     
     # Zero attitude and angular velocity
@@ -85,8 +106,6 @@ kt = 2.245365e-6*scale
 km = kt*thrustToTorque
 
 freq = 50.0
-
-
 h = 1/freq
 
 Nx1 = 13
@@ -121,12 +140,6 @@ def quad_dynamics_rk4(x, u):
     xnormalized = xn[3:7]/norm(xn[3:7])
     return np.hstack([xn[0:3], xnormalized, xn[7:13]])
 
-
-
-
-
-    
-
 class TinyMPC:
     def __init__(self, input_data, Nsteps, mode = 0):
         self.cache = {}
@@ -135,37 +148,11 @@ class TinyMPC:
         self.cache['B'] = input_data['B']
         self.cache['Q'] = input_data['Q']
         self.cache['R'] = input_data['R']
-
-        A = input_data['A']  # 12x12 
-        B = input_data['B']  # 12x4
-        
-        # # Create stacked system matrix for trajectory tracking
-        # self.cache['A_stacked'] = np.block([
-        #     [A, B],  # [12x12, 12x4]
-        #     [np.zeros((Nu, Nx)), np.eye(Nu)]  # [4x12, 4x4]
-        # ])  # Final size: (12+4)x(12+4) = 16x16
-
-
-        nx = self.cache['A'].shape[0]  # State dimension
-        nu = self.cache['B'].shape[1]  # Input dimension
-
-
-        # # Create stacked system matrix for trajectory tracking
-        # self.cache['A_stacked'] = np.block([
-        #     [A, B],  # [12x12, 12x4]
-        #     [-np.eye((Nu, Nx)), -np.eye(Nu)]  # [4x12, 4x4]
-        # ])  # Final size: (12+4)x(12+4) = 16x16
-
-
-
-    
         self.compute_cache_terms()
-        
         self.set_tols_iters()
         self.x_prev = np.zeros((self.cache['A'].shape[0],Nsteps))
         self.u_prev = np.zeros((self.cache['B'].shape[1],Nsteps))
         self.N = Nsteps
-        
 
     def compute_cache_terms(self):
         Q_rho = self.cache['Q']
@@ -240,8 +227,6 @@ class TinyMPC:
         p[:,self.N-1] = -np.dot(self.cache['Pinf'], x_ref[:, self.N-1])
         p[:,self.N-1] -= self.cache['rho'] * (v[:, self.N-1] - g[:, self.N-1])
 
-        self.cache['q'] = q.copy()
-
     def set_bounds(self, umax = None, umin = None, xmax = None, xmin = None):
         if (umin is not None) and (umax is not None):
             self.umin = umin
@@ -250,14 +235,12 @@ class TinyMPC:
             self.xmin = xmin
             self.xmax = xmax
 
-    def set_tols_iters(self, max_iter = 500, abs_pri_tol = 1e-7, abs_dua_tol = 1e-7):
+    def set_tols_iters(self, max_iter = 500, abs_pri_tol = 1e-2, abs_dua_tol = 1e-2):
         self.max_iter = max_iter
         self.abs_pri_tol = abs_pri_tol
         self.abs_dua_tol = abs_dua_tol
 
- 
-            
-    def solve_admm(self, x_init, u_init, x_ref=None, u_ref=None, current_time=None):
+    def solve_admm(self, x_init, u_init, x_ref = None, u_ref = None):
         status = 0
         x = np.copy(x_init)
         u = np.copy(u_init)
@@ -278,61 +261,30 @@ class TinyMPC:
             u_ref = np.zeros(u.shape)
 
         for k in range(self.max_iter):
-
-            # Check before primal update
-            print("Before primal update:")
-            print(f"x contains NaN: {np.any(np.isnan(x))}")
-            print(f"u contains NaN: {np.any(np.isnan(u))}")
-            
             self.update_primal(x, u, d, p, q, r)
-
-            # Check after primal update
-            print("After primal update:")
-            print(f"x contains NaN: {np.any(np.isnan(x))}")
-            print(f"u contains NaN: {np.any(np.isnan(u))}")
-            
-
-
             self.update_slack(z, v, y, g, u, x, self.umax, self.umin, self.xmax, self.xmin)
-
-            # Check after primal update
-            print("After primal update:")
-            print(f"x contains NaN: {np.any(np.isnan(x))}")
-            print(f"u contains NaN: {np.any(np.isnan(u))}")
-        
-
             self.update_dual(y, g, u, x, z, v)
             self.update_linear_cost(r, q, p, z, v, y, g, u_ref, x_ref)
 
             pri_res_input = np.max(np.abs(u - z))
             pri_res_state = np.max(np.abs(x - v))
-
-
-            print(f"Residuals:")
-            print(f"pri_res_input: {pri_res_input}")
-            print(f"pri_res_state: {pri_res_state}")
-            print(f"Current rho: {self.cache['rho']}")
-
             dua_res_input = np.max(np.abs(self.cache['rho'] * (z_prev - z)))
             dua_res_state = np.max(np.abs(self.cache['rho'] * (v_prev - v)))
-
 
             pri_res = max(pri_res_input, pri_res_state)
             dual_res = max(dua_res_input, dua_res_state)
 
-
-
             z_prev = np.copy(z)
             v_prev = np.copy(v)
-
-            if (pri_res < self.abs_pri_tol and dual_res < self.abs_dua_tol):
-                status = 1
-                break
 
             # if (pri_res_input < self.abs_pri_tol and dua_res_input < self.abs_dua_tol and
             #     pri_res_state < self.abs_pri_tol and dua_res_state < self.abs_dua_tol):
             #     status = 1
             #     break
+
+            if (pri_res < self.abs_pri_tol and dual_res < self.abs_dua_tol):
+                status = 1
+                break
 
         self.x_prev = x
         self.u_prev = u
@@ -387,7 +339,7 @@ def tinympc_controller(x_curr, t):
     x_init[:,0] = delta_x
     u_init = np.copy(tinympc.u_prev)
 
-    x_out, u_out, status, k = tinympc.solve_admm(x_init, u_init, x_ref, u_ref, current_time=t)
+    x_out, u_out, status, k = tinympc.solve_admm(x_init, u_init, x_ref, u_ref)
     
     return uhover + u_out[:,0], k
 
@@ -400,8 +352,8 @@ def visualize_trajectory(x_all, u_all):
     t = np.arange(nsteps) * h
     
     # Figure 8 parameters
-    A = 1.0  # amplitude
-    w = 2*np.pi/6 # frequency
+    A = 0.5  # amplitude
+    w = 2*np.pi/6  # frequency
     
     # Create figure
     plt.figure(figsize=(15, 5))
@@ -410,6 +362,11 @@ def visualize_trajectory(x_all, u_all):
     plt.subplot(131)
     plt.plot(x_all[:, 0], x_all[:, 2], 'b-', label='Actual')
     
+    # # Plot reference figure-8 (matching Julia)
+    # t_ref = np.linspace(0, 8.0, 100)  # Longer time range
+    # x_ref = np.sin(2*t_ref)           # Julia's x reference
+    # z_ref = np.cos(t_ref)/2           # Julia's z reference
+    # plt.plot(x_ref, z_ref, 'r--', label='Reference')
 
     t_ref = np.linspace(0, 5.0, 100)
     x_ref = A * np.sin(w*t_ref)
@@ -424,6 +381,17 @@ def visualize_trajectory(x_all, u_all):
     plt.grid(True)
     plt.legend()
     
+    # # Plot 2: Position vs Time
+    # plt.subplot(132)
+    # plt.plot(t, x_all[:, 0], 'b-', label='x')
+    # plt.plot(t, x_all[:, 2], 'r-', label='z')
+    # plt.plot(t, np.sin(2*t), 'b--', label='x_ref')
+    # plt.plot(t, np.cos(t)/2, 'r--', label='z_ref')
+    # plt.title('Position vs Time')
+    # plt.xlabel('Time [s]')
+    # plt.ylabel('Position [m]')
+    # plt.grid(True)
+    # plt.legend()
 
     plt.subplot(132)
     plt.plot(t, x_all[:, 0], 'b-', label='x')
@@ -465,9 +433,6 @@ def visualize_trajectory(x_all, u_all):
     print(f"Average control effort: {np.mean(np.linalg.norm(u_all - uhover.reshape(1,-1), axis=1)):.4f}")
 
 if __name__ == "__main__":
-    # Clear the rho file at start of simulation
-    #open('data/raw_rhos.txt', 'w').close()
-    
     # Initialize system
     rg = np.array([0.0, 0, 0.0])
     qg = np.array([1.0, 0, 0, 0])
@@ -492,7 +457,7 @@ if __name__ == "__main__":
 
     # Modify MPC parameters for better tracking
     N = 25  # horizon length
-    rho = 1.0 # initial rho (Julia starts at 5 and multiplies by 5)
+    rho = 1.0  # initial rho (Julia starts at 5 and multiplies by 5)
     
     # Much tighter weights for better tracking
     max_dev_x = np.array([
@@ -550,13 +515,12 @@ if __name__ == "__main__":
         u_all = []
         x_curr = np.copy(x0)
         iterations = []
-        rho_vals = []
         
         for i in range(NSIM):
             t = i * h
             u_curr, k = controller(x_curr, t)
-            #u_curr_clipped = np.clip(u_curr, 0, 1)
-            x_curr = quad_dynamics_rk4(x_curr, u_curr)
+            u_curr_clipped = np.clip(u_curr, 0, 1)
+            x_curr = quad_dynamics_rk4(x_curr, u_curr_clipped)
             
             # Reshape and store
             x_curr = np.array(x_curr).reshape(-1)
@@ -565,36 +529,40 @@ if __name__ == "__main__":
             x_all.append(x_curr)
             u_all.append(u_curr)
             iterations.append(k)
-            rho_vals.append(tinympc.cache['rho'])
             
-        return x_all, u_all, iterations, rho_vals
+        return x_all, u_all, iterations
 
     # Run simulation with modified parameters
-    x_all, u_all, iterations, rho_vals = simulate_with_controller(x0, tinympc_controller, NSIM=400)
+    x_all, u_all, iterations = simulate_with_controller(x0, tinympc_controller, NSIM=400)
 
     # Visualize trajectory
     visualize_trajectory(x_all, u_all)
 
-    #np.savetxt('data/iterations_traj_adapt_OSQP.txt', iterations)
+    #np.savetxt('iterations_normal.txt', iterations)
 
-    plt.figure(figsize=(10, 8))
-    plt.subplot(211)
-    plt.plot(iterations, label='Iterations')
+    # Plot iterations
+    plt.figure(figsize=(10, 5))
+    plt.plot(iterations, label='Fixed rho')
+    plt.xlabel('Time Step')
+    print("Total iterations:", sum(iterations))
+    #np.savetxt('data/iterations_traj_normal.txt', iterations)
     plt.ylabel('Iterations')
     plt.title('ADMM Iterations per Time Step')
-    print("Total iterations:", sum(iterations))
-    plt.grid(True)
     plt.legend()
-
-    # # Plot rho values
-    # plt.subplot(212)
-    # #plt.scatter(range(len(rho_history)), rho_history, label='Rho')
-    # plt.plot(tinympc.rho_adapter.rho_history, label='Rho')
-    # #plt.step(range(len(rho_history)), rho_history, label='Rho')
-    # plt.xlabel('Time Step')
-    # plt.ylabel('Rho Value')
-    # plt.grid(True)
-    # plt.legend()
-
-
+    plt.grid(True)
     plt.show()
+
+    # # Add after creating tinympc instance:
+    # tinympc.set_tols_iters(
+    #     max_iter=20,       # match Julia's max iterations
+    #     abs_pri_tol=1e-3,  # match Julia's tolerance
+    #     abs_dua_tol=1e-3
+    # )
+
+    # # Add this debug code to check reference generation
+    # t_test = 1.0  # test at t=1s
+    # ref = generate_figure8_reference(t_test)
+    # print("\nReference at t=1s:")
+    # print(f"Position: [{ref[0]:.4f}, {ref[1]:.4f}, {ref[2]:.4f}]")
+    # print(f"Velocity: [{ref[6]:.4f}, {ref[7]:.4f}, {ref[8]:.4f}]")
+
