@@ -130,7 +130,7 @@ class RhoAdapter:
 
 
 
-        self.rho_base = 5.0   # Start lower
+        self.rho_base = 1.0   # Start lower
         self.tolerance = 1.1  # Slightly larger steps
         self.rho_min = 1.0
         self.rho_max = 10.0
@@ -188,26 +188,77 @@ class RhoAdapter:
             A_base = cache['A']  # System A matrix
             B_base = cache['B']  # System B matrix
             
-            # Build A matrix that enforces x_{k+1} = Ax_k + Bu_k
-            A_blocks = []
+            # # Build A matrix that enforces x_{k+1} = Ax_k + Bu_k
+            # A_blocks = []
+            # for i in range(N-1):
+            #     row_block = np.zeros((nx, (nx+nu)*(N-1) + nx))
+            #     col_idx = i*(nx+nu)
+            #     row_block[:, col_idx:col_idx+nx] = A_base
+            #     row_block[:, col_idx+nx:col_idx+nx+nu] = B_base
+            #     row_block[:, col_idx+nx+nu:col_idx+2*nx+nu] = -np.eye(nx)
+            #     A_blocks.append(row_block)
+            # A = np.vstack(A_blocks)  # Paper's A matrix
+            # print(f"A shape: {A.shape}")  # Should be (288, 396)
+
+
+            # Form constraint matrix A for both dynamics and inputs
+            A_dynamics = []  # For x_{k+1} = Ax_k + Bu_k
+            A_inputs = []    # For input bounds
+
             for i in range(N-1):
-                row_block = np.zeros((nx, (nx+nu)*(N-1) + nx))
+                # Dynamics block
+                dyn_block = np.zeros((nx, (nx+nu)*(N-1) + nx))
                 col_idx = i*(nx+nu)
-                row_block[:, col_idx:col_idx+nx] = A_base
-                row_block[:, col_idx+nx:col_idx+nx+nu] = B_base
-                row_block[:, col_idx+nx+nu:col_idx+2*nx+nu] = -np.eye(nx)
-                A_blocks.append(row_block)
-            A = np.vstack(A_blocks)  # Paper's A matrix
-            print(f"A shape: {A.shape}")  # Should be (288, 396)
+                dyn_block[:, col_idx:col_idx+nx] = A_base
+                dyn_block[:, col_idx+nx:col_idx+nx+nu] = B_base
+                dyn_block[:, col_idx+nx+nu:col_idx+2*nx+nu] = -np.eye(nx)
+                A_dynamics.append(dyn_block)
+                
+                # Input block
+                input_block = np.zeros((nu, (nx+nu)*(N-1) + nx))
+                input_block[:, col_idx+nx:col_idx+nx+nu] = np.eye(nu)
+                A_inputs.append(input_block)
+
+            A = np.vstack([
+                np.vstack(A_inputs),    # Input constraints first
+                np.vstack(A_dynamics)   # Then dynamics constraints
+            ])
+
+            # # 3. Form constrained variable z
+            # z_blocks = []
+            # for i in range(N-1):
+            #     z_blocks.append(v_prev[:, i].reshape(-1, 1))
+            # z = np.vstack(z_blocks)
+            # print(f"z shape: {z.shape}")  # Should be (288, 1)
+
+            # print(f"y_prev shape: {y_prev.shape}")  # Debug y_prev shape
 
             # 3. Form constrained variable z
-            z_blocks = []
+            z_inputs = []    # For input bounds
+            z_dynamics = []  # For dynamics
             for i in range(N-1):
-                z_blocks.append(v_prev[:, i].reshape(-1, 1))
-            z = np.vstack(z_blocks)
-            print(f"z shape: {z.shape}")  # Should be (288, 1)
+                z_inputs.append(z_prev[:, i].reshape(-1, 1))     # Input slack variables
+                z_dynamics.append(v_prev[:, i].reshape(-1, 1))   # Dynamics slack variables
 
-            print(f"y_prev shape: {y_prev.shape}")  # Debug y_prev shape
+            z = np.vstack([
+                np.vstack(z_inputs),    # nu*(N-1) rows
+                np.vstack(z_dynamics)   # nx*(N-1) rows
+            ])
+
+            # 6. Form dual variable y 
+            y_inputs = []    # For input bounds
+            y_dynamics = []  # For dynamics
+            for i in range(N-1):
+                y_inputs.append(y_prev[:, i].reshape(-1, 1))     # Input duals
+                y_dynamics.append(g_prev[:, i].reshape(-1, 1))   # Dynamics duals
+
+            y = np.vstack([
+                np.vstack(y_inputs),    # nu*(N-1) rows
+                np.vstack(y_dynamics)   # nx*(N-1) rows
+            ])
+
+
+
             
             # 4. Form cost matrix P
             Q = cache['Q']
@@ -243,12 +294,12 @@ class RhoAdapter:
             
         
       
-            # 6. Form dual variable y (only for dynamics constraints)
-            y_blocks = []
-            for i in range(N-1):
-                y_blocks.append(v_prev[:, i].reshape(-1, 1))
-            y = np.vstack(y_blocks)  # Using only dynamics duals
-            print(f"y shape: {y.shape}")  # Should be (288, 1)
+            # # 6. Form dual variable y (only for dynamics constraints)
+            # y_blocks = []
+            # for i in range(N-1):
+            #     y_blocks.append(v_prev[:, i].reshape(-1, 1))
+            # y = np.vstack(y_blocks)  # Using only dynamics duals
+            # print(f"y shape: {y.shape}")  # Should be (288, 1)
 
             # 7. Compute residuals
             # Primal residual
