@@ -420,6 +420,8 @@ if __name__ == "__main__":
 
     x_all, u_all, iterations = simulate_with_controller(x0, x_nom_tinyMPC, u_nom_tinyMPC, tinympc_controller)
 
+    np.savetxt('data/iterations/normal_hover_wind.txt', iterations)
+
     # Visualize trajectory
     visualize_trajectory(x_all, u_all)
 

@@ -675,23 +675,23 @@ class TinyMPC:
                 # print(f"dual_res_x: {dual_res_x}")
                 # print(f"rho: {self.cache['rho']}")
 
-            
-            
-            new_rho = self.rho_adapter.predict_rho(
-                    pri_res, 
-                    dual_res, 
-                    k, 
-                    self.cache['rho'],
-                    self.cache,
-                    x,  # current x
-                    u,
-                    v,
-                    z,  # current z
-                    g,
-                    y   # current y
-            )
+            if k% 10 == 0:
+                
+                new_rho = self.rho_adapter.predict_rho(
+                        pri_res, 
+                        dual_res, 
+                        k, 
+                        self.cache['rho'],
+                        self.cache,
+                        x,  # current x
+                        u,
+                        v,
+                        z,  # current z
+                        g,
+                        y   # current y
+                )
 
-            self.update_rho(new_rho)
+                self.update_rho(new_rho)
 
                 
                 # With this code, exactly the same as below
@@ -1025,6 +1025,8 @@ if __name__ == "__main__":
     x_all, u_all, iterations, rho_vals = simulate_with_controller(x0, x_nom_tinyMPC, u_nom_tinyMPC, tinympc_controller)
 
     #np.savetxt('data/iterations_stacked_OSQP.txt', iterations)
+    np.savetxt('data/iterations/adapt_hover.txt', iterations)
+    np.savetxt('data/rho_vals/adapt_hover.txt', rho_vals)
 
     # Visualization (keep existing visualization code)
     visualize_trajectory(x_all, u_all)
