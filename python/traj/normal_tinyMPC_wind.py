@@ -277,7 +277,13 @@ class TinyMPC:
         if (u_ref is None):
             u_ref = np.zeros(u.shape)
 
- 
+        # Wind disturbance setup
+        wind_magnitude = 0.005  # m/s
+        wind_direction = np.array([1.0, 1.0, 0.0])  # Diagonal wind in xy-plane
+        wind_direction = wind_direction / np.linalg.norm(wind_direction)
+        wind_effect = wind_magnitude * wind_direction
+
+        x[0:3, :] += wind_effect.reshape(-1, 1)  # Position effect
 
         for k in range(self.max_iter):
 
