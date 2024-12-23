@@ -1054,16 +1054,3 @@ if __name__ == "__main__":
 
 
     plt.show()
-
-    # After simulation, plot both raw and actual rhos
-    #raw_rhos = np.loadtxt('data/raw_rhos.txt')
-    
-    # plt.figure(figsize=(10, 4))
-    # plt.plot(raw_rhos, 'r--', label='Raw ρ', alpha=0.5)
-    # plt.plot(rho_vals, 'b-', label='Actual ρ')
-    # plt.xlabel('Time Step')
-    # plt.ylabel('ρ Value')
-    # plt.title('Raw vs Actual ρ Values')
-    # plt.grid(True)
-    # plt.legend()
-    # plt.show()

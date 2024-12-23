@@ -17,7 +17,7 @@ def generate_figure8_reference(t):
     """Generate figure-8 reference with smooth start"""
     # Figure 8 parameters
     A = 0.5 # amplitude
-    w = 2*np.pi/6 # frequency
+    w = 2*np.pi/7 # frequency
     
     # Smooth start factor (ramps up in first second)
     smooth_start = min(t/1.0, 1.0)
@@ -134,11 +134,7 @@ class RhoAdapter:
         self.tolerance = 1.1  # Slightly larger steps
         self.rho_min = 1.0
         self.rho_max = 10000.0
-        
-        
-
-        self.rhos = self.setup_rho_sequence()
-        self.current_idx = len(self.rhos)//2  # Start in middle
+    
 
 
         # For paper comparison/analysis
@@ -148,22 +144,6 @@ class RhoAdapter:
         self.start_time = time.time()  
 
 
-    def setup_rho_sequence(self):
-        """Generate geometric sequence of rhos (like ReLU-QP)"""
-        rhos = [self.rho_base]
-        # Generate smaller rhos
-        rho = self.rho_base
-        while rho >= self.rho_min:
-            rho = rho / self.tolerance
-            rhos.append(rho)
-        # Generate larger rhos
-        rho = self.rho_base
-        while rho <= self.rho_max:
-            rho = rho * self.tolerance
-            rhos.append(rho)
-        return np.sort(rhos)
-
-    
 
     def predict_rho(self, pri_res, dual_res, iterations, current_rho, cache, x_prev, u_prev, v_prev, z_prev, g_prev, y_prev, current_time=None):
         try:
@@ -731,13 +711,7 @@ class TinyMPC:
             dual_res = max(dua_res_input, dua_res_state)
 
 
-            
-            
-            if k>0 and k%10 == 0:
-
-
-            
-                new_rho = self.rho_adapter.predict_rho(
+            new_rho = self.rho_adapter.predict_rho(
                         pri_res, 
                         dual_res, 
                         k, 
@@ -750,9 +724,9 @@ class TinyMPC:
                         g,
                         y,   # current y
                         current_time=current_time
-                )
+            )
 
-                self.update_rho(new_rho)
+            self.update_rho(new_rho)
                 
                 # With this code, stats are  - 
                 # Final position error: 0.8228 m

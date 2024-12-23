@@ -740,7 +740,7 @@ class TinyMPC:
 
             
             
-            if k>0 and k%10 == 0:
+            if k>0 :
 
 
             
@@ -958,11 +958,11 @@ if __name__ == "__main__":
 
     # Modify MPC parameters for better tracking
     N = 25  # horizon length
-    rho = 1.0 # initial rho (Julia starts at 5 and multiplies by 5)
+    rho = 5.0 # initial rho (Julia starts at 5 and multiplies by 5)
     
     # Much tighter weights for better tracking
     max_dev_x = np.array([
-        0.01, 0.01, 0.01,    # position (exactly as Julia)
+        0.1, 0.1, 0.1,    # position (exactly as Julia)
         0.5, 0.5, 0.05,      # attitude (asymmetric as Julia)
         0.5, 0.5, 0.5,       # velocity
         0.7, 0.7, 0.5        # angular velocity

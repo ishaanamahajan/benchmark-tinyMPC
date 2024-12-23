@@ -505,7 +505,7 @@ if __name__ == "__main__":
 
     # Modify MPC parameters for better tracking
     N = 25  # horizon length
-    rho = 5.0 # initial rho (Julia starts at 5 and multiplies by 5)
+    rho = 1.0 # initial rho (Julia starts at 5 and multiplies by 5)
     
     # Much tighter weights for better tracking
     max_dev_x = np.array([

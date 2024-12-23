@@ -11,11 +11,17 @@ np.set_printoptions(precision=4, suppress=True)
 import time
 
 
+A = 0.5
+w = 2*np.pi/7
+
+
 def generate_figure8_reference(t):
     """Generate figure-8 reference with smooth start"""
     # Figure 8 parameters
-    A = 0.5 # amplitude
-    w = 2*np.pi/6 # frequency
+
+    A = 0.5
+    w = 2*np.pi/7
+
     
     # Smooth start factor (ramps up in first second)
     smooth_start = min(t/1.0, 1.0)
@@ -403,9 +409,6 @@ def visualize_trajectory(x_all, u_all):
     nsteps = len(x_all)
     t = np.arange(nsteps) * h
     
-    # Figure 8 parameters
-    A = 1.0  # amplitude
-    w = 2*np.pi/6 # frequency
     
     # Create figure
     plt.figure(figsize=(15, 5))
@@ -414,11 +417,14 @@ def visualize_trajectory(x_all, u_all):
     plt.subplot(131)
     plt.plot(x_all[:, 0], x_all[:, 2], 'b-', label='Actual')
     
+    # # Plot reference figure-8 (matching Julia)
+    # t_ref = np.linspace(0, 8.0, 100)  # Longer time range
+    # x_ref = np.sin(2*t_ref)           # Julia's x reference
+    # z_ref = np.cos(t_ref)/2           # Julia's z reference
+    # plt.plot(x_ref, z_ref, 'r--', label='Reference')
 
-    t_ref = np.linspace(0, 5.0, 100)
-    x_ref = A * np.sin(w*t_ref)
-    z_ref = A * np.sin(2*w*t_ref)/2
-    plt.plot(x_ref, z_ref, 'r--', label='Reference')
+    x_ref = np.array([generate_figure8_reference(t_i) for t_i in t])
+    plt.plot(x_ref[:, 0], x_ref[:, 2], 'r--', label='Reference')
 
     
     plt.title('Figure-8 Trajectory')
@@ -496,7 +502,7 @@ if __name__ == "__main__":
 
     # Modify MPC parameters for better tracking
     N = 25  # horizon length
-    rho = 1.0 # initial rho (Julia starts at 5 and multiplies by 5)
+    rho = 5.0 # initial rho (Julia starts at 5 and multiplies by 5)
     
     # Much tighter weights for better tracking
     max_dev_x = np.array([
@@ -579,7 +585,7 @@ if __name__ == "__main__":
     # Visualize trajectory
     visualize_trajectory(x_all, u_all)
 
-    #np.savetxt('data/iterations_traj_adapt_OSQP.txt', iterations)
+    np.savetxt('data/iterations/normal_traj.txt', iterations)
 
     plt.figure(figsize=(10, 8))
     plt.subplot(211)
