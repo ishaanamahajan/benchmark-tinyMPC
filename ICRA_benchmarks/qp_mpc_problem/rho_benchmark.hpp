@@ -14,6 +14,15 @@ struct RhoBenchmarkResult {
     uint32_t time_us;      // Time taken for adaptation computation
 };
 
+struct RhoAdapter {
+    float rho_base;
+    float rho_min;
+    float rho_max;
+    float tolerance;
+    bool clip;
+    // Maybe add history if needed for debugging
+};
+
 // Main benchmark functions
 void benchmark_rho_adaptation(
     const float* x_prev,    // Previous state (nx x 1)
@@ -21,7 +30,8 @@ void benchmark_rho_adaptation(
     const float* z_prev,    // Previous slack (nx x 1)
     float pri_res,          // Primal residual
     float dual_res,         // Dual residual
-    RhoBenchmarkResult* result
+    RhoBenchmarkResult* result,
+    RhoAdapter* adapter
 );
 
 void update_cache_taylor(float new_rho, float old_rho);
