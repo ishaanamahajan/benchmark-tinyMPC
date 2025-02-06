@@ -7,6 +7,12 @@ float Pinf[BENCH_NX][BENCH_NX];
 float C1[BENCH_NU][BENCH_NU];
 float C2[BENCH_NX][BENCH_NX];
 
+// Initialize constant matrices
+const float A_stacked[BENCH_NX + BENCH_NU][BENCH_NX + BENCH_NU] = {{0}}; // Fill with actual values
+const float q[BENCH_NX + BENCH_NU] = {0}; // Fill with actual values
+const float P[BENCH_NX + BENCH_NU][BENCH_NX + BENCH_NU] = {{0}}; // Fill with actual values
+
+
 
 
 const float PINF_INIT[12][12] = {
@@ -98,6 +104,33 @@ const float dC2_drho[BENCH_NX][BENCH_NX] = {
 };
 
 
+// Helper functions
+float compute_max_norm(const float* vec, int size) {
+    float max_val = 0.0f;
+    for(int i = 0; i < size; i++) {
+        max_val = max(max_val, abs(vec[i]));
+    }
+    return max_val;
+}
+
+void matrix_multiply(const float* A, const float* x, float* result, int rows, int cols, int n) {
+    for(int i = 0; i < rows; i++) {
+        result[i] = 0;
+        for(int j = 0; j < cols; j++) {
+            result[i] += A[i * cols + j] * x[j];
+        }
+    }
+}
+
+void matrix_multiply_transpose(const float* A, const float* x, float* result, int rows, int cols, int n) {
+    for(int i = 0; i < cols; i++) {
+        result[i] = 0;
+        for(int j = 0; j < rows; j++) {
+            result[i] += A[j * cols + i] * x[j];
+        }
+    }
+}
+
 void initialize_benchmark_cache() {
     memcpy(Kinf, KINF_INIT, sizeof(Kinf));
     memcpy(Pinf, PINF_INIT, sizeof(Pinf));
@@ -105,35 +138,28 @@ void initialize_benchmark_cache() {
     memcpy(C2, C2_INIT, sizeof(C2));
 }
 
-
-
-
-
 void update_cache_taylor(float new_rho, float old_rho) {
     float delta_rho = new_rho - old_rho;
     
-    // Update K using Taylor expansion
+    // Update matrices using Taylor expansion
     for(int i = 0; i < BENCH_NU; i++) {
         for(int j = 0; j < BENCH_NX; j++) {
             Kinf[i][j] += delta_rho * dKinf_drho[i][j];
         }
     }
     
-    // Update P using Taylor expansion
     for(int i = 0; i < BENCH_NX; i++) {
         for(int j = 0; j < BENCH_NX; j++) {
             Pinf[i][j] += delta_rho * dPinf_drho[i][j];
         }
     }
     
-    // Update C1 using Taylor expansion
     for(int i = 0; i < BENCH_NU; i++) {
         for(int j = 0; j < BENCH_NU; j++) {
             C1[i][j] += delta_rho * dC1_drho[i][j];
         }
     }
     
-    // Update C2 using Taylor expansion
     for(int i = 0; i < BENCH_NX; i++) {
         for(int j = 0; j < BENCH_NX; j++) {
             C2[i][j] += delta_rho * dC2_drho[i][j];
@@ -141,22 +167,25 @@ void update_cache_taylor(float new_rho, float old_rho) {
     }
 }
 
-
-
-void benchmark_rho_adaptation(float pri_res, float dual_res, RhoBenchmarkResult* result) {
+void benchmark_rho_adaptation(
+    const float* x_prev,
+    const float* u_prev,
+    const float* z_prev,
+    float pri_res,
+    float dual_res,
+    RhoBenchmarkResult* result,
+    RhoAdapter* adapter
+) {
     initialize_benchmark_cache();
-
-    result->initial_rho = 85.0f;
     
     uint32_t start = micros();
     
-    // Get state and input from previous iteration
-    // Assuming x_prev, u_prev, z_prev, y_k are stored somewhere
-    float x_k[BENCH_NX];  // state (12x1)
-    float u_k[BENCH_NU];  // input (4x1)
-    float z_k[BENCH_NX];  // slack (12x1)
-    float y_k[BENCH_NX + BENCH_NU];  // [x;u] (16x1)
-
+    // Get current state
+    float x_k[BENCH_NX];
+    float u_k[BENCH_NU];
+    float z_k[BENCH_NX];
+    float y_k[BENCH_NX + BENCH_NU];
+    
     memcpy(x_k, x_prev, BENCH_NX * sizeof(float));
     memcpy(u_k, u_prev, BENCH_NU * sizeof(float));
     memcpy(z_k, z_prev, BENCH_NX * sizeof(float));
@@ -165,63 +194,48 @@ void benchmark_rho_adaptation(float pri_res, float dual_res, RhoBenchmarkResult*
     memcpy(y_k, x_k, BENCH_NX * sizeof(float));
     memcpy(y_k + BENCH_NX, u_k, BENCH_NU * sizeof(float));
     
-    // Compute primal scaling
+    // Compute norms for scaling
     float Ax_norm = 0.0f;
-    // Compute A_stacked @ x_bar
-    for(int i = 0; i < BENCH_NX + BENCH_NU; i++) {
-        float sum = 0.0f;
-        for(int j = 0; j < BENCH_NX + BENCH_NU; j++) {
-            sum += A_stacked[i][j] * (j < BENCH_NX ? x_k[j] : u_k[j-BENCH_NX]);
-        }
-        Ax_norm = std::max(Ax_norm, std::abs(sum));
-    }
-    
-    // Compute |z_k|_∞
-    float z_norm = 0.0f;
-    for(int i = 0; i < BENCH_NX; i++) {
-        z_norm = std::max(z_norm, std::abs(z_k[i]));
-    }
-    
-    float prim_scaling = pri_res / std::max(Ax_norm, z_norm);
-    
-    // Compute dual scaling
+    float z_norm = compute_max_norm(z_k, BENCH_NX);
     float Px_norm = 0.0f;
-    // Compute |Pinf @ x_k|_∞
-    for(int i = 0; i < BENCH_NX; i++) {
-        float sum = 0.0f;
-        for(int j = 0; j < BENCH_NX; j++) {
-            sum += Pinf[i][j] * x_k[j];
-        }
-        Px_norm = std::max(Px_norm, std::abs(sum));
-    }
-    
     float ATy_norm = 0.0f;
-    // Compute |A_stacked.T @ y_k|_∞
-    for(int i = 0; i < BENCH_NX + BENCH_NU; i++) {
-        float sum = 0.0f;
-        for(int j = 0; j < BENCH_NX + BENCH_NU; j++) {
-            sum += A_stacked[j][i] * y_k[j];
-        }
-        ATy_norm = std::max(ATy_norm, std::abs(sum));
-    }
+    float q_norm = compute_max_norm(q, BENCH_NX + BENCH_NU);
     
-    float q_norm = 0.0f;
-    // Compute |q|_∞
-    for(int i = 0; i < BENCH_NX + BENCH_NU; i++) {
-        q_norm = std::max(q_norm, std::abs(q[i]));
-    }
+    // Compute A_stacked @ x_k
+    float* temp = new float[BENCH_NX + BENCH_NU];
+    matrix_multiply((float*)A_stacked, y_k, temp, BENCH_NX + BENCH_NU, BENCH_NX + BENCH_NU, 1);
+    Ax_norm = compute_max_norm(temp, BENCH_NX + BENCH_NU);
     
-    float dual_scaling = dual_res / std::max(std::max(Px_norm, ATy_norm), q_norm);
+    // Compute P @ x_k
+    matrix_multiply((float*)P, y_k, temp, BENCH_NX + BENCH_NU, BENCH_NX + BENCH_NU, 1);
+    Px_norm = compute_max_norm(temp, BENCH_NX + BENCH_NU);
+    
+    // Compute A_stacked.T @ y_k
+    matrix_multiply_transpose((float*)A_stacked, y_k, temp, BENCH_NX + BENCH_NU, BENCH_NX + BENCH_NU, 1);
+    ATy_norm = compute_max_norm(temp, BENCH_NX + BENCH_NU);
+    
+    delete[] temp;
+    
+    // Compute scalings
+    float prim_scaling = pri_res / max(Ax_norm, z_norm);
+    float dual_scaling = dual_res / max(max(Px_norm, ATy_norm), q_norm);
     
     // Update rho
     float ratio = prim_scaling / dual_scaling;
-    ratio = std::min(std::max(ratio, 0.001f), 1.0f);
-    float new_rho = result->initial_rho * std::sqrt(ratio);
-    new_rho = std::min(std::max(new_rho, 70.0f), 100.0f);
+    ratio = min(max(ratio, 0.001f), 1.0f);
+    float new_rho = adapter->rho_base * sqrt(ratio);
+    
+    if (adapter->clip) {
+        new_rho = min(max(new_rho, adapter->rho_min), adapter->rho_max);
+    }
     
     // Update cache using Taylor expansion
-    update_cache_taylor(new_rho, result->initial_rho);
+    update_cache_taylor(new_rho, adapter->rho_base);
     
+    // Store results
     result->time_us = micros() - start;
+    result->initial_rho = adapter->rho_base;
     result->final_rho = new_rho;
+    result->pri_res = pri_res;
+    result->dual_res = dual_res;
 }

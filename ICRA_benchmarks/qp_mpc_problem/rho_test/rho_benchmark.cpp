@@ -7,6 +7,35 @@ float Pinf[BENCH_NX][BENCH_NX];
 float C1[BENCH_NU][BENCH_NU];
 float C2[BENCH_NX][BENCH_NX];
 
+// 2. Add the missing matrix definitions:
+const float A_stacked[BENCH_NX + BENCH_NU][BENCH_NX + BENCH_NU] = {{0}}; // Fill with actual values
+const float q[BENCH_NX + BENCH_NU] = {0}; // Fill with actual values
+const float P[BENCH_NX + BENCH_NU][BENCH_NX + BENCH_NU] = {{0}}; // Fill with actual values
+
+// 3. Add state/input vectors:
+float x_prev[BENCH_NX] = {0};
+float u_prev[BENCH_NU] = {0};
+float z_prev[BENCH_NX] = {0};
+
+// 4. Add matrix multiplication functions:
+void matrix_multiply(const float* A, const float* x, float* result, int rows, int cols, int n) {
+    for(int i = 0; i < rows; i++) {
+        result[i] = 0;
+        for(int j = 0; j < cols; j++) {
+            result[i] += A[i * cols + j] * x[j];
+        }
+    }
+}
+
+void matrix_multiply_transpose(const float* A, const float* x, float* result, int rows, int cols, int n) {
+    for(int i = 0; i < cols; i++) {
+        result[i] = 0;
+        for(int j = 0; j < rows; j++) {
+            result[i] += A[j * cols + i] * x[j];
+        }
+    }
+}
+
 void initialize_benchmark_cache() {
     memcpy(Kinf, KINF_INIT, sizeof(Kinf));
     memcpy(Pinf, PINF_INIT, sizeof(Pinf));

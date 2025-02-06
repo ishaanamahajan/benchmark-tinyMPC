@@ -11,7 +11,7 @@ path_to_root = os.getcwd()
 print(path_to_root)
 
 import sys
-from gen_code_osqp import generate_osqp_solver
+#from gen_code_osqp import generate_osqp_solver
 
 from gen_mpc_problem import *
 

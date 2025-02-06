@@ -57,7 +57,7 @@ void benchmark_rho_adaptation(
     float pri_res,
     float dual_res,
     RhoBenchmarkResult* result,
-    RhoAdapter* adapter  // Add this parameter
+    RhoAdapter* adapter
 );
 float compute_max_norm(const float* vec, int size);
 void compute_residuals(
@@ -73,6 +73,9 @@ void compute_residuals(
     float* pri_norm,
     float* dual_norm
 );
+
+// Also add P matrix declaration:
+extern const float P[BENCH_NX + BENCH_NU][BENCH_NX + BENCH_NU];
 
 const float PINF_INIT[12][12] = {
     {74092.187704f, -73.167319f, 0.000000f, 198.053342f, 78082.549386f, 1717.656003f, 26348.957464f, -44.979013f, 0.000000f, 7.184539f, 399.820082f, 213.830097f},
@@ -161,3 +164,7 @@ const float dC2_drho[BENCH_NX][BENCH_NX] = {
     { 0.0002, -0.0000,  0.0000,  0.0001,  0.0007, -0.0002,  0.0002, -0.0000, -0.0000,  0.0000,  0.0001, -0.0001},
     { 0.0000, -0.0000, -0.0000,  0.0000,  0.0001,  0.0011,  0.0000, -0.0000, -0.0000,  0.0000,  0.0000,  0.0003}
 };
+
+// Keep all the existing declarations, but add these matrix multiply functions:
+void matrix_multiply(const float* A, const float* x, float* result, int rows, int cols, int n);
+void matrix_multiply_transpose(const float* A, const float* x, float* result, int rows, int cols, int n);
