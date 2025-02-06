@@ -10,11 +10,22 @@
 #define BENCH_NX 12
 #define BENCH_NU 4
 
-// Result structure
+// Add after the BENCH_* definitions
+struct RhoAdapter {
+    float rho_base;
+    float rho_min;
+    float rho_max;
+    float tolerance;
+    bool clip;
+};
+
+// Update RhoBenchmarkResult to include residuals
 struct RhoBenchmarkResult {
     uint32_t time_us;
     float initial_rho;
     float final_rho;
+    float pri_res;    // Add this
+    float dual_res;   // Add this
 };
 
 // Cache matrices declarations (defined as static in cpp)
@@ -39,9 +50,29 @@ extern const float q[BENCH_NX + BENCH_NU];
 // Function declarations
 void update_cache_taylor(float new_rho, float old_rho);
 void initialize_benchmark_cache();  // This needs to be implemented
-void benchmark_rho_adaptation(float pri_res, float dual_res, RhoBenchmarkResult* result);\
-
-
+void benchmark_rho_adaptation(
+    const float* x_prev,
+    const float* u_prev,
+    const float* z_prev,
+    float pri_res,
+    float dual_res,
+    RhoBenchmarkResult* result,
+    RhoAdapter* adapter  // Add this parameter
+);
+float compute_max_norm(const float* vec, int size);
+void compute_residuals(
+    const float* x,
+    const float* A,
+    const float* z,
+    const float* y,
+    const float* P,
+    const float* q,
+    int size,
+    float* pri_res,
+    float* dual_res,
+    float* pri_norm,
+    float* dual_norm
+);
 
 const float PINF_INIT[12][12] = {
     {74092.187704f, -73.167319f, 0.000000f, 198.053342f, 78082.549386f, 1717.656003f, 26348.957464f, -44.979013f, 0.000000f, 7.184539f, 399.820082f, 213.830097f},

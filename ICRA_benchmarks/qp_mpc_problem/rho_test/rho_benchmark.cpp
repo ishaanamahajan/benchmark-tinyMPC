@@ -49,87 +49,111 @@ void update_cache_taylor(float new_rho, float old_rho) {
     }
 }
 
+// Add new helper function
+float compute_max_norm(const float* vec, int size) {
+    float max_val = 0.0f;
+    for(int i = 0; i < size; i++) {
+        max_val = max(max_val, abs(vec[i]));
+    }
+    return max_val;
+}
 
+// Add residual computation
+void compute_residuals(
+    const float* x,
+    const float* A,
+    const float* z,
+    const float* y,
+    const float* P,
+    const float* q,
+    int size,
+    float* pri_res,
+    float* dual_res,
+    float* pri_norm,
+    float* dual_norm
+) {
+    // Primal residual: r = Ax - z
+    float* Ax = new float[size];
+    matrix_multiply(A, x, Ax, size, size, 1);
+    
+    *pri_res = 0.0f;
+    for(int i = 0; i < size; i++) {
+        *pri_res = max(*pri_res, abs(Ax[i] - z[i]));
+    }
+    
+    // Normalization terms
+    *pri_norm = max(compute_max_norm(Ax, size), 
+                   compute_max_norm(z, size));
 
-void benchmark_rho_adaptation(float pri_res, float dual_res, RhoBenchmarkResult* result) {
+    // Dual residual: r = Px + q + A'y
+    float* Px = new float[size];
+    float* ATy = new float[size];
+    matrix_multiply(P, x, Px, size, size, 1);
+    matrix_multiply_transpose(A, y, ATy, size, size, 1);
+    
+    *dual_res = 0.0f;
+    for(int i = 0; i < size; i++) {
+        *dual_res = max(*dual_res, abs(Px[i] + q[i] + ATy[i]));
+    }
+    
+    // Normalization terms
+    *dual_norm = max(max(compute_max_norm(Px, size),
+                        compute_max_norm(ATy, size)),
+                    compute_max_norm(q, size));
+    
+    delete[] Ax;
+    delete[] Px;
+    delete[] ATy;
+}
+
+// Update the main benchmark function
+void benchmark_rho_adaptation(
+    const float* x_prev,
+    const float* u_prev,
+    const float* z_prev,
+    float pri_res,
+    float dual_res,
+    RhoBenchmarkResult* result,
+    RhoAdapter* adapter
+) {
     initialize_benchmark_cache();
-
-    result->initial_rho = 85.0f;
     
     uint32_t start = micros();
     
-    // Get state and input from previous iteration
-    // Assuming x_prev, u_prev, z_prev, y_k are stored somewhere
-    float x_k[BENCH_NX];  // state (12x1)
-    float u_k[BENCH_NU];  // input (4x1)
-    float z_k[BENCH_NX];  // slack (12x1)
-    float y_k[BENCH_NX + BENCH_NU];  // [x;u] (16x1)
-
+    // Get current state
+    float x_k[BENCH_NX];
+    float u_k[BENCH_NU];
+    float z_k[BENCH_NX];
+    float y_k[BENCH_NX + BENCH_NU];
+    
     memcpy(x_k, x_prev, BENCH_NX * sizeof(float));
     memcpy(u_k, u_prev, BENCH_NU * sizeof(float));
     memcpy(z_k, z_prev, BENCH_NX * sizeof(float));
     
-    // Build y_k = [x_k; u_k]
-    memcpy(y_k, x_k, BENCH_NX * sizeof(float));
-    memcpy(y_k + BENCH_NX, u_k, BENCH_NU * sizeof(float));
+    // Compute residuals and norms
+    float pri_norm, dual_norm;
+    compute_residuals(x_k, A_stacked, z_k, y_k, P, q, 
+                     BENCH_NX + BENCH_NU,
+                     &pri_res, &dual_res, &pri_norm, &dual_norm);
     
-    // Compute primal scaling
-    float Ax_norm = 0.0f;
-    // Compute A_stacked @ x_bar
-    for(int i = 0; i < BENCH_NX + BENCH_NU; i++) {
-        float sum = 0.0f;
-        for(int j = 0; j < BENCH_NX + BENCH_NU; j++) {
-            sum += A_stacked[i][j] * (j < BENCH_NX ? x_k[j] : u_k[j-BENCH_NX]);
-        }
-        Ax_norm = std::max(Ax_norm, std::abs(sum));
+    // Adaptive rho logic
+    float normalized_pri = pri_res / (pri_norm + 1e-10f);
+    float normalized_dual = dual_res / (dual_norm + 1e-10f);
+    float ratio = normalized_pri / (normalized_dual + 1e-10f);
+    
+    float new_rho = adapter->rho_base * sqrtf(ratio);
+    
+    if (adapter->clip) {
+        new_rho = min(max(new_rho, adapter->rho_min), adapter->rho_max);
     }
-    
-    // Compute |z_k|_∞
-    float z_norm = 0.0f;
-    for(int i = 0; i < BENCH_NX; i++) {
-        z_norm = std::max(z_norm, std::abs(z_k[i]));
-    }
-    
-    float prim_scaling = pri_res / std::max(Ax_norm, z_norm);
-    
-    // Compute dual scaling
-    float Px_norm = 0.0f;
-    // Compute |Pinf @ x_k|_∞
-    for(int i = 0; i < BENCH_NX; i++) {
-        float sum = 0.0f;
-        for(int j = 0; j < BENCH_NX; j++) {
-            sum += Pinf[i][j] * x_k[j];
-        }
-        Px_norm = std::max(Px_norm, std::abs(sum));
-    }
-    
-    float ATy_norm = 0.0f;
-    // Compute |A_stacked.T @ y_k|_∞
-    for(int i = 0; i < BENCH_NX + BENCH_NU; i++) {
-        float sum = 0.0f;
-        for(int j = 0; j < BENCH_NX + BENCH_NU; j++) {
-            sum += A_stacked[j][i] * y_k[j];
-        }
-        ATy_norm = std::max(ATy_norm, std::abs(sum));
-    }
-    
-    float q_norm = 0.0f;
-    // Compute |q|_∞
-    for(int i = 0; i < BENCH_NX + BENCH_NU; i++) {
-        q_norm = std::max(q_norm, std::abs(q[i]));
-    }
-    
-    float dual_scaling = dual_res / std::max(std::max(Px_norm, ATy_norm), q_norm);
-    
-    // Update rho
-    float ratio = prim_scaling / dual_scaling;
-    ratio = std::min(std::max(ratio, 0.001f), 1.0f);
-    float new_rho = result->initial_rho * std::sqrt(ratio);
-    new_rho = std::min(std::max(new_rho, 70.0f), 100.0f);
     
     // Update cache using Taylor expansion
-    update_cache_taylor(new_rho, result->initial_rho);
+    update_cache_taylor(new_rho, adapter->rho_base);
     
-    result->time_us = micros() - start;
+    // Store results
+    result->initial_rho = adapter->rho_base;
     result->final_rho = new_rho;
+    result->pri_res = pri_res;
+    result->dual_res = dual_res;
+    result->time_us = micros() - start;
 }
