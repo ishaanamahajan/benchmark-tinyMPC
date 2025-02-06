@@ -3,6 +3,7 @@
 #include <Eigen.h>
 #include "constants.hpp"
 #include "Arduino.h"
+#include "rho_benchmark.hpp"
 
 using Eigen::Matrix;
 
@@ -56,6 +57,7 @@ struct tiny_params {
     // tiny_VectorNc x_min[NHORIZON];
     // tiny_VectorNc x_max[NHORIZON];
     tiny_MatrixNcNx A_constraints[NHORIZON];
+    RhoAdapter rho_adapter;
 
     // Turns out converting everything to big matrices is
     // slower than using for loops here - maybe this would
@@ -120,6 +122,10 @@ struct tiny_problem {
     Matrix<tinytype, 3, NHORIZON> xyz_news;
     tiny_VectorNu Qu;
     tiny_VectorNx Ax; // Stores result of sparse Adyn*x vector product computation
+
+    uint32_t admm_time;
+    uint32_t rho_time;
+    
 
     int cache_level;
 };

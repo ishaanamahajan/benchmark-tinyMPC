@@ -1,19 +1,16 @@
 #include "rho_benchmark.hpp"
 #include <Arduino.h>
 
-// Cache matrices that get updated
+// These need to be non-const to match header
 float Kinf[BENCH_NU][BENCH_NX];
 float Pinf[BENCH_NX][BENCH_NX];
 float C1[BENCH_NU][BENCH_NU];
 float C2[BENCH_NX][BENCH_NX];
 
-// Initialize constant matrices
+// These initialization arrays can stay const
 const float A_stacked[BENCH_NX + BENCH_NU][BENCH_NX + BENCH_NU] = {{0}}; // Fill with actual values
 const float q[BENCH_NX + BENCH_NU] = {0}; // Fill with actual values
 const float P[BENCH_NX + BENCH_NU][BENCH_NX + BENCH_NU] = {{0}}; // Fill with actual values
-
-
-
 
 const float PINF_INIT[12][12] = {
     {74092.187704f, -73.167319f, 0.000000f, 198.053342f, 78082.549386f, 1717.656003f, 26348.957464f, -44.979013f, 0.000000f, 7.184539f, 399.820082f, 213.830097f},
@@ -56,8 +53,7 @@ const float KINF_INIT[4][12] = {
     {-0.110799f, -0.175107f, 1.366579f, 0.786153f, -0.267683f, 3.011522f, -0.069994f, -0.129287f, 0.717299f, 0.063727f, 0.005747f, 0.791402f},
 };
 
-
-// Pre-computed sensitivity matrices at rho = 85.0
+// These derivative arrays can stay const
 const float dKinf_drho[BENCH_NU][BENCH_NX] = {
     { 0.0001, -0.0000, -0.0016,  0.0002,  0.0005,  0.0033,  0.0001, -0.0000, -0.0009,  0.0000,  0.0001,  0.0010},
     {-0.0001,  0.0000, -0.0016, -0.0001, -0.0004, -0.0033, -0.0001,  0.0000, -0.0009, -0.0000, -0.0001, -0.0010},
@@ -80,7 +76,6 @@ const float dPinf_drho[BENCH_NX][BENCH_NX] = {
     { 0.1505, -0.0600,  0.0000,  0.7094,  1.7752, 12.9370,  0.1643, -0.0656,  0.0000,  0.1258,  0.3145,  5.0369}
 };
 
-// dC1_drho is all zeros
 const float dC1_drho[BENCH_NU][BENCH_NU] = {
     {-0.0, -0.0, -0.0, -0.0},
     {-0.0, -0.0, -0.0, -0.0},
@@ -102,7 +97,6 @@ const float dC2_drho[BENCH_NX][BENCH_NX] = {
     { 0.0002, -0.0000,  0.0000,  0.0001,  0.0007, -0.0002,  0.0002, -0.0000, -0.0000,  0.0000,  0.0001, -0.0001},
     { 0.0000, -0.0000, -0.0000,  0.0000,  0.0001,  0.0011,  0.0000, -0.0000, -0.0000,  0.0000,  0.0000,  0.0003}
 };
-
 
 // Helper functions
 float compute_max_norm(const float* vec, int size) {
@@ -170,14 +164,13 @@ void update_cache_taylor(float new_rho, float old_rho) {
 void benchmark_rho_adaptation(
     const float* x_prev,
     const float* u_prev,
-    const float* z_prev,
+    const float* v_prev,
     float pri_res,
     float dual_res,
     RhoBenchmarkResult* result,
     RhoAdapter* adapter
 ) {
     initialize_benchmark_cache();
-    
     uint32_t start = micros();
     
     // Get current state
@@ -188,7 +181,7 @@ void benchmark_rho_adaptation(
     
     memcpy(x_k, x_prev, BENCH_NX * sizeof(float));
     memcpy(u_k, u_prev, BENCH_NU * sizeof(float));
-    memcpy(z_k, z_prev, BENCH_NX * sizeof(float));
+    memcpy(z_k, v_prev, BENCH_NX * sizeof(float));
     
     // Build y_k = [x_k; u_k]
     memcpy(y_k, x_k, BENCH_NX * sizeof(float));
@@ -220,11 +213,12 @@ void benchmark_rho_adaptation(
     float prim_scaling = pri_res / max(Ax_norm, z_norm);
     float dual_scaling = dual_res / max(max(Px_norm, ATy_norm), q_norm);
     
-    // Update rho
+    // Update rho using analytical method
     float ratio = prim_scaling / dual_scaling;
     ratio = min(max(ratio, 0.001f), 1.0f);
     float new_rho = adapter->rho_base * sqrt(ratio);
     
+    // Apply clipping if enabled
     if (adapter->clip) {
         new_rho = min(max(new_rho, adapter->rho_min), adapter->rho_max);
     }
@@ -238,4 +232,6 @@ void benchmark_rho_adaptation(
     result->final_rho = new_rho;
     result->pri_res = pri_res;
     result->dual_res = dual_res;
+    result->pri_norm = max(Ax_norm, z_norm);
+    result->dual_norm = max(max(Px_norm, ATy_norm), q_norm);
 }

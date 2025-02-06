@@ -17,98 +17,81 @@ void solve_lqr(struct tiny_problem *problem, const struct tiny_params *params) {
 }
 
 
-void solve_admm(struct tiny_problem *problem,  struct tiny_params *params) {
-
-    // for (int i=NHORIZON-2; i>=0; i--) {
-    //     // problem->Qu.noalias() = params->cache.Bdyn.transpose().lazyProduct(problem->p.col(i+1));
-    //     // problem->Qu += problem->r.col(i);
-    //     // (problem->d.col(i)).noalias() = params->cache.Quu_inv.lazyProduct(problem->Qu);
-        
-    //     // (problem->d.col(i)).noalias() = params->cache.Quu_inv[problem->cache_level] * (params->cache.Bdyn[problem->cache_level].transpose() * problem->p.col(i+1) + problem->r.col(i));
-    //     // (problem->p.col(i)).noalias() = problem->q.col(i) + params->cache.AmBKt[problem->cache_level].lazyProduct(problem->p.col(i+1)) - (params->cache.Kinf[problem->cache_level].transpose()).lazyProduct(problem->r.col(i)) + params->cache.coeff_d2p[problem->cache_level] * problem->d.col(i);
-    //     std::cout << "Quu: " << params->cache.Quu_inv[problem->cache_level] << std::endl;
-    //     std::cout << "p: " << problem->p.col(i+1) << std::endl;
-    //     std::cout << "r: " << problem->r.col(i) << std:: endl;
-    //     // (problem->d.col(i)).noalias() = params->cache.Quu_inv[problem->cache_level] * (params->cache.Bdyn[problem->cache_level].transpose() * problem->p.col(i+1) + problem->r.col(i));
-    //     // (problem->p.col(i)).noalias() = problem->q.col(i) + params->cache.AmBKt[problem->cache_level].lazyProduct(problem->p.col(i+1)) - (params->cache.Kinf[problem->cache_level].transpose()).lazyProduct(problem->r.col(i)); // + params->cache.coeff_d2p * problem->d.col(i); // coeff_d2p always appears to be zeros
-    // }
+void solve_admm(struct tiny_problem *problem, struct tiny_params *params) {
     startTimestamp = micros();
-
+    
     problem->status = 0;
     problem->iter = 0;
 
-
-
+    // Initial updates
     forward_pass(problem, params);
     update_slack(problem, params);
     update_dual(problem, params);
     update_linear_cost(problem, params);
-    // std::cout << problem->r << std::endl;
-    // std::cout << problem->q << std::endl;
-    // std::cout << problem->p << std::endl;
-    for (int i=0; i<problem->max_iter; i++) {
-    // for (int i=0; i<1; i++) {
-    // while (usecTimestamp() + 300 < maxTime) {
 
-        // Solve linear system with Riccati and roll out to get new trajectory
+    // Track timing for main ADMM loop
+    uint32_t admm_start = micros();
+    
+    for (int i = 0; i < problem->max_iter; i++) {
         update_primal(problem, params);
-        // backward_pass_grad(problem, params);
-        // std::cout << problem->d << std::endl;
-        // std::cout << problem->p << std::endl;
-        // forward_pass(problem, params);
-        // std::cout << problem->u << std::endl;
-        // std::cout << problem->x << std::endl;
-
-        // Project slack variables into feasible domain
         update_slack(problem, params);
-
-        // Compute next iteration of dual variables
         update_dual(problem, params);
-
-        // Update linear control cost terms using reference trajectory, duals, and slack variables
         update_linear_cost(problem, params);
 
+        // Compute residuals
         problem->primal_residual_state = (problem->x - problem->vnew).cwiseAbs().maxCoeff();
-        problem->dual_residual_state = ((problem->v - problem->vnew).cwiseAbs().maxCoeff()) * params->cache.rho[problem->cache_level];
+        problem->dual_residual_state = (problem->v - problem->vnew).cwiseAbs().maxCoeff() 
+                                      * params->cache.rho[problem->cache_level];
         problem->primal_residual_input = (problem->u - problem->znew).cwiseAbs().maxCoeff();
-        problem->dual_residual_input = ((problem->z - problem->znew).cwiseAbs().maxCoeff()) * params->cache.rho[problem->cache_level];
+        problem->dual_residual_input = (problem->z - problem->znew).cwiseAbs().maxCoeff() 
+                                      * params->cache.rho[problem->cache_level];
 
-        // TODO: convert arrays of Eigen vectors into one Eigen matrix
-        // Save previous slack variables
         problem->v = problem->vnew;
         problem->z = problem->znew;
-
         problem->iter += 1;
 
-        // TODO: remove convergence check and just return when allotted runtime is up
-        // Check for convergence
-        if (problem->primal_residual_state < problem->abs_tol &&
-            problem->primal_residual_input < problem->abs_tol &&
-            problem->dual_residual_state < problem->abs_tol &&
-            problem->dual_residual_input < problem->abs_tol)
+        if ((problem->primal_residual_state < problem->abs_tol) &&
+            (problem->primal_residual_input < problem->abs_tol) &&
+            (problem->dual_residual_state < problem->abs_tol) &&
+            (problem->dual_residual_input < problem->abs_tol))
         {
             problem->status = 1;
             break;
         }
-
-        // TODO: add rho scaling
-        RhoBenchmarkResult result;
-        float pri_res = max(problem->primal_residual_state, problem->primal_residual_input);
-        float dual_res = max(problem->dual_residual_state, problem->dual_residual_input);
-        benchmark_rho_adaptation(pri_res, dual_res, &result);
-        
-        // Update rho in the solver
-        //params->cache.rho[problem->cache_level] = result.final_rho;
-
-
-
-
-        // std::cout << problem->primal_residual_state << std::endl;
-        // std::cout << problem->dual_residual_state << std::endl;
-        // std::cout << problem->primal_residual_input << std::endl;
-        // std::cout << problem->dual_residual_input << "\n" << std::endl;
     }
+    
+    uint32_t admm_time = micros() - admm_start;
+
+    // Optional rho adaptation timing
+    uint32_t rho_start = micros();
+    
+    if (params->rho_adapter.analytical_method) {
+        float pri_res = std::max(problem->primal_residual_state, problem->primal_residual_input);
+        float dual_res = std::max(problem->dual_residual_state, problem->dual_residual_input);
+
+        RhoBenchmarkResult result;
+        benchmark_rho_adaptation(
+            problem->x.data(),
+            problem->u.data(),
+            problem->v.data(),
+            pri_res,
+            dual_res,
+            &result,
+            &params->rho_adapter
+        );
+        
+        // Store timing results
+        result.time_us = micros() - rho_start;
+        
+        // Store the new rho for next iteration
+        params->cache.rho[problem->cache_level] = result.final_rho;
+    }
+    
     problem->solve_time = micros() - startTimestamp;
+    
+    // Store detailed timing info in the problem struct
+    problem->admm_time = admm_time;
+    problem->rho_time = params->rho_adapter.analytical_method ? (micros() - rho_start) : 0;
 }
 
 /**

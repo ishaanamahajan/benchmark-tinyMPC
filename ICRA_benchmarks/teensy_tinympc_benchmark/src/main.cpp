@@ -8,23 +8,90 @@ void setup() {
     Serial.begin(115200);
     while(!Serial) { ; }
     
-    Serial.println("Starting MPC Test");
+    Serial.println("Starting MPC Benchmark Test");
+    Serial.println("Trial,Method,SolveTime,ADMMTime,RhoTime,Iterations,FinalRho");
     
-    // Initialize problem
+    // Initialize problem & params
     tiny_problem problem;
     tiny_params params;
     
-    // Setup problem parameters
-    initialize_benchmark_cache();  // Initialize your matrices
+    // Initialize matrices once
+    initialize_benchmark_cache();
     
-    // Run solver with rho adaptation
-    solve_admm(&problem, &params);
+    // Set up the problem parameters
+    problem.abs_tol = 1e-2;  // Set reasonable tolerance
+    problem.max_iter = 100;   // Set max iterations
     
-    // Print results
-    Serial.print("Final rho: "); 
-    Serial.println(params.cache.rho[problem.cache_level]);
-    Serial.print("Time taken: ");
-    Serial.println(problem.solve_time);
+    // Set initial state
+    problem.x.setZero();
+    problem.x.col(0) << 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0;  // Some non-zero initial state
+    
+    // Initialize other variables
+    problem.u.setZero();
+    problem.v.setZero();
+    problem.z.setZero();
+    problem.g.setZero();
+    problem.y.setZero();
+    
+    const int NUM_TRIALS = 10;
+    
+    // First: Run trials with fixed rho
+    params.rho_adapter.analytical_method = false;
+    params.cache.rho[0] = 1.0;  // Set initial rho
+    params.cache.rho[1] = 1.0;
+    
+    for(int i = 0; i < NUM_TRIALS; i++) {
+        // Reset problem for new trial
+        problem.x.setZero();
+        problem.x.col(0) << 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0;
+        problem.u.setZero();
+        problem.v.setZero();
+        problem.z.setZero();
+        problem.g.setZero();
+        problem.y.setZero();
+        
+        solve_admm(&problem, &params);
+        
+        Serial.print(i); Serial.print(",");
+        Serial.print("Fixed,");
+        Serial.print(problem.solve_time); Serial.print(",");
+        Serial.print(problem.admm_time); Serial.print(",");
+        Serial.print(problem.rho_time); Serial.print(",");
+        Serial.print(problem.iter); Serial.print(",");
+        Serial.println(params.cache.rho[problem.cache_level]);
+        
+        delay(100);
+    }
+    
+    // Reset rho for adaptive trials
+    params.rho_adapter.analytical_method = true;
+    params.cache.rho[0] = 1.0;
+    params.cache.rho[1] = 1.0;
+    
+    for(int i = 0; i < NUM_TRIALS; i++) {
+        // Reset problem for new trial
+        problem.x.setZero();
+        problem.x.col(0) << 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0;
+        problem.u.setZero();
+        problem.v.setZero();
+        problem.z.setZero();
+        problem.g.setZero();
+        problem.y.setZero();
+        
+        solve_admm(&problem, &params);
+        
+        Serial.print(i); Serial.print(",");
+        Serial.print("Adaptive,");
+        Serial.print(problem.solve_time); Serial.print(",");
+        Serial.print(problem.admm_time); Serial.print(",");
+        Serial.print(problem.rho_time); Serial.print(",");
+        Serial.print(problem.iter); Serial.print(",");
+        Serial.println(params.cache.rho[problem.cache_level]);
+        
+        delay(100);
+    }
+    
+    Serial.println("Benchmark Complete!");
 }
 
 void loop() {
