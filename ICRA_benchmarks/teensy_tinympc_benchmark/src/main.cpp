@@ -18,13 +18,23 @@ void setup() {
     // Initialize matrices once
     initialize_benchmark_cache();
     
+    // Set tolerance and max iterations
+    problem.abs_tol = 1e-3;
+    problem.max_iter = 100;
+    
     const int NUM_TRIALS = 10;  // Number of trials for each method
     
     // First: Run trials with fixed rho
     params.rho_adapter.analytical_method = false;
+    params.rho_adapter.rho_base = 85.0f;  // Changed to 85.0
+    params.cache.rho[0] = 85.0f;          // Changed to 85.0
+    params.cache.rho[1] = 85.0f;          // Changed to 85.0
+    
     for(int i = 0; i < NUM_TRIALS; i++) {
         // Reset problem for new trial
         problem = tiny_problem();  // Reset to default state
+        problem.abs_tol = 1e-2;    // Need to reset these after tiny_problem()
+        problem.max_iter = 500;
         
         // Solve
         solve_admm(&problem, &params);
@@ -43,6 +53,10 @@ void setup() {
     
     // Second: Run trials with adaptive rho
     params.rho_adapter.analytical_method = true;
+    params.rho_adapter.rho_base = 85.0f;  // Set initial rho for adaptive
+    params.cache.rho[0] = 85.0f;
+    params.cache.rho[1] = 85.0f;
+    
     for(int i = 0; i < NUM_TRIALS; i++) {
         // Reset problem for new trial
         problem = tiny_problem();  // Reset to default state
