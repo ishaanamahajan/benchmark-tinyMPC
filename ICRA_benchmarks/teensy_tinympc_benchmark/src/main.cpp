@@ -18,40 +18,18 @@ void setup() {
     // Initialize matrices once
     initialize_benchmark_cache();
     
-    // Set up the problem parameters
-    problem.abs_tol = 1e-2;  // Set reasonable tolerance
-    problem.max_iter = 100;   // Set max iterations
-    
-    // Set initial state
-    problem.x.setZero();
-    problem.x.col(0) << 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0;  // Some non-zero initial state
-    
-    // Initialize other variables
-    problem.u.setZero();
-    problem.v.setZero();
-    problem.z.setZero();
-    problem.g.setZero();
-    problem.y.setZero();
-    
-    const int NUM_TRIALS = 10;
+    const int NUM_TRIALS = 10;  // Number of trials for each method
     
     // First: Run trials with fixed rho
     params.rho_adapter.analytical_method = false;
-    params.cache.rho[0] = 1.0;  // Set initial rho
-    params.cache.rho[1] = 1.0;
-    
     for(int i = 0; i < NUM_TRIALS; i++) {
         // Reset problem for new trial
-        problem.x.setZero();
-        problem.x.col(0) << 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0;
-        problem.u.setZero();
-        problem.v.setZero();
-        problem.z.setZero();
-        problem.g.setZero();
-        problem.y.setZero();
+        problem = tiny_problem();  // Reset to default state
         
+        // Solve
         solve_admm(&problem, &params);
         
+        // Output results in CSV format
         Serial.print(i); Serial.print(",");
         Serial.print("Fixed,");
         Serial.print(problem.solve_time); Serial.print(",");
@@ -60,26 +38,19 @@ void setup() {
         Serial.print(problem.iter); Serial.print(",");
         Serial.println(params.cache.rho[problem.cache_level]);
         
-        delay(100);
+        delay(100);  // Small delay between trials
     }
     
-    // Reset rho for adaptive trials
+    // Second: Run trials with adaptive rho
     params.rho_adapter.analytical_method = true;
-    params.cache.rho[0] = 1.0;
-    params.cache.rho[1] = 1.0;
-    
     for(int i = 0; i < NUM_TRIALS; i++) {
         // Reset problem for new trial
-        problem.x.setZero();
-        problem.x.col(0) << 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0;
-        problem.u.setZero();
-        problem.v.setZero();
-        problem.z.setZero();
-        problem.g.setZero();
-        problem.y.setZero();
+        problem = tiny_problem();  // Reset to default state
         
+        // Solve
         solve_admm(&problem, &params);
         
+        // Output results in CSV format
         Serial.print(i); Serial.print(",");
         Serial.print("Adaptive,");
         Serial.print(problem.solve_time); Serial.print(",");
@@ -88,7 +59,7 @@ void setup() {
         Serial.print(problem.iter); Serial.print(",");
         Serial.println(params.cache.rho[problem.cache_level]);
         
-        delay(100);
+        delay(100);  // Small delay between trials
     }
     
     Serial.println("Benchmark Complete!");
