@@ -1,4 +1,5 @@
 #include "rho_benchmark.hpp"
+#include "mpc_matrices.hpp"
 #include <Arduino.h>
 
 // These need to be non-const to match header
@@ -8,11 +9,7 @@ float C1[BENCH_NU][BENCH_NU];
 float C2[BENCH_NX][BENCH_NX];
 
 // These initialization arrays can stay const
-const float A_stacked[BENCH_NX + BENCH_NU][BENCH_NX + BENCH_NU] = {{0}}; // Fill with actual values
-const float q[BENCH_NX + BENCH_NU] = {0}; // Fill with actual values
-const float P[BENCH_NX + BENCH_NU][BENCH_NX + BENCH_NU] = {{0}}; // Fill with actual values
-
-const float PINF_INIT[12][12] = {
+float PINF_INIT[12][12] = {
     {74092.187704f, -73.167319f, 0.000000f, 198.053342f, 78082.549386f, 1717.656003f, 26348.957464f, -44.979013f, 0.000000f, 7.184539f, 399.820082f, 213.830097f},
     {-73.167319f, 73964.909547f, -0.000000f, -77730.404405f, -197.999696f, -686.738633f, -44.969404f, 26269.155532f, -0.000000f, -387.712050f, -7.186499f, -85.452259f},
     {0.000000f, -0.000000f, 44963.622514f, 0.000000f, 0.000000f, 0.000000f, 0.000000f, -0.000000f, 6235.729084f, 0.000000f, 0.000000f, 0.000000f},
@@ -26,13 +23,13 @@ const float PINF_INIT[12][12] = {
     {399.820082f, -7.186499f, 0.000000f, 49.618732f, 1600.826569f, 870.953406f, 283.309542f, -6.160959f, 0.000000f, 6.126061f, 197.178200f, 231.262934f},
     {213.830097f, -85.452259f, 0.000000f, 687.275807f, 1718.550470f, 14433.220501f, 196.304757f, -78.483363f, 0.000000f, 92.499883f, 231.262934f, 3894.405009f},
 };
-const float C1_INIT[4][4] = {
+float C1_INIT[4][4] = {
     {0.001228f, 0.000008f, 0.001186f, 0.000009f},
     {0.000008f, 0.001223f, 0.000011f, 0.001189f},
     {0.001186f, 0.000011f, 0.001222f, 0.000013f},
     {0.000009f, 0.001189f, 0.000013f, 0.001220f},
 };
-const float C2_INIT[12][12] = {
+float C2_INIT[12][12] = {
     {0.999988f, -0.000000f, 0.000000f, 0.000021f, -0.019007f, 0.001094f, -0.002486f, -0.000003f, 0.000000f, 0.004264f, -3.801469f, 0.218865f},
     {-0.000000f, 0.999988f, -0.000000f, 0.019009f, -0.000021f, -0.000437f, -0.000003f, -0.002486f, -0.000000f, 3.801852f, -0.004220f, -0.087345f},
     {-0.000000f, -0.000000f, 0.995404f, 0.000000f, -0.000000f, 0.000000f, -0.000000f, -0.000000f, -0.459639f, 0.000000f, -0.000000f, 0.000000f},
@@ -192,19 +189,19 @@ void benchmark_rho_adaptation(
     float z_norm = compute_max_norm(z_k, BENCH_NX);
     float Px_norm = 0.0f;
     float ATy_norm = 0.0f;
-    float q_norm = compute_max_norm(q, BENCH_NX + BENCH_NU);
+    float q_norm = compute_max_norm(Q_DATA, BENCH_NX + BENCH_NU);
     
     // Compute A_stacked @ x_k
     float* temp = new float[BENCH_NX + BENCH_NU];
-    matrix_multiply((float*)A_stacked, y_k, temp, BENCH_NX + BENCH_NU, BENCH_NX + BENCH_NU, 1);
+    matrix_multiply((float*)A_STACKED_DATA, y_k, temp, BENCH_NX + BENCH_NU, BENCH_NX + BENCH_NU, 1);
     Ax_norm = compute_max_norm(temp, BENCH_NX + BENCH_NU);
     
     // Compute P @ x_k
-    matrix_multiply((float*)P, y_k, temp, BENCH_NX + BENCH_NU, BENCH_NX + BENCH_NU, 1);
+    matrix_multiply((float*)P_DATA, y_k, temp, BENCH_NX + BENCH_NU, BENCH_NX + BENCH_NU, 1);
     Px_norm = compute_max_norm(temp, BENCH_NX + BENCH_NU);
     
     // Compute A_stacked.T @ y_k
-    matrix_multiply_transpose((float*)A_stacked, y_k, temp, BENCH_NX + BENCH_NU, BENCH_NX + BENCH_NU, 1);
+    matrix_multiply_transpose((float*)A_STACKED_DATA, y_k, temp, BENCH_NX + BENCH_NU, BENCH_NX + BENCH_NU, 1);
     ATy_norm = compute_max_norm(temp, BENCH_NX + BENCH_NU);
     
     delete[] temp;
