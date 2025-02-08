@@ -40,12 +40,19 @@ def generate_mpc_data():
     # Cost matrices
     Q = np.diag(np.random.uniform(0, 10, nx))
     R = 0.1 * np.eye(nu)
+
+    mass = 0.035  # kg
+    g = 9.81      # m/s^2
+    scale = 65535
+    kt = 2.245365e-6 * scale
+    hover_thrust = (mass * g / kt / 4)
     
     # Constraints
-    umax = 3 * np.ones((nu, 1))
-    umin = -3 * np.ones((nu, 1))
-    xmax = 10000 * np.ones((nx, 1))
-    xmin = -10000 * np.ones((nx, 1))
+    umax = (1.0 - hover_thrust) * np.ones((nu, 1))
+    umin = (-hover_thrust) * np.ones((nu, 1))
+    xmax = 1000 * np.ones((nx, 1))
+    xmin = -1000 * np.ones((nx, 1))
+    
     
     # Reference trajectory
     xbar = np.zeros((Nsim, nx))
