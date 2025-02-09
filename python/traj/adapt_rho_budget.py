@@ -133,7 +133,7 @@ class RhoAdapter:
         self.rho_base = 1.0   # Start lower
         self.tolerance = 1.1  # Slightly larger steps
         self.rho_min = 1.0
-        self.rho_max = 10000.0
+        self.rho_max = 100.0
     
 
 
@@ -662,7 +662,7 @@ class TinyMPC:
             u_ref = np.zeros(u.shape)
 
 
-        iteration_budget = 10
+        iteration_budget = 15
 
 
         for k in range(iteration_budget):
@@ -886,16 +886,6 @@ def visualize_trajectory(x_all, u_all):
     final_ref_x = A * np.sin(w*final_t)
     final_ref_z = A * np.sin(2*w*final_t)/2
     
-    # Print statistics
-    print("\nTrajectory Statistics:")
-    print(f"Final position error: {np.linalg.norm([x_all[-1,0] - final_ref_x, x_all[-1,2] - final_ref_z]):.4f} m")
-    
-    # Calculate average error over trajectory
-    avg_error = np.mean([np.linalg.norm([x_all[i,0] - A*np.sin(w*t[i]), 
-                                        x_all[i,2] - A*np.sin(2*w*t[i])/2]) 
-                        for i in range(len(t))])
-    print(f"Average position error: {avg_error:.4f} m")
-    print(f"Average control effort: {np.mean(np.linalg.norm(u_all - uhover.reshape(1,-1), axis=1)):.4f}")
 
 if __name__ == "__main__":
     # Clear the rho file at start of simulation
@@ -925,7 +915,7 @@ if __name__ == "__main__":
 
     # Modify MPC parameters for better tracking
     N = 25  # horizon length
-    rho = 1.0 # initial rho (Julia starts at 5 and multiplies by 5)
+    rho = 5.0 # initial rho (Julia starts at 5 and multiplies by 5)
     
     # Much tighter weights for better tracking
     max_dev_x = np.array([
@@ -1009,6 +999,9 @@ if __name__ == "__main__":
     visualize_trajectory(x_all, u_all)
 
     #np.savetxt('data/iterations_traj_adapt_OSQP.txt', iterations)
+
+    np.savetxt('data/iterations/adapt_traj.txt', iterations)
+    np.savetxt('data/rho_vals/adapt_traj.txt', rho_vals)
 
     plt.figure(figsize=(10, 8))
     plt.subplot(211)

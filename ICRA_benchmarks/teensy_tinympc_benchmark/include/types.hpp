@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Eigen.h>
+#include <Eigen/LU>
 #include "constants.hpp"
 #include "Arduino.h"
 #include "rho_benchmark.hpp"
@@ -144,6 +145,7 @@ struct tiny_problem {
     uint32_t solve_time;          // Total solve time
     uint32_t admm_time;           // ADMM iteration time
     uint32_t rho_time;           // Rho adaptation time
+    int solve_count = 0;  // Add this line
 
     tiny_problem() :
         primal_residual_state(0),

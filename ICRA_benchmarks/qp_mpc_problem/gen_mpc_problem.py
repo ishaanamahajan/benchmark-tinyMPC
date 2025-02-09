@@ -126,7 +126,7 @@ def export_data_to_cpp(xbar, A, B, Q, Pinf, R, Kinf, Quu_inv, AmBKt,
         # Cache terms
         f.write(f"const PROGMEM tinytype rho_value = {rho};\n\n")
         write_matrix(f, "Kinf_data", Kinf)
-        write_matrix(f, "Pinf_data", Pinf)
+        write_matrix(f, "Pinf_data", Pinf) 
         write_matrix(f, "Quu_inv_data", Quu_inv)
         write_matrix(f, "AmBKt_data", AmBKt)
     

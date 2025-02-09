@@ -9,13 +9,13 @@ def plot_comparison(mode):
     iteration_files = {
         'normal': f"{base_path}iterations/normal_{mode}.txt",
         'adapt': f"{base_path}iterations/adapt_{mode}.txt",
-        'normal_wind': f"{base_path}iterations/normal_{mode}_wind.txt", 
-        'adapt_wind': f"{base_path}iterations/adapt_{mode}_wind.txt"
+        # 'normal_wind': f"{base_path}iterations/normal_{mode}_wind.txt", 
+        # 'adapt_wind': f"{base_path}iterations/adapt_{mode}_wind.txt"
     }
 
     rho_files = {
         'adapt': f"{base_path}rho_vals/adapt_{mode}.txt",
-        'adapt_wind': f"{base_path}rho_vals/adapt_{mode}_wind.txt"
+        #'adapt_wind': f"{base_path}rho_vals/adapt_{mode}_wind.txt"
     }
 
     # Initialize data storage

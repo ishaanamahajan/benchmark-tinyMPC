@@ -4,6 +4,8 @@
 
 #include "rho_benchmark.hpp"
 
+#include "problem_data/rand_prob_tinympc_params.hpp"
+
 #define DEBUG_MODULE "TINYALG"
 
 extern "C" {
@@ -18,19 +20,26 @@ void solve_lqr(struct tiny_problem *problem, const struct tiny_params *params) {
 
 
 void solve_admm(struct tiny_problem *problem, struct tiny_params *params) {
-    Serial.println("\n=== Starting solve_admm ===");
+    // Initialize dual variables to zero only on first solve
+    if (problem->solve_count == 0) {
+        problem->y.setZero();
+        problem->g.setZero();
+    }
+    problem->solve_count++;
+    
+    //Serial.println("\n=== Starting solve_admm ===");
     
     // Print key parameters
-    Serial.print("Tolerances at solve - pri_tol: ");
-    Serial.print(params->abs_pri_tol, 8);
-    Serial.print(", dua_tol: ");
-    Serial.println(params->abs_dua_tol, 8);
+    // Serial.print("Tolerances at solve - pri_tol: ");
+    // Serial.print(params->abs_pri_tol, 8);
+    // Serial.print(", dua_tol: ");
+    // Serial.println(params->abs_dua_tol, 8);
     
-    // Print norms of key matrices
-    Serial.print("State norm: "); Serial.println(problem->x.norm());
-    Serial.print("Input norm: "); Serial.println(problem->u.norm());
-    Serial.print("Q norm: "); Serial.println(params->Q[0].norm());
-    Serial.print("Xref norm: "); Serial.println(params->Xref.norm());
+    // // Print norms of key matrices
+    // Serial.print("State norm: "); Serial.println(problem->x.norm());
+    // Serial.print("Input norm: "); Serial.println(problem->u.norm());
+    // Serial.print("Q norm: "); Serial.println(params->Q[0].norm());
+    // Serial.print("Xref norm: "); Serial.println(params->Xref.norm());
     
     startTimestamp = micros();
     
@@ -51,10 +60,10 @@ void solve_admm(struct tiny_problem *problem, struct tiny_params *params) {
     uint32_t admm_start = micros();
     
     // Debug print initial values
-    Serial.println("\nInitial values:");
-    Serial.print("max_iter: "); Serial.println(params->max_iter);
-    Serial.print("abs_pri_tol: "); Serial.println(params->abs_pri_tol);
-    Serial.print("abs_dua_tol: "); Serial.println(params->abs_dua_tol);
+    // Serial.println("\nInitial values:");
+    // Serial.print("max_iter: "); Serial.println(params->max_iter);
+    // Serial.print("abs_pri_tol: "); Serial.println(params->abs_pri_tol);
+    // Serial.print("abs_dua_tol: "); Serial.println(params->abs_dua_tol);
     
     // Calculate initial residuals
     problem->primal_residual_input = (problem->u - problem->znew).cwiseAbs().maxCoeff();
@@ -62,11 +71,11 @@ void solve_admm(struct tiny_problem *problem, struct tiny_params *params) {
     problem->dual_residual_input = (params->cache.rho[problem->cache_level] * (z_prev - problem->znew)).cwiseAbs().maxCoeff();
     problem->dual_residual_state = (params->cache.rho[problem->cache_level] * (v_prev - problem->vnew)).cwiseAbs().maxCoeff();
 
-    Serial.println("Initial residuals:");
-    Serial.print("pri_in: "); Serial.println(problem->primal_residual_input);
-    Serial.print("pri_st: "); Serial.println(problem->primal_residual_state);
-    Serial.print("dua_in: "); Serial.println(problem->dual_residual_input);
-    Serial.print("dua_st: "); Serial.println(problem->dual_residual_state);
+    // Serial.println("Initial residuals:");
+    // Serial.print("pri_in: "); Serial.println(problem->primal_residual_input);
+    // Serial.print("pri_st: "); Serial.println(problem->primal_residual_state);
+    // Serial.print("dua_in: "); Serial.println(problem->dual_residual_input);
+    // Serial.print("dua_st: "); Serial.println(problem->dual_residual_state);
     
     for (int i = 0; i < params->max_iter; i++) {
         update_primal(problem, params);
@@ -80,12 +89,24 @@ void solve_admm(struct tiny_problem *problem, struct tiny_params *params) {
         problem->dual_residual_input = (params->cache.rho[problem->cache_level] * (z_prev - problem->znew)).cwiseAbs().maxCoeff();
         problem->dual_residual_state = (params->cache.rho[problem->cache_level] * (v_prev - problem->vnew)).cwiseAbs().maxCoeff();
 
-        if (i % 100 == 0) {  // Print every 100 iterations
-            Serial.print("Iter "); Serial.print(i);
-            Serial.print(" Residuals - pri_in: "); Serial.print(problem->primal_residual_input);
-            Serial.print(" pri_st: "); Serial.print(problem->primal_residual_state);
-            Serial.print(" dua_in: "); Serial.print(problem->dual_residual_input);
-            Serial.print(" dua_st: "); Serial.println(problem->dual_residual_state);
+        // Print every 50 iterations
+        if (problem->iter % 50 == 0) {
+            Serial.print("Iter "); Serial.print(problem->iter);
+            Serial.print(" pri_in: "); Serial.print(problem->primal_residual_input, 6);
+            Serial.print(" pri_st: "); Serial.print(problem->primal_residual_state, 6);
+            Serial.print(" dua_in: "); Serial.print(problem->dual_residual_input, 6);
+            Serial.print(" dua_st: "); Serial.println(problem->dual_residual_state, 6);
+        }
+
+        // Check convergence with more detailed output
+        if (problem->primal_residual_input < params->abs_pri_tol && 
+            problem->primal_residual_state < params->abs_pri_tol &&
+            problem->dual_residual_input < params->abs_dua_tol && 
+            problem->dual_residual_state < params->abs_dua_tol) {
+            
+            //Serial.println("Converged!");
+            problem->status = 1;  // Converged
+            break;
         }
 
         // Update previous values
@@ -96,17 +117,6 @@ void solve_admm(struct tiny_problem *problem, struct tiny_params *params) {
         problem->z = problem->znew;
         
         problem->iter += 1;
-
-        // Check convergence using stored residuals
-        if ((problem->primal_residual_input < params->abs_pri_tol) && 
-            (problem->primal_residual_state < params->abs_pri_tol) &&
-            (problem->dual_residual_input < params->abs_dua_tol) && 
-            (problem->dual_residual_state < params->abs_dua_tol))
-        {
-            Serial.println("Converged!");
-            problem->status = 1;
-            break;
-        }
     }
     
     // Only adapt rho after ADMM convergence
@@ -147,13 +157,15 @@ void update_primal(struct tiny_problem *problem, const struct tiny_params *param
 */
 void backward_pass_grad(struct tiny_problem *problem, const struct tiny_params *params) {
     for (int i=NHORIZON-2; i>=0; i--) {
-        // Match Python's computation exactly
-        (problem->d.col(i)).noalias() = params->cache.Quu_inv[problem->cache_level] * 
-            (params->cache.Bdyn[problem->cache_level].transpose() * problem->p.col(i+1) + problem->r.col(i));
+        // d[:, k] = C1 @ (B.T @ p[:, k+1] + r[:, k])
+        auto temp = params->cache.Bdyn[problem->cache_level].transpose() * problem->p.col(i+1) + 
+                   problem->r.col(i);
+        problem->d.col(i).noalias() = params->cache.Quu_inv[problem->cache_level] * temp;
         
-        (problem->p.col(i)).noalias() = problem->q.col(i) + 
-            params->cache.AmBKt[problem->cache_level] * problem->p.col(i+1) - 
-            params->cache.Kinf[problem->cache_level].transpose() * problem->r.col(i);
+        // p[:, k] = q[:, k] + C2 @ p[:, k+1] - Kinf.T @ r[:, k]
+        problem->p.col(i).noalias() = problem->q.col(i) + 
+                                     params->cache.AmBKt[problem->cache_level] * problem->p.col(i+1) - 
+                                     params->cache.Kinf[problem->cache_level].transpose() * problem->r.col(i);
     }
 }
 
@@ -161,13 +173,37 @@ void backward_pass_grad(struct tiny_problem *problem, const struct tiny_params *
  * Use LQR feedback policy to roll out trajectory
 */
 void forward_pass(struct tiny_problem *problem, const struct tiny_params *params) {
-    for (int i=0; i<NHORIZON-1; i++) {
-        (problem->u.col(i)).noalias() = -params->cache.Kinf[problem->cache_level].lazyProduct(problem->x.col(i)) - problem->d.col(i);
-        // problem->u.col(i) << .001, .02, .3, 4;
-        // DEBUG_PRINT("u(0): %f\n", problem->u.col(0)(0));
-        // multAdyn(problem->Ax, params->cache.Adyn[problem->cache_level], problem->x.col(i));
-        (problem->x.col(i+1)).noalias() = params->cache.Adyn[problem->cache_level].lazyProduct(problem->x.col(i)) + params->cache.Bdyn[problem->cache_level].lazyProduct(problem->u.col(i));
-        // (problem->x.col(i+1)).noalias() = params->cache.Adyn.lazyProduct(problem->x.col(i)) + params->cache.Bdyn.lazyProduct(problem->u.col(i));
+    // Serial.println("\n=== Forward Pass ===");
+    
+    // // Debug K matrix first
+    // Serial.println("K matrix (first row):");
+    for(int j = 0; j < NSTATES; j++) {
+        // Serial.print(params->cache.Kinf[problem->cache_level](0,j), 6);
+        // Serial.print(" ");
+    }
+   
+    
+    for (int k = 0; k < NHORIZON-1; k++) {
+        // 1. Print state and reference
+        // Serial.print("k="); Serial.print(k);
+        // Serial.print(" x:"); Serial.print(problem->x.col(k)(0), 6);
+        // Serial.print(" xref:"); Serial.print(params->Xref.col(k)(0), 6);
+        
+        // 2. Compute and print control components
+        auto state_error = problem->x.col(k) - params->Xref.col(k);
+        auto feedback = -params->cache.Kinf[problem->cache_level] * state_error;
+        auto feedforward = -problem->d.col(k);
+        
+        // Serial.print(" fb:"); Serial.print(feedback(0), 6);
+        // Serial.print(" ff:"); Serial.print(feedforward(0), 6);
+        
+        // 3. Update control and state
+        problem->u.col(k) = feedback + feedforward;
+        problem->x.col(k+1) = params->cache.Adyn[problem->cache_level] * problem->x.col(k) + 
+                             params->cache.Bdyn[problem->cache_level] * problem->u.col(k);
+        
+        // Serial.print(" u:"); Serial.print(problem->u.col(k)(0), 6);
+        // Serial.print(" next_x:"); Serial.println(problem->x.col(k+1)(0), 6);
     }
 }
 
@@ -178,45 +214,42 @@ void forward_pass(struct tiny_problem *problem, const struct tiny_params *params
  * projection function
 */
 void update_slack(struct tiny_problem *problem, const struct tiny_params *params) {
-    // Box constraints on input
-    // Get current time
-
-    problem->znew = params->u_max.cwiseMin(params->u_min.cwiseMax(problem->u + problem->y));
-    problem->vnew = params->x_max.cwiseMin(params->x_min.cwiseMax(problem->x + problem->g));
-
-    // Half space constraints on state
-    // TODO: support multiple half plane constraints per knot point
-    //      currently this only works for one constraint per knot point
-    // TODO: can potentially take advantage of the fact that A_constraints[3:end] is zero and just do
-    //      v.col(i) = x.col(i) - dist*A_constraints[i] since we have to copy x[3:end] into v anyway
-    //      downside is it's not clear this is happening externally and so values of A_constraints
-    //      not set to zero (other than the first three) can cause the algorithm to fail
-    // TODO: the only state values changing here are the first three (x, y, z) so it doesn't make sense
-    //      to do operations on the remaining 9 when projecting (or doing anything related to the dual
-    //      or auxiliary variables). v and g could be of size (3) and everything would work the same.
-    //      The only reason this doesn't break is because in the update_linear_cost function subtracts
-    //      g from v and so the last nine entries are always zero.
-    // problem->xg = problem->x + problem->g;
-    // problem->dists = (params->A_constraints.transpose().cwiseProduct(problem->xg)).colwise().sum();
-    // problem->dists -= params->x_max;
-    // // startTimestamp = usecTimestamp();
-    // problem->cache_level = 0;
-    // for (int i=0; i<NHORIZON; i++) {
-    //     problem->dist = (params->A_constraints[i].head(3)).lazyProduct(problem->xg.col(i).head(3)); // Distances can be computed in one step outside the for loop
-    //     problem->dist -= params->x_max[i](0);
-    //     problem->xyz_news.col(i) = problem->xg.col(i).head(3) - problem->dist*params->A_constraints[i].head(3).transpose();
-    //     // DEBUG_PRINT("dist: %f\n", dist);
-    //     if (problem->dist <= 0) {
-    //         problem->vnew.col(i) = problem->xg.col(i);
-    //     }
-    //     else {
-    //         problem->cache_level = 1; // Constraint violated, use second cache level
-    //         problem->xyz_new = problem->xg.col(i).head(3) - problem->dist*params->A_constraints[i].head(3).transpose();
-    //         problem->vnew.col(i) << problem->xyz_new, problem->xg.col(i).tail(NSTATES-3);
-    //     }
-    // }
-    // problem->vnew = problem->xg;
-    // DEBUG_PRINT("s: %d\n", usecTimestamp() - startTimestamp);
+    //Serial.println("\n=== Slack Update ===");
+    
+    for (int k = 0; k < NHORIZON-1; k++) {
+        // Input bounds - use vectors directly
+        auto temp_z = problem->u.col(k) + problem->y.col(k);
+        for (int i = 0; i < NINPUTS; i++) {
+            problem->znew(i,k) = std::min(std::max(temp_z(i), params->u_min(i)), params->u_max(i));
+        }
+        
+        // State bounds - use vectors directly
+        auto temp_v = problem->x.col(k) + problem->g.col(k);
+        for (int i = 0; i < NSTATES; i++) {
+            problem->vnew(i,k) = std::min(std::max(temp_v(i), params->x_min(i)), params->x_max(i));
+        }
+        
+        // Debug output for first iteration
+        if (k == 0) {
+            // Serial.println("Before update (k=0):");
+            // Serial.print("u: "); Serial.print(problem->u.col(0).norm());
+            // Serial.print(" y: "); Serial.print(problem->y.col(0).norm());
+            // Serial.print(" x: "); Serial.print(problem->x.col(0).norm());
+            // Serial.print(" g: "); Serial.println(problem->g.col(0).norm());
+            
+            // Serial.println("After update (k=0):");
+            // Serial.print("temp_z: "); Serial.print(temp_z.norm());
+            // Serial.print(" znew: "); Serial.print(problem->znew.col(0).norm());
+            // Serial.print(" temp_v: "); Serial.print(temp_v.norm());
+            // Serial.print(" vnew: "); Serial.println(problem->vnew.col(0).norm());
+        }
+    }
+    
+    // Final state constraint
+    auto temp_v = problem->x.col(NHORIZON-1) + problem->g.col(NHORIZON-1);
+    for (int i = 0; i < NSTATES; i++) {
+        problem->vnew(i,NHORIZON-1) = std::min(std::max(temp_v(i), params->x_min(i)), params->x_max(i));
+    }
 }
 
 /**
@@ -224,8 +257,22 @@ void update_slack(struct tiny_problem *problem, const struct tiny_params *params
  * lagrangian multiplier update
 */
 void update_dual(struct tiny_problem *problem, const struct tiny_params *params) {
-    problem->y = problem->y + problem->u - problem->znew;
-    problem->g = problem->g + problem->x - problem->vnew;
+    // Store previous values for residual computation
+    tiny_MatrixNxNh v_prev = problem->v;
+    tiny_MatrixNuNhm1 z_prev = problem->z;
+    
+    // Regular dual updates
+    for (int k = 0; k < NHORIZON-1; k++) {
+        problem->y.col(k) += problem->u.col(k) - problem->znew.col(k);
+        problem->g.col(k) += problem->x.col(k) - problem->vnew.col(k);
+    }
+    problem->g.col(NHORIZON-1) += problem->x.col(NHORIZON-1) - problem->vnew.col(NHORIZON-1);
+    
+    // Update residuals
+    problem->primal_residual_input = (problem->u - problem->znew).cwiseAbs().maxCoeff();
+    problem->primal_residual_state = (problem->x - problem->vnew).cwiseAbs().maxCoeff();
+    problem->dual_residual_input = (params->cache.rho[problem->cache_level] * (z_prev - problem->znew)).cwiseAbs().maxCoeff();
+    problem->dual_residual_state = (params->cache.rho[problem->cache_level] * (v_prev - problem->vnew)).cwiseAbs().maxCoeff();
 }
 
 /**
@@ -256,6 +303,79 @@ void update_linear_cost(struct tiny_problem *problem, const struct tiny_params *
                                   params->Xref.col(NHORIZON-1));
     problem->p.col(NHORIZON-1) -= params->cache.rho[problem->cache_level] * 
                                  (problem->vnew.col(NHORIZON-1) - problem->g.col(NHORIZON-1));
+}
+
+void compute_cache_terms(struct tiny_params *params) {
+    Serial.println("\n=== Computing Cache Terms ===");
+    
+    // First, let's print the pre-computed K (from PROGMEM)
+    Serial.println("Pre-computed K (first row):");
+    for(int j = 0; j < NSTATES; j++) {
+        float k_val = pgm_read_float(&Kinf_data[j]);
+        Serial.print(k_val, 6); Serial.print(" ");
+    }
+    Serial.println();
+    
+    // Create augmented cost matrices
+    tiny_MatrixNxNx Q_rho;
+    tiny_MatrixNuNu R_rho;
+    Q_rho.setZero();
+    R_rho.setZero();
+    
+    // Load Q and R from PROGMEM
+    for(int i = 0; i < NSTATES; i++) {
+        Q_rho(i,i) = pgm_read_float(&Q_data[i]) + params->cache.rho[0];
+    }
+    for(int i = 0; i < NINPUTS; i++) {
+        R_rho(i,i) = pgm_read_float(&R_data[i]) + params->cache.rho[0];
+    }
+    
+    // DLQR iteration
+    tiny_MatrixNxNx P;
+    // Initialize P with pre-computed Pinf
+    for(int i = 0; i < NSTATES; i++) {
+        for(int j = 0; j < NSTATES; j++) {
+            P(i,j) = pgm_read_float(&Pinf_data[i*NSTATES + j]);
+        }
+    }
+    
+    tiny_MatrixNuNx BtP;
+    tiny_MatrixNuNu temp;
+    
+    // Single iteration to compute K and other cache terms
+    BtP = params->cache.Bdyn[0].transpose() * P;
+    temp = R_rho + BtP * params->cache.Bdyn[0];
+    
+    // Add small regularization
+    for(int j = 0; j < NINPUTS; j++) {
+        temp(j,j) += 1e-8f;
+    }
+    
+    // Compute and store all cache terms
+    params->cache.Quu_inv[0] = temp.lu().solve(tiny_MatrixNuNu::Identity());
+    params->cache.Kinf[0] = params->cache.Quu_inv[0] * BtP * params->cache.Adyn[0];
+    params->cache.AmBKt[0] = params->cache.Adyn[0] - params->cache.Bdyn[0] * params->cache.Kinf[0];
+    params->cache.Pinf[0] = P;  // Store pre-computed P
+    
+    // Print computed K for comparison
+    Serial.println("Computed K (first row):");
+    for(int j = 0; j < NSTATES; j++) {
+        Serial.print(params->cache.Kinf[0](0,j), 6); Serial.print(" ");
+    }
+    Serial.println();
+    
+    // Print difference norm
+    float diff_norm = 0;
+    for(int i = 0; i < NINPUTS; i++) {
+        for(int j = 0; j < NSTATES; j++) {
+            float k_precomputed = pgm_read_float(&Kinf_data[i*NSTATES + j]);
+            diff_norm += pow(k_precomputed - params->cache.Kinf[0](i,j), 2);
+        }
+    }
+    diff_norm = sqrt(diff_norm);
+    Serial.print("K matrix difference norm: "); Serial.println(diff_norm, 6);
+    
+    Serial.println("=== Cache Terms Complete ===\n");
 }
 
 

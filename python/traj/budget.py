@@ -284,7 +284,7 @@ class TinyMPC:
             u_ref = np.zeros(u.shape)
 
 
-        iteration_budget = 10
+        iteration_budget = 15
 
  
 
@@ -466,16 +466,7 @@ def visualize_trajectory(x_all, u_all):
     final_ref_x = A * np.sin(w*final_t)
     final_ref_z = A * np.sin(2*w*final_t)/2
     
-    # Print statistics
-    print("\nTrajectory Statistics:")
-    print(f"Final position error: {np.linalg.norm([x_all[-1,0] - final_ref_x, x_all[-1,2] - final_ref_z]):.4f} m")
-    
-    # Calculate average error over trajectory
-    avg_error = np.mean([np.linalg.norm([x_all[i,0] - A*np.sin(w*t[i]), 
-                                        x_all[i,2] - A*np.sin(2*w*t[i])/2]) 
-                        for i in range(len(t))])
-    print(f"Average position error: {avg_error:.4f} m")
-    print(f"Average control effort: {np.mean(np.linalg.norm(u_all - uhover.reshape(1,-1), axis=1)):.4f}")
+
 
 if __name__ == "__main__":
     # Clear the rho file at start of simulation

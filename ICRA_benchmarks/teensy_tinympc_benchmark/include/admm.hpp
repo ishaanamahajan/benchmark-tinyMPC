@@ -19,6 +19,8 @@ void update_slack(struct tiny_problem *problem, const struct tiny_params *params
 void update_dual(struct tiny_problem *problem, const struct tiny_params *params);
 void update_linear_cost(struct tiny_problem *problem, const struct tiny_params *params);
 
+void compute_cache_terms(struct tiny_params *params);
+
 #ifdef __cplusplus
 }
 #endif

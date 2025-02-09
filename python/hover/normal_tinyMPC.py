@@ -397,8 +397,8 @@ if __name__ == "__main__":
         
         for i in range(NSIM):
             u_curr, k = controller(x_curr, x_nom, u_nom)
-            u_curr_clipped = np.clip(u_curr, 0, 1)
-            x_curr = quad_dynamics_rk4(x_curr, u_curr_clipped)
+            #u_curr_clipped = np.clip(u_curr, 0, 1)
+            x_curr = quad_dynamics_rk4(x_curr, u_curr)
             x_curr = x_curr.reshape(x_curr.shape[0]).tolist()
             u_curr = u_curr.reshape(u_curr.shape[0]).tolist()
             x_all.append(x_curr)
