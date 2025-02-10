@@ -156,6 +156,13 @@ struct tiny_params {
     }
 };
 
+struct SolverTimings {
+    uint32_t init_time;
+    uint32_t admm_time;
+    uint32_t rho_time;
+    uint32_t total_time;
+};
+
 struct tiny_problem {
     // Problem state and inputs
     tiny_MatrixNxNh x;            // State trajectory
@@ -191,7 +198,12 @@ struct tiny_problem {
     uint32_t solve_time;          // Total solve time
     uint32_t admm_time;           // ADMM iteration time
     uint32_t rho_time;           // Rho adaptation time
+    uint32_t init_time;  // Add this field
     int solve_count = 0;  // Add this line
+
+    // Separate timing structs for each solver
+    SolverTimings fixed_timings;
+    SolverTimings adaptive_timings;
 
     tiny_problem() :
         primal_residual_state(0),
@@ -204,7 +216,8 @@ struct tiny_problem {
         abs_tol(1e-3f),
         solve_time(0),
         admm_time(0),
-        rho_time(0)
+        rho_time(0),
+        init_time(0)
     {
         Serial.println("=== tiny_problem constructor running! ===");
         

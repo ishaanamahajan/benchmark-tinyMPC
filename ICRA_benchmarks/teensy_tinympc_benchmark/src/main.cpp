@@ -68,7 +68,7 @@ void setup() {
     delay(2000);
     
     Serial.println("Starting MPC Benchmark Test");
-    Serial.println("Method,Trial,SolveTime,ADMMTime,RhoTime,Iterations,FinalRho");
+    Serial.println("Method,Trial,SolveTime,InitTime,ADMMTime,RhoTime,Iterations,FinalRho");
     
     // Initialize problem & params
     tiny_problem problem;
@@ -112,33 +112,53 @@ void setup() {
     
     // Test fixed rho for hover
     Serial.println("\n=== Hover with Fixed Rho ===");
+    // Reset everything
     problem.status = 0;
     problem.iter = 0;
+    problem.solve_count = 0;
+    problem.y.setZero();
+    problem.g.setZero();
+    problem.v.setZero();
+    problem.z.setZero();
+    problem.vnew.setZero();
+    problem.znew.setZero();
     solve_admm(&problem, &params);
     Serial.print("Fixed Hover,");
-    Serial.print("-1,");  // special trial number for hover
-    Serial.print(problem.solve_time);
+    Serial.print("-1,");
+    Serial.print(problem.fixed_timings.total_time);
     Serial.print(",");
-    Serial.print(problem.admm_time);
-    Serial.print(",0,");
+    Serial.print(problem.fixed_timings.init_time);
+    Serial.print(",");
+    Serial.print(problem.fixed_timings.admm_time);
+    Serial.print(",0,");  // No rho time for fixed
     Serial.print(problem.iter);
     Serial.print(",");
     Serial.println(params.rho);
     
     // Test adaptive rho for hover
     Serial.println("\n=== Hover with Adaptive Rho ===");
+    // Reset everything again
     problem.status = 0;
     problem.iter = 0;
+    problem.solve_count = 0;
+    problem.y.setZero();
+    problem.g.setZero();
+    problem.v.setZero();
+    problem.z.setZero();
+    problem.vnew.setZero();
+    problem.znew.setZero();
     params.rho = adapter.rho_base;
     params.compute_cache_terms();
     solve_admm_adaptive(&problem, &params, &adapter);
     Serial.print("Adaptive Hover,");
     Serial.print("-1,");
-    Serial.print(problem.solve_time);
+    Serial.print(problem.adaptive_timings.total_time);
     Serial.print(",");
-    Serial.print(problem.admm_time);
+    Serial.print(problem.adaptive_timings.init_time);
     Serial.print(",");
-    Serial.print(problem.rho_time);
+    Serial.print(problem.adaptive_timings.admm_time);
+    Serial.print(",");
+    Serial.print(problem.adaptive_timings.rho_time);
     Serial.print(",");
     Serial.print(problem.iter);
     Serial.print(",");
@@ -170,6 +190,8 @@ void setup() {
         Serial.print(i);
         Serial.print(",");
         Serial.print(problem.solve_time);
+        Serial.print(",");
+        Serial.print(problem.init_time);
         Serial.print(",");
         Serial.print(problem.admm_time);
         Serial.print(",");
@@ -216,6 +238,8 @@ void setup() {
         Serial.print(i);
         Serial.print(",");
         Serial.print(problem.solve_time);
+        Serial.print(",");
+        Serial.print(problem.init_time);
         Serial.print(",");
         Serial.print(problem.admm_time);
         Serial.print(",");

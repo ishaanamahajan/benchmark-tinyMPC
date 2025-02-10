@@ -26,7 +26,8 @@ void solve_lqr(struct tiny_problem *problem, const struct tiny_params *params) {
 
 
 void solve_admm(struct tiny_problem *problem, struct tiny_params *params) {
-    // Initialize ALL variables to zero on first solve
+    // Measure initialization
+    uint32_t init_start = micros();
     if (problem->solve_count == 0) {
         problem->y.setZero();
         problem->g.setZero();
@@ -36,12 +37,13 @@ void solve_admm(struct tiny_problem *problem, struct tiny_params *params) {
         problem->znew.setZero();
     }
     problem->solve_count++;
+    problem->fixed_timings.init_time = micros() - init_start;
     
     startTimestamp = micros();
     
     problem->status = 0;
     problem->iter = 0;
-    problem->rho_time = 0;
+    problem->fixed_timings.rho_time = 0;
 
     // Initial updates
     forward_pass(problem, params);
@@ -92,12 +94,14 @@ void solve_admm(struct tiny_problem *problem, struct tiny_params *params) {
         problem->iter++;
     }
     
-    problem->admm_time = micros() - admm_start;
-    problem->solve_time = micros() - startTimestamp;
+    problem->fixed_timings.admm_time = micros() - admm_start;
+    problem->fixed_timings.total_time = problem->fixed_timings.init_time + 
+                                      problem->fixed_timings.admm_time;
 }
 
 void solve_admm_adaptive(struct tiny_problem *problem, struct tiny_params *params, RhoAdapter *adapter) {
-    // Initialize like regular solve_admm
+    // Measure initialization
+    uint32_t init_start = micros();
     if (problem->solve_count == 0) {
         problem->y.setZero();
         problem->g.setZero();
@@ -107,12 +111,14 @@ void solve_admm_adaptive(struct tiny_problem *problem, struct tiny_params *param
         problem->znew.setZero();
     }
     problem->solve_count++;
+    problem->adaptive_timings.init_time = micros() - init_start;
+    
+    problem->adaptive_timings.rho_time = 0;  // Reset rho time
     
     startTimestamp = micros();
     
     problem->status = 0;
     problem->iter = 0;
-    problem->rho_time = 0;
 
     // Initial updates
     forward_pass(problem, params);
@@ -161,7 +167,7 @@ void solve_admm_adaptive(struct tiny_problem *problem, struct tiny_params *param
                 update_cache_taylor(params->rho, old_rho);
             }
             
-            problem->rho_time += micros() - rho_update_start;
+            problem->adaptive_timings.rho_time += micros() - rho_update_start;
         }
 
         z_prev = problem->znew;
@@ -185,8 +191,10 @@ void solve_admm_adaptive(struct tiny_problem *problem, struct tiny_params *param
         problem->iter++;
     }
     
-    problem->admm_time = micros() - admm_start;
-    problem->solve_time = micros() - startTimestamp;
+    problem->adaptive_timings.admm_time = micros() - admm_start;
+    problem->adaptive_timings.total_time = problem->adaptive_timings.init_time + 
+                                         problem->adaptive_timings.admm_time + 
+                                         problem->adaptive_timings.rho_time;
 }
 
 void update_primal(struct tiny_problem *problem, const struct tiny_params *params) {
