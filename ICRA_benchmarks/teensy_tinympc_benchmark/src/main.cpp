@@ -58,6 +58,11 @@ void print_stats(const char* method, SolverStats* stats) {
     Serial.println("Std Dev iterations: " + String(stats->std_iters));
 }
 
+// Add hover constants
+const float MASS = 0.035f;
+const float G = 9.81f;
+const float KT = 2.245365e-6f * 65535.0f;
+
 void setup() {
     Serial.begin(115200);
     delay(2000);
@@ -86,7 +91,62 @@ void setup() {
     SolverStats fixed_stats = {0};
     SolverStats adaptive_stats = {0};
     
-    // First run trials with fixed rho
+    // First do hover test
+    Serial.println("\n=== Starting Hover Tests ===");
+    
+    // Setup hover conditions
+    float hover_thrust = (MASS * G) / (4.0f * KT);
+    
+    problem.x.setZero();
+    problem.x.col(0) << 0.2f, 0.2f, -0.2f,  // position offset
+                        1.0f, 0.0f, 0.0f,    // roll offset
+                        0.0f, 0.0f, 0.0f,    // zero velocity
+                        0.0f, 0.0f, 0.0f;    // zero angular rates
+    
+    params.Xref.setZero();  // target hover state
+    params.Uref.setZero();
+    // Set hover thrust for all timesteps
+    for(int k = 0; k < NHORIZON-1; k++) {
+        params.Uref.col(k) << hover_thrust, hover_thrust, hover_thrust, hover_thrust;
+    }
+    
+    // Test fixed rho for hover
+    Serial.println("\n=== Hover with Fixed Rho ===");
+    problem.status = 0;
+    problem.iter = 0;
+    solve_admm(&problem, &params);
+    Serial.print("Fixed Hover,");
+    Serial.print("-1,");  // special trial number for hover
+    Serial.print(problem.solve_time);
+    Serial.print(",");
+    Serial.print(problem.admm_time);
+    Serial.print(",0,");
+    Serial.print(problem.iter);
+    Serial.print(",");
+    Serial.println(params.rho);
+    
+    // Test adaptive rho for hover
+    Serial.println("\n=== Hover with Adaptive Rho ===");
+    problem.status = 0;
+    problem.iter = 0;
+    params.rho = adapter.rho_base;
+    params.compute_cache_terms();
+    solve_admm_adaptive(&problem, &params, &adapter);
+    Serial.print("Adaptive Hover,");
+    Serial.print("-1,");
+    Serial.print(problem.solve_time);
+    Serial.print(",");
+    Serial.print(problem.admm_time);
+    Serial.print(",");
+    Serial.print(problem.rho_time);
+    Serial.print(",");
+    Serial.print(problem.iter);
+    Serial.print(",");
+    Serial.println(params.rho);
+    
+    delay(1000);
+    
+    // Then run trials with fixed rho
     for(int i = 0; i < NUM_TRIALS; i++) {
         Serial.println("\n=== Starting Fixed Rho Trial " + String(i) + " ===");
         
