@@ -22,91 +22,85 @@ typedef Matrix<tinytype, NSTATE_CONSTRAINTS, NSTATES> tiny_MatrixNcNx;
 typedef Matrix<tinytype, NSTATES, NHORIZON, Eigen::ColMajor> tiny_MatrixNxNh;
 typedef Matrix<tinytype, NINPUTS, NHORIZON-1, Eigen::ColMajor> tiny_MatrixNuNhm1;
 
-// Define structs outside extern "C"
-struct tiny_cache {
-    tiny_cache() {
-        rho[0] = 85.0f;
-        rho[1] = 85.0f;
-        
-        // Zero initialize all matrices
-        for (int i = 0; i < 2; i++) {
-            Adyn[i].setZero();
-            Bdyn[i].setZero();
-            Kinf[i].setZero();
-            Pinf[i].setZero();
-            Quu_inv[i].setZero();
-            AmBKt[i].setZero();
-            coeff_d2p[i].setZero();
-        }
-    }
-
-    tiny_MatrixNxNx Adyn[2];
-    tiny_MatrixNxNu Bdyn[2];
-    tinytype rho[2];
-    tiny_MatrixNuNx Kinf[2];
-    tiny_MatrixNxNx Pinf[2];
-    tiny_MatrixNuNu Quu_inv[2];
-    tiny_MatrixNxNx AmBKt[2];
-    tiny_MatrixNxNu coeff_d2p[2];
-};
-
 struct tiny_params {
-    static constexpr float DEFAULT_PRI_TOL = 1e-3f;
-    static constexpr float DEFAULT_DUA_TOL = 1e-3f;
+    static constexpr float DEFAULT_PRI_TOL = 1e-2f;  // Match Python's default
+    static constexpr float DEFAULT_DUA_TOL = 1e-2f;
     static constexpr int DEFAULT_MAX_ITER = 500;
     
+    // System matrices (loaded from rand_prob_tinympc_params.hpp)
+    tiny_MatrixNxNx A;            
+    tiny_MatrixNxNu B;            
+    
+    // Cost matrices (single matrices, not arrays)
+    tiny_MatrixNxNx Q;            
+    tiny_MatrixNuNu R;            
+    
+    // Reference trajectories
+    tiny_MatrixNxNh Xref;         
+    tiny_MatrixNuNhm1 Uref;       
+    
+    // Bounds (loaded from rand_prob_tinympc_params.hpp)
+    tiny_VectorNu u_min;
+    tiny_VectorNu u_max;
+    tiny_VectorNx x_min;
+    tiny_VectorNx x_max;
+    
+    // Cache terms (loaded from rand_prob_tinympc_params.hpp)
+    float rho;                    // Single fixed rho value
+    tiny_MatrixNuNx Kinf;         // Single feedback gain
+    tiny_MatrixNxNx Pinf;         // Single terminal cost
+    tiny_MatrixNuNu C1;           // Single Quu_inv
+    tiny_MatrixNxNx C2;           // Single AmBKt
+    
+    // Solver parameters
+    float abs_pri_tol;
+    float abs_dua_tol;
+    int max_iter;
+
     tiny_params() : 
+        rho(rho_value),           // Use the value from rand_prob_tinympc_params.hpp
         abs_pri_tol(DEFAULT_PRI_TOL),
         abs_dua_tol(DEFAULT_DUA_TOL),
         max_iter(DEFAULT_MAX_ITER)
     {
         Serial.println("=== tiny_params constructor running! ===");
         
-        // Zero initialize all matrices
-        u_min.setZero();
-        u_max.setZero();
-        x_min.setZero();
-        x_max.setZero();
+        // Load matrices from the header file
+        load_matrices_from_header();
         
-        // Set non-zero references and costs
-        Xref.setRandom();  // Random reference trajectory
-        Uref.setRandom();  // Random control inputs
-
-        for (int i = 0; i < 2; i++) {
-            Q[i].setConstant(1.0f);  // Unit state cost
-            Qf[i].setConstant(1.0f); // Unit terminal cost
-            R[i].setConstant(0.1f);  // Small input cost
-        }
-
-        // Print key values after initialization
-        Serial.print("Constructor values - pri_tol: ");
-        Serial.print(abs_pri_tol, 8);
-        Serial.print(", dua_tol: ");
-        Serial.println(abs_dua_tol, 8);
-        Serial.print("Xref norm: "); Serial.println(Xref.norm());
-        Serial.print("Q[0] norm: "); Serial.println(Q[0].norm());
-
-        for (int i = 0; i < NHORIZON; i++) {
-            A_constraints[i].setZero();
-        }
+        // Initialize reference trajectories
+        Xref.setZero();
+        Uref.setZero();
     }
 
-    // Member variables
-    tiny_VectorNx Q[2];           // State cost for each cache level
-    tiny_VectorNx Qf[2];          // Terminal state cost for each cache level
-    tiny_VectorNu R[2];           // Input cost for each cache level
-    tiny_MatrixNuNhm1 u_min;      // Input lower bounds
-    tiny_MatrixNuNhm1 u_max;      // Input upper bounds
-    tiny_MatrixNxNh x_min;        // State lower bounds
-    tiny_MatrixNxNh x_max;        // State upper bounds
-    tiny_MatrixNcNx A_constraints[NHORIZON];  // State constraint matrices
-    RhoAdapter rho_adapter;       // Rho adaptation parameters
-    tiny_MatrixNxNh Xref;         // Reference state trajectory
-    tiny_MatrixNuNhm1 Uref;       // Reference input trajectory
-    tiny_cache cache;             // Cached matrices
-    float abs_pri_tol;            // Absolute primal tolerance
-    float abs_dua_tol;            // Absolute dual tolerance
-    int max_iter;                 // Maximum iterations
+private:
+    void load_matrices_from_header() {
+        // Load system matrices
+        memcpy(A.data(), Adyn_data, sizeof(Adyn_data));
+        memcpy(B.data(), Bdyn_data, sizeof(Bdyn_data));
+        
+        // Load cost matrices as diagonal matrices
+        Q = tiny_MatrixNxNx::Zero();
+        R = tiny_MatrixNuNu::Zero();
+        for(int i = 0; i < NSTATES; i++) Q(i,i) = Q_data[i];
+        for(int i = 0; i < NINPUTS; i++) R(i,i) = R_data[i];
+        
+        // Load cache terms
+        memcpy(Kinf.data(), Kinf_data, sizeof(Kinf_data));
+        memcpy(Pinf.data(), Pinf_data, sizeof(Pinf_data));
+        memcpy(C1.data(), Quu_inv_data, sizeof(Quu_inv_data));
+        memcpy(C2.data(), AmBKt_data, sizeof(AmBKt_data));
+        
+        // Load bounds
+        for(int i = 0; i < NINPUTS; i++) {
+            u_min(i) = umin[i];
+            u_max(i) = umax[i];
+        }
+        for(int i = 0; i < NSTATES; i++) {
+            x_min(i) = xmin[i];
+            x_max(i) = xmax[i];
+        }
+    }
 };
 
 struct tiny_problem {
@@ -139,7 +133,6 @@ struct tiny_problem {
     int iter;                     // Current iteration count
     int max_iter;                 // Maximum iterations
     float abs_tol;               // Absolute tolerance
-    int cache_level;             // Current cache level (0 or 1)
     
     // Timing
     uint32_t solve_time;          // Total solve time
@@ -156,7 +149,6 @@ struct tiny_problem {
         iter(0),
         max_iter(500),
         abs_tol(1e-3f),
-        cache_level(0),
         solve_time(0),
         admm_time(0),
         rho_time(0)
