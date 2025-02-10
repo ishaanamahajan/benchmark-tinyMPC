@@ -206,15 +206,18 @@ void benchmark_rho_adaptation(
     
     delete[] temp;
     
-    // Compute scalings
-    float prim_scaling = pri_res / max(Ax_norm, z_norm);
-    float dual_scaling = dual_res / max(max(Px_norm, ATy_norm), q_norm);
-    
-    // Update rho using analytical method
-    float ratio = prim_scaling / dual_scaling;
-    ratio = min(max(ratio, 0.001f), 1.0f);
+    // Compute scalings with epsilon
+    const float eps = 1e-10f;
+    float pri_norm = max(Ax_norm, z_norm);
+    float dual_norm = max(max(Px_norm, ATy_norm), q_norm);
+
+    float normalized_pri = pri_res / (pri_norm + eps);
+    float normalized_dual = dual_res / (dual_norm + eps);
+    float ratio = normalized_pri / (normalized_dual + eps);
+
+    // Update rho using same formula as Python
     float new_rho = adapter->rho_base * sqrt(ratio);
-    
+
     // Apply clipping if enabled
     if (adapter->clip) {
         new_rho = min(max(new_rho, adapter->rho_min), adapter->rho_max);
@@ -229,6 +232,6 @@ void benchmark_rho_adaptation(
     result->final_rho = new_rho;
     result->pri_res = pri_res;
     result->dual_res = dual_res;
-    result->pri_norm = max(Ax_norm, z_norm);
-    result->dual_norm = max(max(Px_norm, ATy_norm), q_norm);
+    result->pri_norm = pri_norm;
+    result->dual_norm = dual_norm;
 }

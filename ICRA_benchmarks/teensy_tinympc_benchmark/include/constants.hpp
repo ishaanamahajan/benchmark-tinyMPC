@@ -1,4 +1,4 @@
-#define NSTATES 12
+#define NSTATES 10
 
 #define NINPUTS 4
 
