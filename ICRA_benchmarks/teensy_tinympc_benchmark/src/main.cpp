@@ -5,6 +5,59 @@
 #include "types.hpp"
 #include "rho_benchmark.hpp"
 
+// Add struct for collecting stats
+struct SolverStats {
+    float avg_solve_time;
+    float avg_admm_time;
+    float avg_rho_time;
+    float avg_iters;
+    float std_solve_time;
+    float std_iters;
+    
+    // Arrays to store raw data
+    float solve_times[5];
+    float admm_times[5];
+    float rho_times[5];
+    float iterations[5];
+};
+
+// Function to compute statistics
+void compute_stats(SolverStats* stats, int num_trials) {
+    // Compute averages
+    float sum_solve = 0, sum_admm = 0, sum_rho = 0, sum_iters = 0;
+    for(int i = 0; i < num_trials; i++) {
+        sum_solve += stats->solve_times[i];
+        sum_admm += stats->admm_times[i];
+        sum_rho += stats->rho_times[i];
+        sum_iters += stats->iterations[i];
+    }
+    
+    stats->avg_solve_time = sum_solve / num_trials;
+    stats->avg_admm_time = sum_admm / num_trials;
+    stats->avg_rho_time = sum_rho / num_trials;
+    stats->avg_iters = sum_iters / num_trials;
+    
+    // Compute standard deviations
+    float sum_sq_solve = 0, sum_sq_iters = 0;
+    for(int i = 0; i < num_trials; i++) {
+        sum_sq_solve += pow(stats->solve_times[i] - stats->avg_solve_time, 2);
+        sum_sq_iters += pow(stats->iterations[i] - stats->avg_iters, 2);
+    }
+    
+    stats->std_solve_time = sqrt(sum_sq_solve / num_trials);
+    stats->std_iters = sqrt(sum_sq_iters / num_trials);
+}
+
+void print_stats(const char* method, SolverStats* stats) {
+    Serial.println("\n=== " + String(method) + " Statistics ===");
+    Serial.println("Average solve time: " + String(stats->avg_solve_time) + " µs");
+    Serial.println("Average ADMM time: " + String(stats->avg_admm_time) + " µs");
+    Serial.println("Average rho time: " + String(stats->avg_rho_time) + " µs");
+    Serial.println("Average iterations: " + String(stats->avg_iters));
+    Serial.println("Std Dev solve time: " + String(stats->std_solve_time) + " µs");
+    Serial.println("Std Dev iterations: " + String(stats->std_iters));
+}
+
 void setup() {
     Serial.begin(115200);
     delay(2000);
@@ -30,6 +83,8 @@ void setup() {
     adapter.clip = true;
     
     const int NUM_TRIALS = 5;
+    SolverStats fixed_stats = {0};
+    SolverStats adaptive_stats = {0};
     
     // First run trials with fixed rho
     for(int i = 0; i < NUM_TRIALS; i++) {
@@ -63,6 +118,12 @@ void setup() {
         Serial.print(problem.iter);
         Serial.print(",");
         Serial.println(params.rho);
+        
+        // Store stats
+        fixed_stats.solve_times[i] = problem.solve_time;
+        fixed_stats.admm_times[i] = problem.admm_time;
+        fixed_stats.rho_times[i] = problem.rho_time;
+        fixed_stats.iterations[i] = problem.iter;
         
         delay(500);
     }
@@ -104,8 +165,21 @@ void setup() {
         Serial.print(",");
         Serial.println(params.rho);
         
+        // Store stats
+        adaptive_stats.solve_times[i] = problem.solve_time;
+        adaptive_stats.admm_times[i] = problem.admm_time;
+        adaptive_stats.rho_times[i] = problem.rho_time;
+        adaptive_stats.iterations[i] = problem.iter;
+        
         delay(500);
     }
+    
+    // Compute and print statistics
+    compute_stats(&fixed_stats, NUM_TRIALS);
+    compute_stats(&adaptive_stats, NUM_TRIALS);
+    
+    print_stats("Fixed Rho", &fixed_stats);
+    print_stats("Adaptive Rho", &adaptive_stats);
     
     Serial.println("Benchmark Complete!");
 }
