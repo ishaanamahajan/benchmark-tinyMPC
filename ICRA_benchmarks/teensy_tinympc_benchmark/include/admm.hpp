@@ -1,6 +1,7 @@
 #pragma once
 
 #include "types.hpp"
+#include "rho_benchmark.hpp"
 
 // Move template functions before extern "C"
 template<typename VectorType>
@@ -21,6 +22,7 @@ extern "C" {
 // Main solver functions
 void solve_lqr(struct tiny_problem *problem, const struct tiny_params *params);
 void solve_admm(struct tiny_problem *problem, struct tiny_params *params);
+void solve_admm_adaptive(struct tiny_problem *problem, struct tiny_params *params, RhoAdapter *adapter);
 
 // ADMM helper functions
 void update_primal(struct tiny_problem *problem, const struct tiny_params *params);

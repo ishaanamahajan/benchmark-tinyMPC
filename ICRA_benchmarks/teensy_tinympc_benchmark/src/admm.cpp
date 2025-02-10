@@ -96,6 +96,99 @@ void solve_admm(struct tiny_problem *problem, struct tiny_params *params) {
     problem->solve_time = micros() - startTimestamp;
 }
 
+void solve_admm_adaptive(struct tiny_problem *problem, struct tiny_params *params, RhoAdapter *adapter) {
+    // Initialize like regular solve_admm
+    if (problem->solve_count == 0) {
+        problem->y.setZero();
+        problem->g.setZero();
+        problem->v.setZero();
+        problem->z.setZero();
+        problem->vnew.setZero();
+        problem->znew.setZero();
+    }
+    problem->solve_count++;
+    
+    startTimestamp = micros();
+    
+    problem->status = 0;
+    problem->iter = 0;
+    problem->rho_time = 0;
+
+    // Initial updates
+    forward_pass(problem, params);
+    update_slack(problem, params);
+    update_dual(problem, params);
+    update_linear_cost(problem, params);
+
+    tiny_MatrixNxNh v_prev = problem->vnew;
+    tiny_MatrixNuNhm1 z_prev = problem->znew;
+    
+    uint32_t admm_start = micros();
+    
+    // Rho adaptation variables
+    RhoBenchmarkResult rho_result;
+    
+    for (int iter = 0; iter < params->max_iter; iter++) {
+        update_primal(problem, params);
+        update_slack(problem, params);
+        update_dual(problem, params);
+        update_linear_cost(problem, params);
+
+        float pri_res_input = (problem->u - problem->znew).lpNorm<Eigen::Infinity>();
+        float pri_res_state = (problem->x - problem->vnew).lpNorm<Eigen::Infinity>();
+        float dua_res_input = params->rho * (problem->znew - z_prev).lpNorm<Eigen::Infinity>();
+        float dua_res_state = params->rho * (problem->vnew - v_prev).lpNorm<Eigen::Infinity>();
+
+        // Update rho every 10 iterations
+        if (iter % 10 == 0 && iter > 0) {
+            uint32_t rho_update_start = micros();
+            
+            // Call benchmark_rho_adaptation with current state
+            benchmark_rho_adaptation(
+                problem->x.col(0).data(),
+                problem->u.col(0).data(),
+                problem->vnew.col(0).data(),
+                max(pri_res_input, pri_res_state),
+                max(dua_res_input, dua_res_state),
+                &rho_result,
+                adapter
+            );
+            
+            // Update rho and cache terms using Taylor expansion
+            if (abs(rho_result.final_rho - params->rho) > adapter->tolerance) {
+                float old_rho = params->rho;
+                params->rho = rho_result.final_rho;
+                update_cache_taylor(params->rho, old_rho);
+            }
+            
+            problem->rho_time += micros() - rho_update_start;
+        }
+
+        z_prev = problem->znew;
+        v_prev = problem->vnew;
+
+        // Store residuals
+        problem->primal_residual_input = pri_res_input;
+        problem->primal_residual_state = pri_res_state;
+        problem->dual_residual_input = dua_res_input;
+        problem->dual_residual_state = dua_res_state;
+        
+        // Check convergence
+        if (pri_res_input <= params->abs_pri_tol && 
+            pri_res_state <= params->abs_pri_tol &&
+            dua_res_input <= params->abs_dua_tol && 
+            dua_res_state <= params->abs_dua_tol) {
+            problem->status = 1;
+            break;
+        }
+        
+        problem->iter++;
+    }
+    
+    problem->admm_time = micros() - admm_start;
+    problem->solve_time = micros() - startTimestamp;
+}
+
 void update_primal(struct tiny_problem *problem, const struct tiny_params *params) {
     backward_pass_grad(problem, params);
     forward_pass(problem, params);
