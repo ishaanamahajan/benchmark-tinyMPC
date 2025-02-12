@@ -32,3 +32,5 @@ Benchmarking solvers on microcontrollers (MCU), within TinyMPC project
 * MCU
   * STM32 (Adafruit feather board)
   * Teensy
+ 
+* Run 1000-10,000 experiments for benchmarking for random X and Us. 
