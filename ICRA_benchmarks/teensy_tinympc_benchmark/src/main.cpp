@@ -15,10 +15,10 @@ struct SolverStats {
     float std_iters;
     
     // Arrays to store raw data
-    float solve_times[5];
-    float admm_times[5];
-    float rho_times[5];
-    float iterations[5];
+    float solve_times[1000];
+    float admm_times[1000];
+    float rho_times[1000];
+    float iterations[1000];
 };
 
 // Function to compute statistics
@@ -87,7 +87,7 @@ void setup() {
     adapter.tolerance = 1.1f;
     adapter.clip = true;
     
-    const int NUM_TRIALS = 5;
+    const int NUM_TRIALS = 1000;
     SolverStats fixed_stats = {0};
     SolverStats adaptive_stats = {0};
     
@@ -168,6 +168,13 @@ void setup() {
     
     // Then run trials with fixed rho
     for(int i = 0; i < NUM_TRIALS; i++) {
+        // Maybe add a progress indicator every 100 trials
+        if(i % 100 == 0) {
+            Serial.print("Trial ");
+            Serial.print(i);
+            Serial.println(" of 1000");
+        }
+        
         Serial.println("\n=== Starting Fixed Rho Trial " + String(i) + " ===");
         
         // Reset problem
@@ -207,11 +214,18 @@ void setup() {
         fixed_stats.rho_times[i] = problem.rho_time;
         fixed_stats.iterations[i] = problem.iter;
         
-        delay(500);
+        delay(10);  // Maybe reduce delay between trials
     }
     
     // Then run trials with adaptive rho
     for(int i = 0; i < NUM_TRIALS; i++) {
+        // Maybe add a progress indicator every 100 trials
+        if(i % 100 == 0) {
+            Serial.print("Trial ");
+            Serial.print(i);
+            Serial.println(" of 1000");
+        }
+        
         Serial.println("\n=== Starting Adaptive Rho Trial " + String(i) + " ===");
         
         // Reset problem
@@ -255,7 +269,7 @@ void setup() {
         adaptive_stats.rho_times[i] = problem.rho_time;
         adaptive_stats.iterations[i] = problem.iter;
         
-        delay(500);
+        delay(10);  // Maybe reduce delay between trials
     }
     
     // Compute and print statistics
