@@ -67,8 +67,10 @@ void setup() {
     Serial.begin(115200);
     delay(2000);
     
-    Serial.println("Starting MPC Benchmark Test");
+    // Just output CSV header once
     Serial.println("Method,Trial,SolveTime,InitTime,ADMMTime,RhoTime,Iterations,FinalRho");
+    
+    Serial.println("Starting MPC Benchmark Test");
     
     // Initialize problem & params
     tiny_problem problem;
@@ -168,77 +170,62 @@ void setup() {
     
     // Then run trials with fixed rho
     for(int i = 0; i < NUM_TRIALS; i++) {
-        // Maybe add a progress indicator every 100 trials
-        if(i % 100 == 0) {
-            Serial.print("Trial ");
-            Serial.print(i);
-            Serial.println(" of 1000");
-        }
-        
-        Serial.println("\n=== Starting Fixed Rho Trial " + String(i) + " ===");
-        
         // Reset problem
         problem.status = 0;
         problem.iter = 0;
-        problem.solve_time = 0;
-        problem.admm_time = 0;
-        problem.rho_time = 0;
+        problem.solve_count = 0;
+        problem.y.setZero();
+        problem.g.setZero();
+        problem.v.setZero();
+        problem.z.setZero();
+        problem.vnew.setZero();
+        problem.znew.setZero();
         
-        // Set test conditions
+        // Random conditions
         problem.x.setZero();
-        problem.x.col(0) << 1.0f, 2.0f, 3.0f, 4.0f;
-        problem.u.setRandom();
+        problem.x.col(0).setRandom();  // Random initial state
         params.Xref.setRandom();
         params.Uref.setRandom();
         
         solve_admm(&problem, &params);
         
+        // Clean CSV output
         Serial.print("Fixed,");
         Serial.print(i);
         Serial.print(",");
-        Serial.print(problem.solve_time);
+        Serial.print(problem.fixed_timings.total_time);
         Serial.print(",");
-        Serial.print(problem.init_time);
+        Serial.print(problem.fixed_timings.init_time);
         Serial.print(",");
-        Serial.print(problem.admm_time);
-        Serial.print(",");
-        Serial.print(problem.rho_time);
-        Serial.print(",");
+        Serial.print(problem.fixed_timings.admm_time);
+        Serial.print(",0,");
         Serial.print(problem.iter);
         Serial.print(",");
         Serial.println(params.rho);
         
         // Store stats
-        fixed_stats.solve_times[i] = problem.solve_time;
-        fixed_stats.admm_times[i] = problem.admm_time;
-        fixed_stats.rho_times[i] = problem.rho_time;
+        fixed_stats.solve_times[i] = problem.fixed_timings.total_time;
+        fixed_stats.admm_times[i] = problem.fixed_timings.admm_time;
+        fixed_stats.rho_times[i] = 0;
         fixed_stats.iterations[i] = problem.iter;
-        
-        delay(10);  // Maybe reduce delay between trials
     }
     
     // Then run trials with adaptive rho
     for(int i = 0; i < NUM_TRIALS; i++) {
-        // Maybe add a progress indicator every 100 trials
-        if(i % 100 == 0) {
-            Serial.print("Trial ");
-            Serial.print(i);
-            Serial.println(" of 1000");
-        }
-        
-        Serial.println("\n=== Starting Adaptive Rho Trial " + String(i) + " ===");
-        
         // Reset problem
         problem.status = 0;
         problem.iter = 0;
-        problem.solve_time = 0;
-        problem.admm_time = 0;
-        problem.rho_time = 0;
+        problem.solve_count = 0;
+        problem.y.setZero();
+        problem.g.setZero();
+        problem.v.setZero();
+        problem.z.setZero();
+        problem.vnew.setZero();
+        problem.znew.setZero();
         
-        // Use same test conditions as fixed version
+        // Random conditions
         problem.x.setZero();
-        problem.x.col(0) << 1.0f, 2.0f, 3.0f, 4.0f;
-        problem.u.setRandom();
+        problem.x.col(0).setRandom();  // Random initial state
         params.Xref.setRandom();
         params.Uref.setRandom();
         
@@ -248,28 +235,27 @@ void setup() {
         
         solve_admm_adaptive(&problem, &params, &adapter);
         
+        // Clean CSV output
         Serial.print("Adaptive,");
         Serial.print(i);
         Serial.print(",");
-        Serial.print(problem.solve_time);
+        Serial.print(problem.adaptive_timings.total_time);
         Serial.print(",");
-        Serial.print(problem.init_time);
+        Serial.print(problem.adaptive_timings.init_time);
         Serial.print(",");
-        Serial.print(problem.admm_time);
+        Serial.print(problem.adaptive_timings.admm_time);
         Serial.print(",");
-        Serial.print(problem.rho_time);
+        Serial.print(problem.adaptive_timings.rho_time);
         Serial.print(",");
         Serial.print(problem.iter);
         Serial.print(",");
         Serial.println(params.rho);
         
         // Store stats
-        adaptive_stats.solve_times[i] = problem.solve_time;
-        adaptive_stats.admm_times[i] = problem.admm_time;
-        adaptive_stats.rho_times[i] = problem.rho_time;
+        adaptive_stats.solve_times[i] = problem.adaptive_timings.total_time;
+        adaptive_stats.admm_times[i] = problem.adaptive_timings.admm_time;
+        adaptive_stats.rho_times[i] = problem.adaptive_timings.rho_time;
         adaptive_stats.iterations[i] = problem.iter;
-        
-        delay(10);  // Maybe reduce delay between trials
     }
     
     // Compute and print statistics
