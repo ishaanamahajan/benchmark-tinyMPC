@@ -67,7 +67,13 @@ void setup() {
     Serial.begin(115200);
     delay(2000);
     
-    // Just output CSV header once
+    Serial.println("Press any key to start benchmark...");
+    while(!Serial.available()) {
+        delay(100);  // Wait for keypress
+    }
+    while(Serial.available()) Serial.read();  // Clear input buffer
+    
+    // Now start the actual benchmark
     Serial.println("Method,Trial,SolveTime,InitTime,ADMMTime,RhoTime,Iterations,FinalRho");
     
     Serial.println("Starting MPC Benchmark Test");
