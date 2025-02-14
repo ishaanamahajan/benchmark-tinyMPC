@@ -15,10 +15,10 @@ struct SolverStats {
     float std_iters;
     
     // Arrays to store raw data
-    float solve_times[1000];
-    float admm_times[1000];
-    float rho_times[1000];
-    float iterations[1000];
+    float solve_times[10000];
+    float admm_times[10000];
+    float rho_times[10000];
+    float iterations[10000];
 };
 
 // Function to compute statistics
@@ -89,7 +89,7 @@ void setup() {
     adapter.tolerance = 1.1f;
     adapter.clip = true;
     
-    const int NUM_TRIALS = 1000;
+    const int NUM_TRIALS = 10000;
     SolverStats fixed_stats = {0};
     SolverStats adaptive_stats = {0};
     
