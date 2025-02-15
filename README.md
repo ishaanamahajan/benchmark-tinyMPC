@@ -2,6 +2,11 @@
 
 Benchmarking solvers on microcontrollers (MCU), within TinyMPC project
 
+
+# To Do - 
+
+* Add a simple heuristic in benchmarking for hover. Lets see what it does 
+
 ## Installation
 
 * Python >= 3.9
