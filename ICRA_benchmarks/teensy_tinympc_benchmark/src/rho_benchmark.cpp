@@ -211,12 +211,24 @@ void benchmark_rho_adaptation(
     float pri_norm = max(Ax_norm, z_norm);
     float dual_norm = max(max(Px_norm, ATy_norm), q_norm);
 
-    float normalized_pri = pri_res / (pri_norm + eps);
-    float normalized_dual = dual_res / (dual_norm + eps);
-    float ratio = normalized_pri / (normalized_dual + eps);
-
-    // Update rho using same formula as Python
-    float new_rho = adapter->rho_base * sqrt(ratio);
+    float new_rho;
+    if (adapter->method == SIMPLE) {
+        // Simple heuristic based on ratio
+        float ratio = pri_res / (dual_res + 1e-8f);
+        
+        if (ratio > 3.0f) {  // Primal residual much larger
+            new_rho = adapter->rho_base * 1.1f;
+        } else if (ratio < 0.33f) {  // Dual residual much larger
+            new_rho = adapter->rho_base * 0.9f;
+        } else {
+            new_rho = adapter->rho_base;
+        }
+    } else {  // OPTIMAL method
+        float normalized_pri = pri_res / (pri_norm + eps);
+        float normalized_dual = dual_res / (dual_norm + eps);
+        float ratio = normalized_pri / (normalized_dual + eps);
+        new_rho = adapter->rho_base * sqrt(ratio);
+    }
 
     // Apply clipping if enabled
     if (adapter->clip) {
