@@ -11,13 +11,18 @@
 #define BENCH_NU 4
 #define BENCH_N 10  // Horizon length, adjust as needed
 
+enum RhoMethod {
+    OPTIMAL,    // Sqrt ratio method
+    SIMPLE,     // Simple heuristic
+};
+
 struct RhoAdapter {
-    float rho_base = 85.0f;
-    float rho_min = 70.0f;
-    float rho_max = 100.0f;
-    float tolerance = 1.1f;
-    bool clip = false;
-    bool analytical_method = true;  // true for analytical, false for heuristic
+    float rho_base;
+    float rho_min;
+    float rho_max;
+    float tolerance;
+    bool clip;
+    RhoMethod method;  // Added method selection
 };
 
 struct RhoBenchmarkResult {
