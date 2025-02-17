@@ -165,6 +165,9 @@ void setup() {
         problem.u.setRandom();
         params.Xref.setRandom();
         params.Uref.setRandom();
+
+        params.rho = adapter.rho_base;
+    params.compute_cache_terms();
         
         solve_admm(&problem, &params);
         
