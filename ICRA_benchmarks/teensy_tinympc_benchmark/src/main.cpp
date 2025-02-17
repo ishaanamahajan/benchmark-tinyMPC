@@ -89,11 +89,70 @@ void setup() {
     
     const int NUM_TRIALS = 1000;
     SolverStats fixed_stats = {0};
-    SolverStats optimal_stats = {0};
-    SolverStats simple_stats = {0};
+    SolverStats adaptive_stats = {0};
     
-    // First run fixed rho trials
+    // First do hover test
+    Serial.println("\n=== Starting Hover Tests ===");
+    
+    // Setup hover conditions
+    float hover_thrust = (MASS * G) / (4.0f * KT);
+    
+    problem.x.setZero();
+    problem.x.col(0) << 0.2f, 0.2f, -0.2f,  // position offset
+                        1.0f, 0.0f, 0.0f,    // roll offset
+                        0.0f, 0.0f, 0.0f,    // zero velocity
+                        0.0f, 0.0f, 0.0f;    // zero angular rates
+    
+    params.Xref.setZero();  // target hover state
+    params.Uref.setZero();
+    // Set hover thrust for all timesteps
+    for(int k = 0; k < NHORIZON-1; k++) {
+        params.Uref.col(k) << hover_thrust, hover_thrust, hover_thrust, hover_thrust;
+    }
+    
+    // Test fixed rho for hover
+    Serial.println("\n=== Hover with Fixed Rho ===");
+    problem.status = 0;
+    problem.iter = 0;
+    solve_admm(&problem, &params);
+    Serial.print("Fixed Hover,");
+    Serial.print("-1,");  // special trial number for hover
+    Serial.print(problem.fixed_timings.total_time);
+    Serial.print(",");
+    Serial.print(problem.fixed_timings.admm_time);
+    Serial.print(",");
+    Serial.print(problem.fixed_timings.rho_time);
+    Serial.print(",");
+    Serial.print(problem.iter);
+    Serial.print(",");
+    Serial.println(params.rho);
+    
+    // Test adaptive rho for hover
+    Serial.println("\n=== Hover with Adaptive Rho ===");
+    problem.status = 0;
+    problem.iter = 0;
+    params.rho = adapter.rho_base;
+    params.compute_cache_terms();
+    solve_admm_adaptive(&problem, &params, &adapter);
+    Serial.print("Adaptive Hover,");
+    Serial.print("-1,");
+    Serial.print(problem.adaptive_timings.total_time);
+    Serial.print(",");
+    Serial.print(problem.adaptive_timings.admm_time);
+    Serial.print(",");
+    Serial.print(problem.adaptive_timings.rho_time);
+    Serial.print(",");
+    Serial.print(problem.iter);
+    Serial.print(",");
+    Serial.println(params.rho);
+    
+    delay(1000);
+    
+    // Then run trials with fixed rho
     for(int i = 0; i < NUM_TRIALS; i++) {
+        Serial.println("\n=== Starting Fixed Rho Trial " + String(i) + " ===");
+        
+        // Reset problem
         problem.status = 0;
         problem.iter = 0;
         problem.fixed_timings.total_time = 0;
@@ -122,35 +181,40 @@ void setup() {
         Serial.print(",");
         Serial.println(params.rho);
         
+        // Store stats
         fixed_stats.solve_times[i] = problem.fixed_timings.total_time;
         fixed_stats.admm_times[i] = problem.fixed_timings.admm_time;
         fixed_stats.rho_times[i] = problem.fixed_timings.rho_time;
         fixed_stats.iterations[i] = problem.iter;
         
-        delay(100);
+        delay(500);
     }
     
-    // Run optimal method trials
-    adapter.method = OPTIMAL;
+    // Then run trials with adaptive rho
     for(int i = 0; i < NUM_TRIALS; i++) {
+        Serial.println("\n=== Starting Adaptive Rho Trial " + String(i) + " ===");
+        
+        // Reset problem
         problem.status = 0;
         problem.iter = 0;
         problem.adaptive_timings.total_time = 0;
         problem.adaptive_timings.admm_time = 0;
         problem.adaptive_timings.rho_time = 0;
         
+        // Use same test conditions as fixed version
         problem.x.setZero();
         problem.x.col(0) << 1.0f, 2.0f, 3.0f, 4.0f;
         problem.u.setRandom();
         params.Xref.setRandom();
         params.Uref.setRandom();
         
+        // Reset rho to base value
         params.rho = adapter.rho_base;
         params.compute_cache_terms();
         
         solve_admm_adaptive(&problem, &params, &adapter);
         
-        Serial.print("Optimal,");
+        Serial.print("Adaptive,");
         Serial.print(i);
         Serial.print(",");
         Serial.print(problem.adaptive_timings.total_time);
@@ -163,65 +227,23 @@ void setup() {
         Serial.print(",");
         Serial.println(params.rho);
         
-        optimal_stats.solve_times[i] = problem.adaptive_timings.total_time;
-        optimal_stats.admm_times[i] = problem.adaptive_timings.admm_time;
-        optimal_stats.rho_times[i] = problem.adaptive_timings.rho_time;
-        optimal_stats.iterations[i] = problem.iter;
+        // Store stats
+        adaptive_stats.solve_times[i] = problem.adaptive_timings.total_time;
+        adaptive_stats.admm_times[i] = problem.adaptive_timings.admm_time;
+        adaptive_stats.rho_times[i] = problem.adaptive_timings.rho_time;
+        adaptive_stats.iterations[i] = problem.iter;
         
-        delay(100);
-    }
-    
-    // Run simple method trials
-    adapter.method = SIMPLE;
-    for(int i = 0; i < NUM_TRIALS; i++) {
-        problem.status = 0;
-        problem.iter = 0;
-        problem.adaptive_timings.total_time = 0;
-        problem.adaptive_timings.admm_time = 0;
-        problem.adaptive_timings.rho_time = 0;
-        
-        problem.x.setZero();
-        problem.x.col(0) << 1.0f, 2.0f, 3.0f, 4.0f;
-        problem.u.setRandom();
-        params.Xref.setRandom();
-        params.Uref.setRandom();
-        
-        params.rho = adapter.rho_base;
-        params.compute_cache_terms();
-        
-        solve_admm_adaptive(&problem, &params, &adapter);
-        
-        Serial.print("Simple,");
-        Serial.print(i);
-        Serial.print(",");
-        Serial.print(problem.adaptive_timings.total_time);
-        Serial.print(",");
-        Serial.print(problem.adaptive_timings.admm_time);
-        Serial.print(",");
-        Serial.print(problem.adaptive_timings.rho_time);
-        Serial.print(",");
-        Serial.print(problem.iter);
-        Serial.print(",");
-        Serial.println(params.rho);
-        
-        simple_stats.solve_times[i] = problem.adaptive_timings.total_time;
-        simple_stats.admm_times[i] = problem.adaptive_timings.admm_time;
-        simple_stats.rho_times[i] = problem.adaptive_timings.rho_time;
-        simple_stats.iterations[i] = problem.iter;
-        
-        delay(100);
+        delay(500);
     }
     
     // Compute and print statistics
     compute_stats(&fixed_stats, NUM_TRIALS);
-    compute_stats(&optimal_stats, NUM_TRIALS);
-    compute_stats(&simple_stats, NUM_TRIALS);
+    compute_stats(&adaptive_stats, NUM_TRIALS);
     
     print_stats("Fixed Rho", &fixed_stats);
-    print_stats("Optimal Rho", &optimal_stats);
-    print_stats("Simple Rho", &simple_stats);
+    print_stats("Adaptive Rho", &adaptive_stats);
     
-    Serial.println("DONE");
+    Serial.println("Benchmark Complete!");
 }
 
 void loop() {

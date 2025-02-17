@@ -3,7 +3,7 @@ import time
 
 # Open serial port with your Teensy's port
 ser = serial.Serial(
-    port='/dev/cu.usbmodem132804401',  # Your Teensy's port
+    port='/dev/cu.usbmodem132804901',  # Your Teensy's port
     baudrate=115200,
     timeout=1
 )
