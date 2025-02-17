@@ -85,7 +85,7 @@ void setup() {
     adapter.rho_min = 70.0f;
     adapter.rho_max = 100.0f;
     adapter.tolerance = 1.1f;
-    adapter.clip = true;
+    adapter.clip = false;
     
     const int NUM_TRIALS = 1000;
     SolverStats fixed_stats = {0};
