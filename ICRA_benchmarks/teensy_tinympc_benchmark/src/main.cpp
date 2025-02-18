@@ -21,6 +21,21 @@ struct SolverStats {
     float iterations[1000];
 };
 
+struct ProblemCase {
+    int trial_num;
+    float fixed_time;
+    float fixed_iters;
+    float adaptive_time;
+    float adaptive_iters;
+    Matrix<float, NSTATES, NHORIZON> Xref;
+    Matrix<float, NINPUTS, NHORIZON-1> Uref;
+};
+
+// Add these variables
+const int MAX_PROBLEM_CASES = 10;
+ProblemCase problem_cases[MAX_PROBLEM_CASES];
+int num_problem_cases = 0;
+
 // Function to compute statistics
 void compute_stats(SolverStats* stats, int num_trials) {
     // Compute averages
@@ -82,14 +97,18 @@ void setup() {
     // Initialize RhoAdapter
     RhoAdapter adapter;
     adapter.rho_base = 85.0f;
-    adapter.rho_min = 70.0f;
+    adapter.rho_min = 40.0f;
     adapter.rho_max = 100.0f;
     adapter.tolerance = 1.1f;
-    adapter.clip = false;
+    adapter.clip = true;
     
     const int NUM_TRIALS = 1000;
     SolverStats fixed_stats = {0};
     SolverStats adaptive_stats = {0};
+    
+    srand(42);  // Fixed seed for reproducibility
+    Matrix<float, NSTATES, NHORIZON> stored_Xref;
+    Matrix<float, NINPUTS, NHORIZON-1> stored_Uref;
     
     // First do hover test
     Serial.println("\n=== Starting Hover Tests ===");
@@ -165,9 +184,8 @@ void setup() {
         problem.u.setRandom();
         params.Xref.setRandom();
         params.Uref.setRandom();
-
-        params.rho = adapter.rho_base;
-    params.compute_cache_terms();
+        stored_Xref = params.Xref;  // Store references that we'll use for both methods
+        stored_Uref = params.Uref;
         
         solve_admm(&problem, &params);
         
@@ -208,8 +226,8 @@ void setup() {
         problem.x.setZero();
         problem.x.col(0) << 1.0f, 2.0f, 3.0f, 4.0f;
         problem.u.setRandom();
-        params.Xref.setRandom();
-        params.Uref.setRandom();
+        params.Xref = stored_Xref;  // Use same references as fixed method
+        params.Uref = stored_Uref;
         
         // Reset rho to base value
         params.rho = adapter.rho_base;
@@ -236,6 +254,27 @@ void setup() {
         adaptive_stats.rho_times[i] = problem.adaptive_timings.rho_time;
         adaptive_stats.iterations[i] = problem.iter;
         
+        if (problem.iter == 500) {  // Near max iterations
+            if (num_problem_cases < MAX_PROBLEM_CASES) {
+                problem_cases[num_problem_cases].trial_num = i;
+                problem_cases[num_problem_cases].fixed_time = fixed_stats.solve_times[i];
+                problem_cases[num_problem_cases].fixed_iters = fixed_stats.iterations[i];
+                problem_cases[num_problem_cases].adaptive_time = problem.adaptive_timings.total_time;
+                problem_cases[num_problem_cases].adaptive_iters = problem.iter;
+                problem_cases[num_problem_cases].Xref = params.Xref;
+                problem_cases[num_problem_cases].Uref = params.Uref;
+                
+                Serial.println("\n=== Problem Case " + String(num_problem_cases) + " ===");
+                Serial.println("Trial: " + String(i));
+                Serial.println("Fixed: " + String(fixed_stats.solve_times[i]) + "µs, " 
+                             + String(fixed_stats.iterations[i]) + " iters");
+                Serial.println("Adaptive: " + String(problem.adaptive_timings.total_time) + "µs, " 
+                             + String(problem.iter) + " iters");
+                
+                num_problem_cases++;
+            }
+        }
+        
         delay(500);
     }
     
@@ -245,6 +284,29 @@ void setup() {
     
     print_stats("Fixed Rho", &fixed_stats);
     print_stats("Adaptive Rho", &adaptive_stats);
+    
+    // Add summary of problem cases
+    Serial.println("\n=== Problem Cases Summary ===");
+    Serial.print("Total problem cases found: "); 
+    Serial.println(num_problem_cases);
+
+    if (num_problem_cases > 0) {
+        float avg_fixed_time = 0, avg_adaptive_time = 0;
+        float avg_fixed_iters = 0, avg_adaptive_iters = 0;
+        
+        for(int i = 0; i < num_problem_cases; i++) {
+            avg_fixed_time += problem_cases[i].fixed_time;
+            avg_adaptive_time += problem_cases[i].adaptive_time;
+            avg_fixed_iters += problem_cases[i].fixed_iters;
+            avg_adaptive_iters += problem_cases[i].adaptive_iters;
+        }
+        
+        Serial.println("\nAverage performance in problem cases:");
+        Serial.println("Fixed: " + String(avg_fixed_time/num_problem_cases) + "µs, " 
+                      + String(avg_fixed_iters/num_problem_cases) + " iters");
+        Serial.println("Adaptive: " + String(avg_adaptive_time/num_problem_cases) + "µs, " 
+                      + String(avg_adaptive_iters/num_problem_cases) + " iters");
+    }
     
     Serial.println("Benchmark Complete!");
 }

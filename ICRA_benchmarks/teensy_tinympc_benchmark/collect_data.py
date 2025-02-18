@@ -9,7 +9,7 @@ ser = serial.Serial(
 )
 
 # Open CSV file
-with open('benchmark_results_no_clip.csv', 'w') as f:
+with open('benchmark_results_outliers.csv', 'w') as f:
     while True:
         try:
             if ser.in_waiting:
