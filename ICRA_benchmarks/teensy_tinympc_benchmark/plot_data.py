@@ -34,21 +34,72 @@ def find_outliers(group):
 fixed_outliers = find_outliers(df[df['Method'] == 'Fixed'])
 adaptive_outliers = find_outliers(df[df['Method'] == 'Adaptive'])
 
-# Create boxplot
-plt.figure(figsize=(8, 6))
-sns.boxplot(data=df, x='Method', y='SolveTime', 
-            palette=['lightblue', 'lightcoral'],
-            width=0.5,
-            fliersize=4)
+# 1. Violin Plot
+plt.figure(figsize=(10, 6))
+ax = sns.violinplot(data=df, x='Method', y='SolveTime', 
+                    palette=['lightcoral', 'lightblue'],
+                    inner=None,
+                    width=0.7)
 
-plt.title('Solve Time Distribution: Fixed vs Adaptive ρ', pad=20, fontsize=14)
+# Add larger median dots manually
+for i, method in enumerate(['Fixed', 'Adaptive']):
+    median = df[df['Method'] == method]['SolveTime'].median()
+    ax.scatter(i, median, color='white', edgecolor='black', s=200, zorder=3)
+
 plt.xlabel('Method', fontsize=12, labelpad=10)
-plt.ylabel('Solve Time (µs)', fontsize=12, labelpad=10)
+plt.ylabel('Computation Time (µs)', fontsize=12, labelpad=10)
 plt.grid(True, axis='y', linestyle='--', alpha=0.7)
-plt.xticks(fontsize=11)
-plt.yticks(fontsize=10)
 plt.tight_layout()
 plt.show()
+
+# 2. CDF Plot with shading (corrected)
+plt.figure(figsize=(10, 6))
+for method, color in zip(['Fixed', 'Adaptive'], ['lightcoral', 'lightblue']):
+    data = df[df['Method'] == method]
+    
+    # Calculate total number of problems including non-converged ones
+    total_problems = len(data)
+    
+    # Filter out non-converged cases (500 iterations)
+    converged_data = data[data['Iterations'] < 500]['SolveTime']
+    num_converged = len(converged_data)
+    
+    # Calculate CDF
+    x = np.sort(converged_data)
+    # Adjust percentage calculation to account for non-converged cases
+    y = np.arange(1, len(x) + 1) / total_problems * 100
+    
+    # Plot line and filled area
+    plt.plot(x, y, color=color, 
+            label=f'{method} ({num_converged/total_problems*100:.1f}% solved)', 
+            linewidth=2)
+    plt.fill_between(x, y, alpha=0.2, color=color)
+
+plt.xlabel('Solve Time (µs)', fontsize=12, labelpad=10)
+plt.ylabel('Percentage of Solved Problems (%)', fontsize=12, labelpad=10)
+plt.grid(True, linestyle='--', alpha=0.7)
+plt.legend()
+plt.tight_layout()
+plt.show()
+
+# Print convergence statistics
+print("\nConvergence Statistics:")
+for method in ['Fixed', 'Adaptive']:
+    data = df[df['Method'] == method]
+    total = len(data)
+    converged = len(data[data['Iterations'] < 500])
+    print(f"\n{method} Method:")
+    print(f"Total problems: {total}")
+    print(f"Converged problems: {converged}")
+    print(f"Convergence rate: {converged/total*100:.1f}%")
+
+# Print statistics (for your reference)
+print("\nKey Statistics:")
+for method in ['Fixed', 'Adaptive']:
+    data = df[df['Method'] == method]
+    print(f"\n{method} Method:")
+    print(f"Median Time: {data['SolveTime'].median():.2f} µs")
+    print(f"95th percentile: {data['SolveTime'].quantile(0.95):.2f} µs")
 
 # Print outlier analysis
 print("\nOutlier Analysis:")
