@@ -1,0 +1,92 @@
+Starting MPC Benchmark Test
+Method,Trial,SolveTime,ADMMTime,RhoTime,Iterations,FinalRho
+=== tiny_problem constructor running! ===
+
+=== Starting Hover Tests ===
+
+=== Hover with Fixed Rho ===
+Fixed Hover,-1,29560,29558,0,500,85.00
+
+=== Hover with Adaptive Rho ===
+Adaptive Hover,-1,13995,13540,455,220,70.00
+
+=== Starting Fixed Rho Trial 0 ===
+Fixed,0,29559,29559,0,500,85.00
+
+=== Starting Fixed Rho Trial 1 ===
+Fixed,1,1479,1479,0,24,85.00
+
+=== Starting Fixed Rho Trial 2 ===
+Fixed,2,533,533,0,8,85.00
+
+=== Starting Fixed Rho Trial 3 ===
+Fixed,3,1124,1124,0,18,85.00
+
+=== Starting Fixed Rho Trial 4 ===
+Fixed,4,355,355,0,5,85.00
+
+=== Starting Fixed Rho Trial 5 ===
+Fixed,5,1183,1183,0,19,85.00
+
+=== Starting Fixed Rho Trial 6 ===
+Fixed,6,533,533,0,8,85.00
+
+=== Starting Fixed Rho Trial 7 ===
+Fixed,7,1124,1124,0,18,85.00
+
+=== Starting Fixed Rho Trial 8 ===
+Fixed,8,415,415,0,6,85.00
+
+=== Starting Fixed Rho Trial 9 ===
+Fixed,9,1124,1124,0,18,85.00
+
+=== Starting Fixed Rho Trial 10 ===
+Fixed,10,592,592,0,9,85.00
+
+=== Starting Fixed Rho Trial 11 ===
+Fixed,11,1124,1124,0,18,85.00
+
+=== Starting Fixed Rho Trial 12 ===
+Fixed,12,414,414,0,6,85.00
+
+=== Starting Fixed Rho Trial 13 ===
+Fixed,13,1183,1183,0,19,85.00
+
+=== Starting Fixed Rho Trial 14 ===
+Fixed,14,532,532,0,8,85.00
+
+=== Starting Fixed Rho Trial 15 ===
+Fixed,15,1124,1124,0,18,85.00
+
+=== Starting Fixed Rho Trial 16 ===
+Fixed,16,414,414,0,6,85.00
+
+=== Starting Fixed Rho Trial 17 ===
+Fixed,17,1183,1183,0,19,85.00
+
+=== Starting Fixed Rho Trial 18 ===
+Fixed,18,533,533,0,8,85.00
+
+=== Starting Fixed Rho Trial 19 ===
+Fixed,19,1124,1124,0,18,85.00
+
+=== Starting Fixed Rho Trial 20 ===
+Fixed,20,473,473,0,7,85.00
+
+=== Starting Fixed Rho Trial 21 ===
+Fixed,21,1183,1183,0,19,85.00
+
+=== Starting Fixed Rho Trial 22 ===
+Fixed,22,473,473,0,7,85.00
+
+=== Starting Fixed Rho Trial 23 ===
+Fixed,23,1124,1124,0,18,85.00
+
+=== Starting Fixed Rho Trial 24 ===
+Fixed,24,592,592,0,9,85.00
+
+=== Starting Fixed Rho Trial 25 ===
+Fixed,25,1183,1183,0,19,85.00
+
+=== Starting Fixed Rho Trial 26 ===
+Fixed,26,237,237,0,3,85.00

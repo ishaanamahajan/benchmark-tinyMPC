@@ -3,13 +3,13 @@ import time
 
 # Open serial port with your Teensy's port
 ser = serial.Serial(
-    port='/dev/cu.usbmodem132804901',  # Your Teensy's port
+    port='/dev/cu.usbmodem132804401',  # Your Teensy's port
     baudrate=115200,
     timeout=1
 )
 
 # Open CSV file
-with open('benchmark_results_outliers.csv', 'w') as f:
+with open('benchmark_results_wind.csv', 'w') as f:
     while True:
         try:
             if ser.in_waiting:

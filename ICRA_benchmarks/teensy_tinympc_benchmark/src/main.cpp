@@ -5,6 +5,77 @@
 #include "types.hpp"
 #include "rho_benchmark.hpp"
 
+// Add these constants at the top with other constants
+const float MASS = 0.035f;
+const float G = 9.81f;
+const float KT = 2.245365e-6f * 65535.0f;
+
+// Wind generation constants
+const float WIND_MEAN_X = 0.5f;
+const float WIND_MEAN_Y = 0.0f;
+const float WIND_MEAN_Z = 0.3f;
+const float WIND_FREQ = 0.5f;
+const float WIND_AMP = 0.5f;
+
+// New wind-related structures
+struct WindState {
+    float vx;
+    float vy;
+    float vz;
+    float t;
+};
+
+struct Trajectory {
+    Matrix<float, NSTATES, NHORIZON> Xref;
+    Matrix<float, NINPUTS, NHORIZON-1> Uref;
+};
+
+// Wind generation function
+WindState generate_wind(float t) {
+    WindState wind;
+    wind.vx = WIND_MEAN_X + WIND_AMP * sin(WIND_FREQ * t);
+    wind.vy = WIND_MEAN_Y + WIND_AMP * cos(WIND_FREQ * t);
+    wind.vz = WIND_MEAN_Z + 0.2f * WIND_AMP * sin(2.0f * WIND_FREQ * t);
+    wind.t = t;
+    return wind;
+}
+
+// Wind trajectory generation
+Trajectory generate_wind_trajectory(float start_time, float duration) {
+    Trajectory traj;
+    const float dt = duration / (NHORIZON - 1);
+    
+    traj.Xref.setZero();
+    traj.Uref.setZero();
+    
+    float hover_thrust = (MASS * G) / (4.0f * KT);
+    
+    for(int k = 0; k < NHORIZON; k++) {
+        float t = start_time + k * dt;
+        WindState wind = generate_wind(t);
+        
+        // Position with wind effects
+        traj.Xref(0,k) = 0.5f * wind.vx * dt * dt;
+        traj.Xref(1,k) = 0.5f * wind.vy * dt * dt;
+        traj.Xref(2,k) = 0.5f * wind.vz * dt * dt;
+        
+        if(k < NHORIZON-1) {
+            float wind_comp_x = wind.vx * 0.1f;
+            float wind_comp_y = wind.vy * 0.1f;
+            float wind_comp_z = wind.vz * 0.1f;
+            
+            traj.Uref(0,k) = hover_thrust + wind_comp_x;
+            traj.Uref(1,k) = hover_thrust + wind_comp_y;
+            traj.Uref(2,k) = hover_thrust + wind_comp_z;
+            traj.Uref(3,k) = hover_thrust;
+        }
+    }
+    return traj;
+}
+
+// Add wind toggle
+const bool USE_WIND = true; 
+
 // Add struct for collecting stats
 struct SolverStats {
     float avg_solve_time;
@@ -21,6 +92,7 @@ struct SolverStats {
     float iterations[1000];
 };
 
+// Add struct for problem cases
 struct ProblemCase {
     int trial_num;
     float fixed_time;
@@ -32,9 +104,12 @@ struct ProblemCase {
 };
 
 // Add these variables
-const int MAX_PROBLEM_CASES = 10;
+const int MAX_PROBLEM_CASES = 50;
 ProblemCase problem_cases[MAX_PROBLEM_CASES];
 int num_problem_cases = 0;
+
+// At the top with other globals
+int max_iter_count = 0;  // Counter for cases hitting max iterations
 
 // Function to compute statistics
 void compute_stats(SolverStats* stats, int num_trials) {
@@ -73,11 +148,6 @@ void print_stats(const char* method, SolverStats* stats) {
     Serial.println("Std Dev iterations: " + String(stats->std_iters));
 }
 
-// Add hover constants
-const float MASS = 0.035f;
-const float G = 9.81f;
-const float KT = 2.245365e-6f * 65535.0f;
-
 void setup() {
     Serial.begin(115200);
     delay(3000);
@@ -97,7 +167,7 @@ void setup() {
     // Initialize RhoAdapter
     RhoAdapter adapter;
     adapter.rho_base = 85.0f;
-    adapter.rho_min = 40.0f;
+    adapter.rho_min = 70.0f;
     adapter.rho_max = 100.0f;
     adapter.tolerance = 1.1f;
     adapter.clip = true;
@@ -106,7 +176,7 @@ void setup() {
     SolverStats fixed_stats = {0};
     SolverStats adaptive_stats = {0};
     
-    srand(42);  // Fixed seed for reproducibility
+    // Add storage for references
     Matrix<float, NSTATES, NHORIZON> stored_Xref;
     Matrix<float, NINPUTS, NHORIZON-1> stored_Uref;
     
@@ -122,13 +192,21 @@ void setup() {
                         0.0f, 0.0f, 0.0f,    // zero velocity
                         0.0f, 0.0f, 0.0f;    // zero angular rates
     
-    params.Xref.setZero();  // target hover state
-    params.Uref.setZero();
-    // Set hover thrust for all timesteps
-    for(int k = 0; k < NHORIZON-1; k++) {
-        params.Uref.col(k) << hover_thrust, hover_thrust, hover_thrust, hover_thrust;
+    // Modify reference generation based on USE_WIND
+    if (USE_WIND) {
+        WindState wind = generate_wind(0.0f);  // start at t=0
+        Trajectory traj = generate_wind_trajectory(0.0f, 2.0f);
+        params.Xref = traj.Xref;
+        params.Uref = traj.Uref;
+    } else {
+        params.Xref.setZero();  // target hover state
+        params.Uref.setZero();
+        // Set hover thrust for all timesteps
+        for(int k = 0; k < NHORIZON-1; k++) {
+            params.Uref.col(k) << hover_thrust, hover_thrust, hover_thrust, hover_thrust;
+        }
     }
-    
+
     // Test fixed rho for hover
     Serial.println("\n=== Hover with Fixed Rho ===");
     problem.status = 0;
@@ -170,6 +248,7 @@ void setup() {
     // Then run trials with fixed rho
     for(int i = 0; i < NUM_TRIALS; i++) {
         Serial.println("\n=== Starting Fixed Rho Trial " + String(i) + " ===");
+        //delay(100);
         
         // Reset problem
         problem.status = 0;
@@ -178,17 +257,32 @@ void setup() {
         problem.fixed_timings.admm_time = 0;
         problem.fixed_timings.rho_time = 0;
         
+        // Reset rho to base value for fixed trials
+        params.rho = adapter.rho_base;
+        params.compute_cache_terms();
+        
         // Set test conditions
         problem.x.setZero();
         problem.x.col(0) << 1.0f, 2.0f, 3.0f, 4.0f;
         problem.u.setRandom();
-        params.Xref.setRandom();
-        params.Uref.setRandom();
-        stored_Xref = params.Xref;  // Store references that we'll use for both methods
+
+        if (USE_WIND) {
+            float t = i * 0.02f;  // time step
+            Trajectory traj = generate_wind_trajectory(t, 2.0f);
+            params.Xref = traj.Xref;
+            params.Uref = traj.Uref;
+        } else {
+            params.Xref.setRandom();
+            params.Uref.setRandom();
+        }
+        
+        // Store references for adaptive trials
+        stored_Xref = params.Xref;
         stored_Uref = params.Uref;
         
         solve_admm(&problem, &params);
         
+        // Output results
         Serial.print("Fixed,");
         Serial.print(i);
         Serial.print(",");
@@ -221,17 +315,28 @@ void setup() {
         problem.adaptive_timings.total_time = 0;
         problem.adaptive_timings.admm_time = 0;
         problem.adaptive_timings.rho_time = 0;
-        
-        // Use same test conditions as fixed version
-        problem.x.setZero();
-        problem.x.col(0) << 1.0f, 2.0f, 3.0f, 4.0f;
-        problem.u.setRandom();
-        params.Xref = stored_Xref;  // Use same references as fixed method
-        params.Uref = stored_Uref;
-        
+
         // Reset rho to base value
         params.rho = adapter.rho_base;
         params.compute_cache_terms();
+        
+        // Set test conditions
+        problem.x.setZero();
+        problem.x.col(0) << 1.0f, 2.0f, 3.0f, 4.0f;
+        problem.u.setRandom();
+
+        if (USE_WIND) {
+            float t = i * 0.02f;  // time step
+            Trajectory traj = generate_wind_trajectory(t, 2.0f);
+            params.Xref = traj.Xref;
+            params.Uref = traj.Uref;
+        } else {
+            // Use same references as fixed method
+            params.Xref = stored_Xref;
+            params.Uref = stored_Uref;
+        }
+        
+
         
         solve_admm_adaptive(&problem, &params, &adapter);
         
@@ -254,27 +359,12 @@ void setup() {
         adaptive_stats.rho_times[i] = problem.adaptive_timings.rho_time;
         adaptive_stats.iterations[i] = problem.iter;
         
-        if (problem.iter == 500) {  // Near max iterations
-            if (num_problem_cases < MAX_PROBLEM_CASES) {
-                problem_cases[num_problem_cases].trial_num = i;
-                problem_cases[num_problem_cases].fixed_time = fixed_stats.solve_times[i];
-                problem_cases[num_problem_cases].fixed_iters = fixed_stats.iterations[i];
-                problem_cases[num_problem_cases].adaptive_time = problem.adaptive_timings.total_time;
-                problem_cases[num_problem_cases].adaptive_iters = problem.iter;
-                problem_cases[num_problem_cases].Xref = params.Xref;
-                problem_cases[num_problem_cases].Uref = params.Uref;
-                
-                Serial.println("\n=== Problem Case " + String(num_problem_cases) + " ===");
-                Serial.println("Trial: " + String(i));
-                Serial.println("Fixed: " + String(fixed_stats.solve_times[i]) + "µs, " 
-                             + String(fixed_stats.iterations[i]) + " iters");
-                Serial.println("Adaptive: " + String(problem.adaptive_timings.total_time) + "µs, " 
-                             + String(problem.iter) + " iters");
-                
-                num_problem_cases++;
-            }
+        // Simple tracking of max iteration cases
+        if (problem.iter >= 499) {  // Near max iterations
+            max_iter_count++;
+            Serial.println("\n!!! Max iterations reached in trial " + String(i));
         }
-        
+
         delay(500);
     }
     
@@ -285,29 +375,12 @@ void setup() {
     print_stats("Fixed Rho", &fixed_stats);
     print_stats("Adaptive Rho", &adaptive_stats);
     
+    
     // Add summary of problem cases
     Serial.println("\n=== Problem Cases Summary ===");
     Serial.print("Total problem cases found: "); 
     Serial.println(num_problem_cases);
 
-    if (num_problem_cases > 0) {
-        float avg_fixed_time = 0, avg_adaptive_time = 0;
-        float avg_fixed_iters = 0, avg_adaptive_iters = 0;
-        
-        for(int i = 0; i < num_problem_cases; i++) {
-            avg_fixed_time += problem_cases[i].fixed_time;
-            avg_adaptive_time += problem_cases[i].adaptive_time;
-            avg_fixed_iters += problem_cases[i].fixed_iters;
-            avg_adaptive_iters += problem_cases[i].adaptive_iters;
-        }
-        
-        Serial.println("\nAverage performance in problem cases:");
-        Serial.println("Fixed: " + String(avg_fixed_time/num_problem_cases) + "µs, " 
-                      + String(avg_fixed_iters/num_problem_cases) + " iters");
-        Serial.println("Adaptive: " + String(avg_adaptive_time/num_problem_cases) + "µs, " 
-                      + String(avg_adaptive_iters/num_problem_cases) + " iters");
-    }
-    
     Serial.println("Benchmark Complete!");
 }
 
