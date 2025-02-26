@@ -28,21 +28,33 @@ void solve_lqr(struct tiny_problem *problem, const struct tiny_params *params) {
 void solve_admm(struct tiny_problem *problem, struct tiny_params *params) {
     // Measure initialization
     uint32_t init_start = micros();
-    if (problem->solve_count == 0) {
-        problem->y.setZero();
-        problem->g.setZero();
-        problem->v.setZero();
-        problem->z.setZero();
-        problem->vnew.setZero();
-        problem->znew.setZero();
-    }
-    problem->solve_count++;
-    problem->fixed_timings.init_time = micros() - init_start;
+    
+    // IMPORTANT: Reset ALL solver state variables
+    problem->y.setZero();
+    problem->g.setZero();
+    problem->v.setZero();
+    problem->z.setZero();
+    problem->vnew.setZero();
+    problem->znew.setZero();
+    problem->p.setZero();
+    problem->q.setZero();
+    problem->r.setZero();
+    problem->d.setZero();
+    
+    // Reset convergence variables
+    problem->status = 0;
+    problem->iter = 0;
+    
+    // Reset timing variables
+    problem->fixed_timings.init_time = 0;
+    problem->fixed_timings.admm_time = 0;
+    problem->fixed_timings.total_time = 0;
+    
+    // Reset cache terms in params
+    params->compute_cache_terms();
     
     startTimestamp = micros();
     
-    problem->status = 0;
-    problem->iter = 0;
     problem->fixed_timings.rho_time = 0;
 
     // Initial updates
@@ -102,14 +114,20 @@ void solve_admm(struct tiny_problem *problem, struct tiny_params *params) {
 void solve_admm_adaptive(struct tiny_problem *problem, struct tiny_params *params, RhoAdapter *adapter) {
     // Measure initialization
     uint32_t init_start = micros();
-    if (problem->solve_count == 0) {
-        problem->y.setZero();
-        problem->g.setZero();
-        problem->v.setZero();
-        problem->z.setZero();
-        problem->vnew.setZero();
-        problem->znew.setZero();
-    }
+    problem->y.setZero();
+    problem->g.setZero();
+    problem->v.setZero();
+    problem->z.setZero();
+    problem->vnew.setZero();
+    problem->znew.setZero();
+    problem->p.setZero();
+    problem->q.setZero();
+    problem->r.setZero();
+    problem->d.setZero();
+    
+    // Reset convergence variables
+    problem->status = 0;
+    problem->iter = 0;
     problem->solve_count++;
     problem->adaptive_timings.init_time = micros() - init_start;
     
@@ -146,7 +164,7 @@ void solve_admm_adaptive(struct tiny_problem *problem, struct tiny_params *param
         float dua_res_state = params->rho * (problem->vnew - v_prev).lpNorm<Eigen::Infinity>();
 
         // Update rho every 10 iterations
-        if (iter % 10 == 0 && iter > 0) {
+        if (iter > 0 && iter % 5 == 0) {
             uint32_t rho_update_start = micros();
             
             // Call benchmark_rho_adaptation with current state
@@ -157,15 +175,16 @@ void solve_admm_adaptive(struct tiny_problem *problem, struct tiny_params *param
                 max(pri_res_input, pri_res_state),
                 max(dua_res_input, dua_res_state),
                 &rho_result,
-                adapter
+                adapter,
+                params->rho
             );
             
-            // Update rho and cache terms using Taylor expansion
-            if (abs(rho_result.final_rho - params->rho) > adapter->tolerance) {
-                float old_rho = params->rho;
-                params->rho = rho_result.final_rho;
-                update_cache_taylor(params->rho, old_rho);
-            }
+            // // Update rho and cache terms using Taylor expansion
+            // if (abs(rho_result.final_rho - params->rho) > adapter->tolerance) {
+            //     float old_rho = params->rho;
+            //     params->rho = rho_result.final_rho;
+            //     update_cache_taylor(params->rho, old_rho);
+            // }
             
             problem->adaptive_timings.rho_time += micros() - rho_update_start;
         }
