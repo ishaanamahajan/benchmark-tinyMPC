@@ -90,61 +90,27 @@ void setup() {
     const int NUM_TRIALS = 100;
     SolverStats fixed_stats = {0};
     SolverStats adaptive_stats = {0};
+
+    srand(42);
     
-    // First do hover test
-    Serial.println("\n=== Starting Hover Tests ===");
-    
-    // Setup hover conditions
-    float hover_thrust = (MASS * G) / (4.0f * KT);
-    
-    problem.x.setZero();
-    problem.x.col(0) << 0.2f, 0.2f, -0.2f,  // position offset
-                        1.0f, 0.0f, 0.0f,    // roll offset
-                        0.0f, 0.0f, 0.0f,    // zero velocity
-                        0.0f, 0.0f, 0.0f;    // zero angular rates
-    
-    params.Xref.setZero();  // target hover state
-    params.Uref.setZero();
-    // Set hover thrust for all timesteps
-    for(int k = 0; k < NHORIZON-1; k++) {
-        params.Uref.col(k) << hover_thrust, hover_thrust, hover_thrust, hover_thrust;
+    // Pre-generate all random references to ensure identical test conditions
+    // Store references for each trial
+    Eigen::MatrixXf trial_Xrefs[NUM_TRIALS];
+    Eigen::MatrixXf trial_Urefs[NUM_TRIALS];
+    Eigen::MatrixXf trial_u_init[NUM_TRIALS];
+
+    // Generate random references with fixed seed
+    for(int i = 0; i < NUM_TRIALS; i++) {
+        // Set a different but deterministic seed for each trial
+        srand(42 + i);
+        
+        trial_Xrefs[i] = Eigen::MatrixXf::Random(params.Xref.rows(), params.Xref.cols());
+        trial_Urefs[i] = Eigen::MatrixXf::Random(params.Uref.rows(), params.Uref.cols());
+        trial_u_init[i] = Eigen::MatrixXf::Random(problem.u.rows(), problem.u.cols());
     }
     
-    // Test fixed rho for hover
-    Serial.println("\n=== Hover with Fixed Rho ===");
-    problem.status = 0;
-    problem.iter = 0;
-    solve_admm(&problem, &params);
-    Serial.print("Fixed Hover,");
-    Serial.print("-1,");  // special trial number for hover
-    Serial.print(problem.fixed_timings.total_time);
-    Serial.print(",");
-    Serial.print(problem.fixed_timings.admm_time);
-    Serial.print(",");
-    Serial.print(problem.fixed_timings.rho_time);
-    Serial.print(",");
-    Serial.print(problem.iter);
-    Serial.print(",");
-    Serial.println(params.rho);
     
-    // Test adaptive rho for hover
-    Serial.println("\n=== Hover with Adaptive Rho ===");
-    problem.status = 0;
-    problem.iter = 0;
-    params.rho = adapter.rho_base;
-    params.compute_cache_terms();
-    solve_admm_adaptive(&problem, &params, &adapter);
-    Serial.print("Adaptive Hover,");
-    Serial.print("-1,");
-    Serial.print(problem.adaptive_timings.total_time);
-    Serial.print(",");
-    Serial.print(problem.adaptive_timings.admm_time);
-    Serial.print(",");
-    Serial.print(problem.adaptive_timings.rho_time);
-    Serial.print(",");
-    Serial.print(problem.iter);
-    Serial.print(",");
-    Serial.println(params.rho);
+
     
     delay(1000);
     
@@ -161,12 +127,12 @@ void setup() {
         
         // Set test conditions
         problem.x.setZero();
-        // problem.x.col(0) << 0.0f, 0.0f, 0.0f,  // position offset
-        //            0.0f, 0.0f, 0.0f,    // roll offset
-        //            0.0f, 0.0f, 0.0f,    // zero velocity
-        //            0.0f, 0.0f, 0.0f;    // zero angular rates
+        problem.x.col(0) << 0.0f, 0.0f, 0.0f,  // position offset
+                   0.0f, 0.0f, 0.0f,    // roll offset
+                   0.0f, 0.0f, 0.0f,    // zero velocity
+                   0.0f, 0.0f, 0.0f;    // zero angular rates
 
-        problem.x.col(0) << 1.0f, 2.0f, 3.0f, 4.0f ; // position offset
+        // problem.x.col(0) << 1.0f, 2.0f, 3.0f, 4.0f ; // position offset
         problem.u.setRandom();
         params.Xref.setRandom();
         params.Uref.setRandom();
@@ -211,12 +177,12 @@ void setup() {
         
         // Use same test conditions as fixed version
         problem.x.setZero();
-        // problem.x.col(0) << 0.0f, 0.0f, 0.0f,  // position offset
-        //            0.0f, 0.0f, 0.0f,    // roll offset
-        //            0.0f, 0.0f, 0.0f,    // zero velocity
-        //            0.0f, 0.0f, 0.0f;    // zero angular rates
+        problem.x.col(0) << 0.0f, 0.0f, 0.0f,  // position offset
+                   0.0f, 0.0f, 0.0f,    // roll offset
+                   0.0f, 0.0f, 0.0f,    // zero velocity
+                   0.0f, 0.0f, 0.0f;    // zero angular rates
 
-        problem.x.col(0) << 1.0f, 2.0f, 3.0f, 4.0f ;
+        //problem.x.col(0) << 1.0f, 2.0f, 3.0f, 4.0f ;
         problem.u.setRandom();
         params.Xref.setRandom();
         params.Uref.setRandom();
