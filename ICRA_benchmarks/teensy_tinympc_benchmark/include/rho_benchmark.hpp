@@ -111,7 +111,8 @@ void benchmark_rho_adaptation(
     float pri_res,
     float dual_res,
     RhoBenchmarkResult* result,
-    RhoAdapter* adapter
+    RhoAdapter* adapter,
+    float rho
 );
 
 void update_cache_taylor(float new_rho, float old_rho);
