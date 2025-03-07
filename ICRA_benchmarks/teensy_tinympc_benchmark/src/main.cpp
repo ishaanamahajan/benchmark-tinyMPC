@@ -87,7 +87,7 @@ void setup() {
     adapter.tolerance = 1.1f;
     adapter.clip = true;
     
-    const int NUM_TRIALS = 1000;
+    const int NUM_TRIALS = 100;
     SolverStats fixed_stats = {0};
     SolverStats adaptive_stats = {0};
     
@@ -161,10 +161,18 @@ void setup() {
         
         // Set test conditions
         problem.x.setZero();
-        problem.x.col(0) << 1.0f, 2.0f, 3.0f, 4.0f;
+        // problem.x.col(0) << 0.0f, 0.0f, 0.0f,  // position offset
+        //            0.0f, 0.0f, 0.0f,    // roll offset
+        //            0.0f, 0.0f, 0.0f,    // zero velocity
+        //            0.0f, 0.0f, 0.0f;    // zero angular rates
+
+        problem.x.col(0) << 1.0f, 2.0f, 3.0f, 4.0f ; // position offset
         problem.u.setRandom();
         params.Xref.setRandom();
         params.Uref.setRandom();
+
+        params.rho = 85.0f;
+        params.compute_cache_terms();
         
         solve_admm(&problem, &params);
         
@@ -203,7 +211,12 @@ void setup() {
         
         // Use same test conditions as fixed version
         problem.x.setZero();
-        problem.x.col(0) << 1.0f, 2.0f, 3.0f, 4.0f;
+        // problem.x.col(0) << 0.0f, 0.0f, 0.0f,  // position offset
+        //            0.0f, 0.0f, 0.0f,    // roll offset
+        //            0.0f, 0.0f, 0.0f,    // zero velocity
+        //            0.0f, 0.0f, 0.0f;    // zero angular rates
+
+        problem.x.col(0) << 1.0f, 2.0f, 3.0f, 4.0f ;
         problem.u.setRandom();
         params.Xref.setRandom();
         params.Uref.setRandom();

@@ -1,136 +1,383 @@
+"""
+File: prob_data_gen.py
+Author: Anoushka, Khai
+Date: 2023-09-15
+Description: A Python script to generate random MPC problem for OSQP (Python) and TinyMPC (C++).
+Modified to generate 1000 random controllable matrices.
+"""
+
 import numpy as np
-from scipy.linalg import block_diag
+import os
 
-def construct_A_stacked(A, B, N=5, nx=12, nu=4):
-    total_rows = (nu * (N-1)) + (nx * (N-1))  # 64 rows
-    total_cols = (nx * N) + (nu * (N-1))      # 76 cols
+def export_xref_to_c(declare, data, nx):
+    string = declare + "= {\n"
+    for i in range(data.shape[0]):
+        string = string + "  "
+        for j in range(nx):
+            if i == data.shape[0] and j == nx:
+                this_str = str(data[i][j]) + ",\t"
+            else:
+                this_str = str(data[i][j]) + ",\t"
+            # str = str * this_str * "f"
+            string = string + this_str
+        string = string + "\n"
+    string = string + "};"
+    return string
+
+def export_mat_to_c(declare, data):
+    string = declare + "= {\n"
+    for i in range(data.shape[0]):
+        string = string + "  "
+        for j in range(data.shape[1]):
+            if i == data.shape[0] and j == data.shape[1]:
+                this_str = str(data[i][j]) + ",\t"
+            else:
+                 this_str = str(data[i][j]) + ",\t"
+            string = string + this_str
+        string = string + "\n"
+    string = string + "};"
+    return string
+
+def tinympc_export_data_to_c(xbar, A, B, Q, Qf, R, umin, umax, xmin, xmax, nx, nu, Nh, Nsim):
+    include_statement = '#include "types.hpp"\n\n'
+    boilerplate = "#pragma once\n\n"
+
+    xbar_string = export_xref_to_c("const PROGMEM tinytype Xref_data["+str(Nsim)+"*"+str(nx)+"] ", xbar, nx)
+
+    A_data_string = export_mat_to_c("const PROGMEM tinytype Adyn_data["+str(nx)+"*"+str(nx)+"] ", A) + "\n\n"
+    B_data_string = export_mat_to_c("const PROGMEM tinytype Bdyn_data["+str(nx)+"*"+str(nu)+"] ", B) + "\n\n"
+   
+    Q_diag = np.diagonal(Q)
+    Q_data_string = "const PROGMEM tinytype Q_data["+str(nx)+"] = {"
+    for i in range(nx):
+        Q_data_string = Q_data_string + str(Q_diag[i])
+        if i != nx-1:
+            Q_data_string = Q_data_string + ','
+    Q_data_string = Q_data_string+"};\n\n"
     
-    A_stacked = np.zeros((total_rows, total_cols))
+    Qf_diag = np.diagonal(Qf)
+    Qf_data_string = "const PROGMEM tinytype Qf_data["+str(nx)+"] = {"
+    for i in range(nx):
+        Qf_data_string = Qf_data_string + str(Qf_diag[i])
+        if i != nx-1:
+            Qf_data_string = Qf_data_string + ','
+    Qf_data_string = Qf_data_string+"};\n\n"
     
-    # Input constraints (first nu*(N-1) rows)
-    for i in range(N-1):
-        row_start = i * nu
-        col_start = nx + i * (nx + nu)  # Skip first nx cols, then skip block size
-        A_stacked[row_start:row_start+nu, col_start:col_start+nu] = np.eye(nu)
-    
-    # Dynamics constraints (last nx*(N-1) rows)
-    for i in range(N-1):
-        row_start = nu*(N-1) + i*nx  # Start after input constraints
-        col_start = i*(nx + nu)
+    R_diag = np.diagonal(R)
+    R_data_string = "const PROGMEM tinytype R_data["+str(nu)+"] = {"
+    for i in range(nu):
+        R_data_string = R_data_string + str(R_diag[i])
+        if i != nu-1:
+            R_data_string = R_data_string + ','
+    R_data_string = R_data_string+"};\n\n"
+
+    umin_string = export_mat_to_c("const PROGMEM tinytype umin["+str(nu)+"] ", umin) + "\n\n"
+    umax_string = export_mat_to_c("const PROGMEM tinytype umax["+str(nu)+"] ", umax) + "\n\n"
+    xmin_string = export_mat_to_c("const PROGMEM tinytype xmin["+str(nx)+"] ", xmin) + "\n\n"
+    xmax_string = export_mat_to_c("const PROGMEM tinytype xmax["+str(nx)+"] ", xmax) + "\n\n"
+
+    f = open('random_problems/prob_nx_'+str(nx)+'/constants.hpp','w')
+    f.write("#define NSTATES "+str(nx)+'\n\n')
+    f.write("#define NINPUTS "+str(nu)+'\n\n')
+    f.write("#define NHORIZON "+str(Nh)+'\n\n')
+    f.write("#define NTOTAL "+str(Nsim)+'\n\n')
+    f.write('#define NSTATE_CONSTRAINTS 1\n\n')
+
+    f.close()
+
+    f = open('random_problems/prob_nx_'+str(nx)+"/rand_prob_tinympc_xbar.hpp", "w")
+    # f = open("rand_prob_tinympc_xbar.hpp", "w")
+    f.write(include_statement)
+    f.write(boilerplate)
+    f.write(xbar_string)
+    f.close()
+
+    f = open('random_problems/prob_nx_'+str(nx)+"/rand_prob_tinympc_params.hpp", "w")
+    # f = open("rand_prob_tinympc_params.hpp", "w")
+    f.write(include_statement)
+    f.write(boilerplate)
+    f.write(A_data_string)
+    f.write(B_data_string)
+    f.write(Q_data_string)
+    f.write(Qf_data_string)
+    f.write(R_data_string)
+    f.write(umin_string)
+    f.write(umax_string)
+    f.write(xmin_string)
+    f.write(xmax_string)
         
-        # Add A, B, -I matrices
-        A_stacked[row_start:row_start+nx, col_start:col_start+nx] = A
-        A_stacked[row_start:row_start+nx, col_start+nx:col_start+nx+nu] = B
-        A_stacked[row_start:row_start+nx, col_start+nx+nu:col_start+2*nx+nu] = -np.eye(nx)
-    
-    return A_stacked
+    K = np.zeros((nu,nx))
+    P = np.zeros((nx,nx))
+    Kprev = np.zeros((nu,nx))
+    Pprev = np.zeros((nx,nx))
 
-def construct_P(Q, R, N=5, nx=12, nu=4):
-    # Build block diagonal P matrix
-    P_blocks = []
-    for i in range(N):
-        if i < N-1:
-            P_blocks.append(block_diag(Q, R))
-        else:
-            P_blocks.append(Q)
-    return block_diag(*P_blocks)
+    # Compute Kinf, Pinf
+    riccati_iters = 0
+    riccati_err = 1e-10
+    Pprev = Qf
+    while True:
+        K = np.linalg.inv(R + B.T @ Pprev @ B) @ (B.T @ Pprev @ A)
+        P = Q + A.T @ Pprev @ (A - B@K)
+        if np.max(np.abs(K - Kprev)) < riccati_err:
+            break
+        Kprev = K
+        Pprev = P
+        riccati_iters += 1
 
-def construct_q(Q, R, x_prev, u_prev, xg, uhover, N=5):
-    q_blocks = []
-    for i in range(N):
-        # For hover, reference is just xg
-        delta_x = x_prev[:, i] - xg[:12]
-        q_x = Q @ delta_x.reshape(-1, 1)
-        if i < N-1:
-            # For hover, reference input is uhover
-            delta_u = u_prev[:, i] - uhover
-            q_u = R @ delta_u.reshape(-1, 1)
-            q_blocks.extend([q_x, q_u])
-        else:
-            q_blocks.append(q_x)
-    return np.vstack(q_blocks)
+    # Cache precomputed values
+    rho = 85.0
+    Q = Q + rho*np.eye(nx)
+    Qf = P + rho*np.eye(nx)
+    R = R + rho*np.eye(nu)
 
-def print_matrix_cpp(matrix, name):
-    """Generate C++ code for a matrix"""
-    if matrix.ndim == 2:
-        print(f"const float {name}[{matrix.shape[0]}][{matrix.shape[1]}] = {{0}};  // Initialize to zero")
-        print("{")
-        for i in range(matrix.shape[0]):
-            for j in range(matrix.shape[1]):
-                if abs(matrix[i,j]) > 1e-10:  # Only print non-zero elements
-                    print(f"    {name}[{i}][{j}] = {matrix[i,j]}f;")
-        print("}")
-    else:  # Vector
-        print(f"const float {name}[{matrix.shape[0]}] = {{")
-        for i in range(matrix.shape[0]):
-            if abs(matrix[i]) > 1e-10:  # Only print non-zero elements
-                print(f"    {matrix[i]}f,")
-        print("};")
+    # Compute Kinf, Pinf
+    riccati_iters = 0
+    riccati_err = 1e-10
+    Pprev = Qf
+    while True:
+        K = np.linalg.inv(R + B.T @ Pprev @ B) @ (B.T @ Pprev @ A)
+        P = Q + A.T @ Pprev @ (A - B@K)
+        if np.max(np.abs(K - Kprev)) < riccati_err:
+            break
+        Kprev = K
+        Pprev = P
+        riccati_iters += 1
 
-def main():
-    # System dimensions
-    nx, nu = 12, 4
-    N = 5
-    
-    # Constants from your output
-    xg = np.array([0., 0., 0., 1., 0., 0., 0., 0., 0., 0., 0., 0.])
-    uhover = np.array([0.58333335, 0.58333335, 0.58333335, 0.58333335])
-    
-    # Load Adyn matrix (12x12)
-    Adyn = np.array([
-        [-0.013073761504966662, 0.22461100944713758, 0.2544408073658377, 0.1323348019582432, -0.05119190975443125, -0.2853635217317808, 0.005852846280465838, 0.07011807025248573, -0.2968322415804105, -0.013342503116046556, 0., 0.],
-        [-0.06137248955268807, 0.2556656045343489, -0.03063256502887507, 0.11552939765513578, -0.058969127243344646, -0.07512087891577696, -0.2702501391833329, 0.127746986825234, 0.2908888109041632, -0.020948991811369395, 0., 0.],
-        [-0.0037584741172171717, -0.16552794408938437, -0.08875096809930084, 0.042372984402228635, 0.21786326884394774, -0.22975411646799596, -0.07774672994090405, -0.11375421443400495, -0.058180667232261285, -0.4098828152231077, 0., 0.],
-        [0.12242331773993388, 0.12471677936291188, -0.13911303499908662, -0.26582147700536507, -0.06658710699507481, 0.1492285342092377, 0.2972460153275449, 0.0391296849734597, -0.2510614748851446, -0.005822319071535572, 0., 0.],
-        [-0.143324536463163, -0.20137617437023497, -0.003491287843558525, -0.40319248933888935, 0.14221711686704866, 0.014805096771462429, -0.2455110123152518, 0.20304991085071805, -0.07610204893227299, 0.116184055528124, 0., 0.],
-        [0.3210840769778985, 0.03371740843854953, -0.07351063257254649, 0.12192570383078735, -0.09990897508376877, 0.16135562872560028, -0.09661345679939942, -0.3049664444342707, -0.2697298445157618, -0.08068945894468639, 0., 0.],
-        [-0.2453297827460556, 0.0781710615539388, 0.21751900328258827, 0.16456053729640305, 0.039794460418853844, -0.341101291599811, 0.06377132349933874, -0.4229502226809967, 0.1311149585415748, -0.2636762989898564, 0., 0.],
-        [0.1423211580260777, -0.23414683773964046, -0.0841343426124434, -0.3162995888947139, 0.05837127123614148, -0.0007534977634424823, 0.2791294857680328, 0.04530726363395446, 0.16481169971975138, 0.12548148413744514, 0., 0.],
-        [0.1957264057858685, 0.027686871374062134, 0.043621258418221606, -0.08965321413278575, 0.3543881498570847, -0.10454970854675709, -0.1424335459450487, -0.21015125400397391, -0.17906097779100996, -0.13920921968532168, 0., 0.],
-        [0.17549826346412045, 0.035767072993639695, 0.13962148612526337, -0.10341080386062167, 0.34497227607248887, -0.07652298009340157, -0.1685188116906241, -0.08983973705154376, 0.24099638700900639, -0.012089801465588858, 0., 0.],
-        [0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
-        [0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.]
-    ])
-    
-    # Load Bdyn matrix (12x4)
-    Bdyn = np.array([
-        [0.5847337443977123, 0.9156896162787989, -0.6632152796182489, -0.7287620922223179],
-        [-0.06009044137962216, 0.7220150513443002, 0.5341385478526204, 0.1163562164376648],
-        [-0.6864334687845264, -0.2174748617885558, 0.4386915533094997, -0.25317463011527597],
-        [-0.921761299446676, 0.16776792214640257, 0.4402691593858987, 0.42954298328491336],
-        [-0.6702683229305435, -0.3280168211921326, -0.18165541540616048, -0.1590371745457484],
-        [-0.7716830209906447, -0.22893693859729036, 0.013264373087658488, 0.42112134423274306],
-        [0.13889537768820004, -0.19013887920220185, 0.8551947255090679, 0.19616713326347623],
-        [0.949581767410826, 0.7347527127002798, 0.34725220325022876, 0.7986269908494112],
-        [0.9824793562366523, -0.5582454660717111, 0.38211303980760825, 0.8375585557182579],
-        [-0.9651996799670686, 0.5989779930651686, -0.8211941002179848, 0.8331085948904269],
-        [0., 0., 0., 0.],
-        [0., 0., 0., 0.]
-    ])
-    
-    # Load Q matrix (12x12)
-    Q_diag = np.array([6.964691855978616, 2.8613933495037944, 2.268514535642031, 5.513147690828912,
-                       7.1946896978556305, 4.23106460124461, 9.807641983846155, 6.848297385848633,
-                       4.809319014843609, 3.9211751819415053, 0., 0.])
+    Kinf = K
+    Pinf = P
+    Quu_inv = np.linalg.inv(R + B.T @ Pinf@B)
+    AmBKt = (A - B@K).T
+    coeff_d2p_list = Kinf.T@R - AmBKt@Pinf@B
+
+    rho_string = "const PROGMEM tinytype rho_value = "+str(rho)+";\n\n"
+    Kinf_string = export_mat_to_c("const PROGMEM tinytype Kinf_data["+str(nu)+"*"+str(nx)+"] ", Kinf) + "\n\n"
+    Pinf_string = export_mat_to_c("const PROGMEM tinytype Pinf_data["+str(nx)+"*"+str(nx)+"] ", Pinf) + "\n\n"
+    Quu_inv_string = export_mat_to_c("const PROGMEM tinytype Quu_inv_data["+str(nu)+"*"+str(nu)+"] ", Quu_inv) + "\n\n"
+    AmBKt_string = export_mat_to_c("const PROGMEM tinytype AmBKt_data["+str(nx)+"*"+str(nx)+"] ", AmBKt) + "\n\n"
+    coeff_d2p_list_string = export_mat_to_c("const PROGMEM tinytype coeff_d2p_data["+str(nx)+"*"+str(nu)+"] ", coeff_d2p_list) + "\n\n"
+
+    f.write(rho_string)
+    f.write(Kinf_string)
+    f.write(Pinf_string)
+    f.write(Quu_inv_string)
+    f.write(AmBKt_string)
+    f.write(coeff_d2p_list_string)
+    f.close()
+
+def osqp_export_data_to_python(xbar, A, B, Q, Qf, R, umin, umax, xmin, xmax, nx, nu, Nh, Nsim):
+    np.savez('random_problems/prob_nx_'+str(nx)+'/rand_prob_osqp_params.npz',nx=nx, nu=nu, Nh=Nh, Nsim=Nsim, Q=Q, R=R, A=A, B=B, Qf=Qf, x_bar=xbar, umin=umin, umax=umax, xmin=xmin, xmax=xmax)
+    # np.savez('rand_prob_osqp_params.npz',nx=nx, nu=nu, Nh=Nh, Nsim=Nsim, Q=Q, R=R, A=A, B=B, Qf=Qf, x_bar=xbar, umin=umin, umax=umax, xmin=xmin, xmax=xmax)
+    SIZE_Q = (Nh + 1) * nx + Nh * nu
+    SIZE_LU = (Nh + 1) * nx * 2 + Nh * nu
+
+    include_statement = '#include "osqp_api_types.h"\n\n'
+    boilerplate = "#pragma once\n\n"
+
+    xbar_string = export_xref_to_c("const PROGMEM OSQPFloat Xref_data["+str(Nsim)+"*"+str(nx)+"] ", xbar, nx)+'\n\n'
+
+    # f = open("rand_prob_osqp_xbar.h", "w")
+    f = open('random_problems/prob_nx_'+str(nx)+"/rand_prob_osqp_xbar.h", "w")
+    f.write(include_statement)
+    f.write(boilerplate)
+    f.write(xbar_string)
+
+    f.write("#define NSTATES "+str(nx)+'\n\n')
+    f.write("#define NINPUTS "+str(nu)+'\n\n')
+    f.write("#define NHORIZON "+str(Nh)+'\n\n')
+    f.write("#define NTOTAL "+str(Nsim)+'\n\n')
+    f.write("#define SIZE_Q "+str(SIZE_Q)+'\n\n')
+    f.write("#define SIZE_LU "+str(SIZE_LU)+'\n\n')
+
+    Q_string = export_mat_to_c("const PROGMEM OSQPFloat mQ["+str(nx)+"*"+str(nx)+"] ", -Q)+'\n\n'
+    Qf_string = export_mat_to_c("const PROGMEM OSQPFloat mQf["+str(nx)+"*"+str(nx)+"] ", -Qf)+'\n\n'
+    A_string = export_mat_to_c("const PROGMEM OSQPFloat A["+str(nx)+"*"+str(nx)+"] ", A)+'\n\n'
+    B_string = export_mat_to_c("const PROGMEM OSQPFloat B["+str(nx)+"*"+str(nu)+"] ", B)+'\n\n'
+
+    f.write(Q_string)
+    f.write(Qf_string)
+    f.write(A_string)
+    f.write(B_string)
+
+    f.close()
+
+def generate_data(nx, nu, Nh, Nsim):
+    np.random.seed(123)
+    # Generate Q: Q_{ii} = U(0, 1)
+    Q_diag = np.random.uniform(0,10,nx)
     Q = np.diag(Q_diag)
-    
-    # Load R matrix (4x4)
-    R = np.diag([0.1, 0.1, 0.1, 0.1])
-    
-    # Sample state and input trajectories for hover
-    x_prev = np.zeros((nx, N))  # Starting from zero state
-    u_prev = np.zeros((nu, N-1))  # Starting from zero input
-    
-    # Generate MPC matrices
-    A_stacked = construct_A_stacked(Adyn, Bdyn, N)
-    P = construct_P(Q, R, N)
-    q = construct_q(Q, R, x_prev, u_prev, xg, uhover, N)
-    
-    # Print C++ code
-    print("// Generated MPC matrices")
-    print_matrix_cpp(A_stacked, "A_stacked")
-    print_matrix_cpp(P, "P")
-    print_matrix_cpp(q, "q")
 
-if __name__ == "__main__":
-    main()
+    # Generate R: R_{ii} = 0.1
+    R_diag = 0.1*np.ones(nu)
+    R = np.diag(R_diag)
+
+    # Generate Qf: (N-1)*Q
+    Qf = ((Nh)-1)*Q
+
+    # reference trajectory xk, uk --> uk ~ N(0, 1), xk+1 = f(xk, uk)
+    u = np.random.normal(size=(nu, Nsim-1))
+
+    # A and B are random matrices with eigenvalues inside of the unit circle
+
+    # Generate a controllable system
+    while True:
+        # SVD for both A and B to ensure that the eigenvalues are inside of the unit circle
+        A = np.random.uniform(low=-1, high=1, size=(nx, nx))
+        U, S, Vh = np.linalg.svd(A) # S is a vector of the non-zero singular values
+        E = np.zeros((U.shape[0], Vh.shape[0])) # E is the SVD matrix of singular values Σ 
+        S = S / np.max(S) # Scale the singular values so that 
+        np.fill_diagonal(E, S)
+        A = U @ E @ Vh.T
+
+        B = np.random.uniform(low=-1, high=1, size=(nx,nu))
+
+        # Check if the system is controllable
+        C = np.zeros((nx,nx*nu)) # controllability matrix
+        Ak = np.zeros((nx,nx)) + np.eye(nx)
+        for k in range(nx):
+            C[:, (k)*nu:(k)*nu+nu] = Ak@B
+            Ak = Ak @ A
+
+        if np.linalg.matrix_rank(C) == A.shape[0]: # only true if system is controllable
+            break
+        else:
+            print("Not controllable")
+
+    umax = np.zeros((nu,1)) + 3
+    umin = np.zeros((nu,1)) - 3
+    xmin = np.zeros((nx,1)) - 10000 # might add state constraints later
+    xmax = np.zeros((nx,1)) + 10000
+
+    x0 = np.zeros(nx)
+    xbar = np.zeros((Nsim, nx))
+    xbar[0,:] = x0
+
+    for k in range(Nsim-1):
+        xbar[k+1,:] = A @ xbar[k,:] + B @ u[:,k]
+
+
+    ### SAVE ALL RANDOM PROBLEM DATA TO A HPP FILE TO BE USED BY ALL SOLVERS ###
+
+    tinympc_export_data_to_c(xbar, A, B, Q, Qf, R, umin, umax, xmin, xmax, nx, nu, Nh, Nsim)
+    osqp_export_data_to_python(xbar, A, B, Q, Qf, R, umin, umax, xmin, xmax, nx, nu, Nh, Nsim)
+        
+def export_matrix_to_raw_format(A, B, system_id, output_dir):
+    """Export A and B matrices in raw array format with PROGMEM directive."""
+    
+    with open(f"{output_dir}/system_{system_id}.h", "w") as f:
+        f.write("#pragma once\n\n")
+        f.write("typedef float tinytype;\n\n")
+        
+        # Export A matrix
+        f.write(f"const PROGMEM tinytype Adyn_data[{A.shape[0]}*{A.shape[1]}] = {{\n")
+        for i in range(A.shape[0]):
+            f.write("  ")
+            for j in range(A.shape[1]):
+                f.write(f"{A[i, j]},\t")
+            f.write("\n")
+        f.write("};\n\n\n")
+        
+        # Export B matrix
+        f.write(f"const PROGMEM tinytype Bdyn_data[{B.shape[0]}*{B.shape[1]}] = {{\n")
+        for i in range(B.shape[0]):
+            f.write("  ")
+            for j in range(B.shape[1]):
+                f.write(f"{B[i, j]},\t")
+            f.write("\n")
+        f.write("};\n\n")
+        
+        # Add placeholder for Q, Qf, R data
+        nx = A.shape[0]
+        nu = B.shape[1]
+        
+        # Generate random Q diagonal values
+        Q_diag = np.random.uniform(0, 10, nx)
+        f.write(f"const PROGMEM tinytype Q_data[{nx}] = {{")
+        for i in range(nx):
+            f.write(f"{Q_diag[i]}")
+            if i < nx - 1:
+                f.write(",")
+        f.write("};\n\n")
+        
+        # Generate Qf as 9*Q
+        Qf_diag = 9 * Q_diag
+        f.write(f"const PROGMEM tinytype Qf_data[{nx}] = {{")
+        for i in range(nx):
+            f.write(f"{Qf_diag[i]}")
+            if i < nx - 1:
+                f.write(",")
+        f.write("};\n\n")
+        
+        # Generate R diagonal values (all 0.1)
+        f.write(f"const PROGMEM tinytype R_data[{nu}] = {{")
+        for i in range(nu):
+            f.write("0.1")
+            if i < nu - 1:
+                f.write(",")
+        f.write("};\n")
+
+def generate_1000_matrices(nx=12, nu=4):
+    """Generate 1000 random controllable matrices using the existing logic."""
+    output_dir = "/Users/ishaanmahajan/benchmark-tinyMPC/ICRA_benchmarks/teensy_tinympc_benchmark/include/problem_data"
+    
+    # Create output directory if it doesn't exist
+    os.makedirs(output_dir, exist_ok=True)
+    
+    # Generate systems
+    for i in range(1, 1001):
+        if i % 10 == 0:
+            print(f"Generating system {i}/1000")
+        
+        # Use different random seed for each system
+        np.random.seed(123 + i)
+        
+        # Generate a controllable system using the exact same logic from generate_data
+        while True:
+            # SVD for both A and B to ensure that the eigenvalues are inside of the unit circle
+            A = np.random.uniform(low=-1, high=1, size=(nx, nx))
+            U, S, Vh = np.linalg.svd(A) # S is a vector of the non-zero singular values
+            E = np.zeros((U.shape[0], Vh.shape[0])) # E is the SVD matrix of singular values Σ 
+            S = S / np.max(S) # Scale the singular values so that 
+            np.fill_diagonal(E, S)
+            A = U @ E @ Vh.T
+
+            B = np.random.uniform(low=-1, high=1, size=(nx, nu))
+
+            # Check if the system is controllable
+            C = np.zeros((nx, nx*nu)) # controllability matrix
+            Ak = np.zeros((nx, nx)) + np.eye(nx)
+            for k in range(nx):
+                C[:, (k)*nu:(k)*nu+nu] = Ak@B
+                Ak = Ak @ A
+
+            if np.linalg.matrix_rank(C) == A.shape[0]: # only true if system is controllable
+                break
+            else:
+                print(f"System {i} not controllable, regenerating...")
+        
+        # Export to header files in raw format
+        export_matrix_to_raw_format(A, B, i, output_dir)
+    
+    # Create an index file that includes all matrices
+    with open(f"{output_dir}/all_systems.h", "w") as f:
+        f.write("#ifndef ALL_SYSTEMS_H\n")
+        f.write("#define ALL_SYSTEMS_H\n\n")
+        
+        for i in range(1, 1001):
+            f.write(f"#include \"system_{i}.h\"\n")
+        
+        f.write("\n#endif // ALL_SYSTEMS_H\n")
+    
+    print(f"Successfully generated 1000 random controllable systems in {output_dir}")
+
+if __name__ == '__main__':
+    # Generate 1000 random controllable matrices (12 states, 4 inputs)
+    generate_1000_matrices(12, 4)
+    
+    # Comment out the original code
+    # nu = 4
+    # Nh = 10
+    # Nsim = 200
+    # for nx in [10]:
+    #     os.system('mkdir random_problems/prob_nx_'+str(nx))
+    #     generate_data(nx, nu, Nh, Nsim)
+    #     print('generated: random_problems/prob_nx_'+str(nx))

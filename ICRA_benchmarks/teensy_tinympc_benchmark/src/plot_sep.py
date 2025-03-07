@@ -96,7 +96,7 @@ def create_separate_plots(df):
     ax1.set_ylabel('Problems Solved (%)')
     ax1.xaxis.set_major_formatter(FuncFormatter(lambda x, p: format(int(x), ',')))
     ax1.grid(True, alpha=0.3)
-    ax1.legend(loc='upper left')
+    ax1.legend(loc='upper left', fontsize=14)
     ax1.set_ylim(0, 105)
 
         # Set the plotting style
@@ -113,6 +113,8 @@ def create_separate_plots(df):
 
     
     plt.tight_layout()
+
+    plt.show()
    
     plt.savefig('cdf_plot.png', dpi=300, bbox_inches='tight')
     plt.close()
@@ -178,6 +180,7 @@ def create_separate_plots(df):
     
     
     plt.savefig('bar_chart.png', dpi=300, bbox_inches='tight')
+    plt.show()
     plt.close()
     
     # Calculate statistics for reporting
@@ -197,7 +200,7 @@ if __name__ == "__main__":
     # Create visualizations - replace this line
     # create_combined_plots(df)
     # with this:
-    file_path = "/Users/ishaanmahajan/benchmark-tinyMPC/ICRA_benchmarks/teensy_tinympc_benchmark/benchmark_results.csv"
+    file_path = "/Users/ishaanmahajan/benchmark-tinyMPC/ICRA_benchmarks/teensy_tinympc_benchmark/benchmark_results_dynamics_10.csv"
     
     try:
         # Try to parse from file first

@@ -96,7 +96,7 @@ def create_combined_plots(df):
     ax1.set_ylabel('Problems Solved (%)')
     ax1.xaxis.set_major_formatter(FuncFormatter(lambda x, p: format(int(x), ',')))
     ax1.grid(True, alpha=0.3)
-    ax1.legend(loc='upper left')
+    ax1.legend(loc='upper left', fontsize=14)
     ax1.set_ylim(0, 105)
     
     # For the stacked bar chart (right)
@@ -116,7 +116,7 @@ def create_combined_plots(df):
     ax2.set_ylabel('Time (µs)')
     ax2.set_xticks(x)
     ax2.set_xticklabels(['Fixed', 'First-Order\nAdaptive'])
-    ax2.legend()
+    ax2.legend(fontsize=14)
     
     # Add value labels on bars
     for i, p in enumerate([p1_fixed, p1_adaptive]):
@@ -161,6 +161,11 @@ def create_combined_plots(df):
     ax2.yaxis.grid(True, linestyle='--', alpha=0.7)
     ax2.yaxis.set_major_formatter(FuncFormatter(lambda x, p: format(int(x), ',')))
     ax2.set_ylim(0, 25000)
+
+    #print avg iterations for fixed and adaptive
+    print(f"Average iterations for Fixed: {fixed_df['iterations'].mean():.2f}")
+    print(f"Average iterations for Adaptive: {adaptive_df['iterations'].mean():.2f}")
+
     
     plt.tight_layout()
     plt.savefig('overhead.png', dpi=300)
