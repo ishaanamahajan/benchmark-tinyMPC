@@ -15,10 +15,10 @@ struct SolverStats {
     float std_iters;
     
     // Arrays to store raw data
-    float solve_times[1000];
-    float admm_times[1000];
-    float rho_times[1000];
-    float iterations[1000];
+    float solve_times[100];
+    float admm_times[100];
+    float rho_times[100];
+    float iterations[100];
 };
 
 // Function to compute statistics
@@ -77,7 +77,7 @@ void setup() {
     // Set ADMM tolerances
     params.abs_pri_tol = 1e-2f;
     params.abs_dua_tol = 1e-2f;
-    params.max_iter = 500;
+    params.max_iter = 5000;
     
     // Initialize RhoAdapter
     RhoAdapter adapter;
@@ -127,15 +127,17 @@ void setup() {
         
         // Set test conditions
         problem.x.setZero();
-        problem.x.col(0) << 0.0f, 0.0f, 0.0f,  // position offset
-                   0.0f, 0.0f, 0.0f,    // roll offset
-                   0.0f, 0.0f, 0.0f,    // zero velocity
-                   0.0f, 0.0f, 0.0f;    // zero angular rates
+        // problem.x.col(0) << 0.0f, 0.0f, 0.0f,  // position offset
+        //            0.0f, 0.0f, 0.0f,    // roll offset
+        //            0.0f, 0.0f, 0.0f,    // zero velocity
+        //            0.0f, 0.0f, 0.0f;    // zero angular rates
 
-        // problem.x.col(0) << 1.0f, 2.0f, 3.0f, 4.0f ; // position offset
-        problem.u.setRandom();
-        params.Xref.setRandom();
-        params.Uref.setRandom();
+        problem.x.col(0) << 1.0f, 2.0f, 3.0f, 4.0f ; // position offset
+        problem.u = trial_u_init[i];        
+        params.Xref = trial_Xrefs[i];      
+        params.Uref = trial_Urefs[i]; 
+
+
 
         params.rho = 85.0f;
         params.compute_cache_terms();
@@ -177,15 +179,15 @@ void setup() {
         
         // Use same test conditions as fixed version
         problem.x.setZero();
-        problem.x.col(0) << 0.0f, 0.0f, 0.0f,  // position offset
-                   0.0f, 0.0f, 0.0f,    // roll offset
-                   0.0f, 0.0f, 0.0f,    // zero velocity
-                   0.0f, 0.0f, 0.0f;    // zero angular rates
+        // problem.x.col(0) << 0.0f, 0.0f, 0.0f,  // position offset
+        //            0.0f, 0.0f, 0.0f,    // roll offset
+        //            0.0f, 0.0f, 0.0f,    // zero velocity
+        //            0.0f, 0.0f, 0.0f;    // zero angular rates
 
-        //problem.x.col(0) << 1.0f, 2.0f, 3.0f, 4.0f ;
-        problem.u.setRandom();
-        params.Xref.setRandom();
-        params.Uref.setRandom();
+        problem.x.col(0) << 1.0f, 2.0f, 3.0f, 4.0f ;
+        problem.u = trial_u_init[i];        
+        params.Xref = trial_Xrefs[i];      
+        params.Uref = trial_Urefs[i]; 
         
         // Reset rho to base value
         params.rho = adapter.rho_base;

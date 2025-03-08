@@ -36,10 +36,10 @@ void solve_admm(struct tiny_problem *problem, struct tiny_params *params) {
     problem->z.setZero();
     problem->vnew.setZero();
     problem->znew.setZero();
-    problem->p.setZero();
-    problem->q.setZero();
-    problem->r.setZero();
-    problem->d.setZero();
+    // problem->p.setZero();
+    // problem->q.setZero();
+    // problem->r.setZero();
+    // problem->d.setZero();
     
     // Reset convergence variables
     problem->status = 0;
@@ -120,10 +120,10 @@ void solve_admm_adaptive(struct tiny_problem *problem, struct tiny_params *param
     problem->z.setZero();
     problem->vnew.setZero();
     problem->znew.setZero();
-    problem->p.setZero();
-    problem->q.setZero();
-    problem->r.setZero();
-    problem->d.setZero();
+    // problem->p.setZero();
+    // problem->q.setZero();
+    // problem->r.setZero();
+    // problem->d.setZero();
     
     // Reset convergence variables
     problem->status = 0;
@@ -164,7 +164,7 @@ void solve_admm_adaptive(struct tiny_problem *problem, struct tiny_params *param
         float dua_res_state = params->rho * (problem->vnew - v_prev).lpNorm<Eigen::Infinity>();
 
         // Update rho every 10 iterations
-        if (iter > 0 && iter % 5 == 0) {
+        if (iter > 0 && iter % 10 == 0) {
             uint32_t rho_update_start = micros();
             
             // Call benchmark_rho_adaptation with current state

@@ -29,9 +29,9 @@ typedef Matrix<tinytype, NSTATES, NHORIZON> tiny_MatrixXref;
 typedef Matrix<tinytype, NINPUTS, NHORIZON-1> tiny_MatrixUref;
 
 struct tiny_params {
-    static constexpr float DEFAULT_PRI_TOL = 1e-2f;  // Match Python's default
-    static constexpr float DEFAULT_DUA_TOL = 1e-2f;
-    static constexpr int DEFAULT_MAX_ITER = 500;
+    static constexpr float DEFAULT_PRI_TOL = 1e-3f;  // Match Python's default
+    static constexpr float DEFAULT_DUA_TOL = 1e-3f;
+    static constexpr int DEFAULT_MAX_ITER = 5000;
     
     // Raw matrices with correct dimensions
     tiny_MatrixNxN A;    // NSTATES x NSTATES
@@ -49,11 +49,17 @@ struct tiny_params {
     tiny_MatrixUref u_min;
     tiny_MatrixUref u_max;
     
-    // Computed cache terms (will be calculated)
+    // Computed cache terms (will be loaded from data)
     tiny_MatrixNuN Kinf; // NINPUTS x NSTATES
     tiny_MatrixNxN Pinf; // NSTATES x NSTATES
     tiny_MatrixNuNu C1;  // NINPUTS x NINPUTS
     tiny_MatrixNxN C2;   // NSTATES x NSTATES
+    
+    // Sensitivity matrices
+    tiny_MatrixNuN dKinf_drho; // NINPUTS x NSTATES
+    tiny_MatrixNxN dPinf_drho; // NSTATES x NSTATES
+    tiny_MatrixNuNu dC1_drho;  // NINPUTS x NINPUTS
+    tiny_MatrixNxN dC2_drho;   // NSTATES x NSTATES
     
     // Other parameters
     tinytype rho;
@@ -63,68 +69,41 @@ struct tiny_params {
 
     // Constructor to initialize from raw data
     tiny_params() : 
-        rho(85.0),
+        rho(rho_value),
         abs_pri_tol(DEFAULT_PRI_TOL),
         abs_dua_tol(DEFAULT_DUA_TOL),
         max_iter(DEFAULT_MAX_ITER)
     {
-        // Initialize matrices to zero first
-        A.setZero();
-        B.setZero();
-        Q.setZero();
-        R.setZero();
-
-        // Load matrices with correct dimensions
+        // Load matrices from PROGMEM
         load_matrix_from_progmem(A, Adyn_data);
         load_matrix_from_progmem(B, Bdyn_data);
         load_diagonal_matrix_from_progmem(Q, Q_data);
         load_diagonal_matrix_from_progmem(R, R_data);
+        
+        // Load pre-computed cache terms
+        load_matrix_from_progmem(Kinf, Kinf_data);
+        load_matrix_from_progmem(Pinf, Pinf_data);
+        load_matrix_from_progmem(C1, Quu_inv_data);
+        load_matrix_from_progmem(C2, AmBKt_data);
+        
+        // Load sensitivity matrices
+        load_matrix_from_progmem(dKinf_drho, dKinf_drho_data);
+        load_matrix_from_progmem(dPinf_drho, dPinf_drho_data);
+        load_matrix_from_progmem(dC1_drho, dC1_drho_data);
+        load_matrix_from_progmem(dC2_drho, dC2_drho_data);
         
         // Initialize reference trajectories to zero
         Xref.setZero();
         Uref.setZero();
         
         // Initialize bounds
-        x_min.setConstant(-10000.0);  // From rand_prob_tinympc_params.hpp
+        x_min.setConstant(-10000.0);
         x_max.setConstant(10000.0);
         u_min.setConstant(-3.0);
         u_max.setConstant(3.0);
-        
-        // Compute cache terms
-        compute_cache_terms();
     }
 
-    void compute_cache_terms() {
-        // Add regularization
-        tiny_MatrixNuNu R_rho = R + rho * tiny_MatrixNuNu::Identity();
-        tiny_MatrixNxN Q_rho = Q + rho * tiny_MatrixNxN::Identity();
-
-        // DLQR computation
-        Kinf = tiny_MatrixNuN::Zero();
-        Pinf = Q;
-
-        for (int k = 0; k < 5000; k++) {
-            tiny_MatrixNuN Kinf_prev = Kinf;
-            
-            tiny_MatrixNuNu BtPB = B.transpose() * Pinf * B;
-            BtPB += 1e-8 * tiny_MatrixNuNu::Identity();
-            
-            tiny_MatrixNuN BtPA = B.transpose() * Pinf * A;
-            
-            Kinf = BtPB.ldlt().solve(BtPA);
-            
-            Pinf = Q_rho + A.transpose() * Pinf * (A - B * Kinf);
-
-            if ((Kinf - Kinf_prev).norm() < 1e-10)
-                break;
-        }
-
-        // Compute C1 and C2
-        tiny_MatrixNuNu temp = R_rho + B.transpose() * Pinf * B;
-        C1 = temp.ldlt().solve(tiny_MatrixNuNu::Identity());
-        C2 = (A - B * Kinf).transpose();
-    }
-
+    // Helper methods to load matrices from PROGMEM
     void load_matrix_from_progmem(tiny_MatrixNxN &matrix, const tinytype *data) {
         for (int i = 0; i < NSTATES; i++) {
             for (int j = 0; j < NSTATES; j++) {
@@ -135,6 +114,22 @@ struct tiny_params {
 
     void load_matrix_from_progmem(tiny_MatrixNxB &matrix, const tinytype *data) {
         for (int i = 0; i < NSTATES; i++) {
+            for (int j = 0; j < NINPUTS; j++) {
+                matrix(i,j) = pgm_read_float(&data[i * NINPUTS + j]);
+            }
+        }
+    }
+
+    void load_matrix_from_progmem(tiny_MatrixNuN &matrix, const tinytype *data) {
+        for (int i = 0; i < NINPUTS; i++) {
+            for (int j = 0; j < NSTATES; j++) {
+                matrix(i,j) = pgm_read_float(&data[i * NSTATES + j]);
+            }
+        }
+    }
+
+    void load_matrix_from_progmem(tiny_MatrixNuNu &matrix, const tinytype *data) {
+        for (int i = 0; i < NINPUTS; i++) {
             for (int j = 0; j < NINPUTS; j++) {
                 matrix(i,j) = pgm_read_float(&data[i * NINPUTS + j]);
             }
@@ -152,6 +147,42 @@ struct tiny_params {
         matrix.setZero();
         for (int i = 0; i < NINPUTS; i++) {
             matrix(i,i) = pgm_read_float(&data[i]);
+        }
+    }
+
+    // Method to get sensitivity matrices
+    void compute_sensitivity_matrices(float* dKinf_drho_out, float* dPinf_drho_out, float* dC1_drho_out, float* dC2_drho_out) {
+        // Simply copy the pre-loaded sensitivity matrices to the output arrays
+        if (dKinf_drho_out) {
+            for (int i = 0; i < NINPUTS; i++) {
+                for (int j = 0; j < NSTATES; j++) {
+                    dKinf_drho_out[i * NSTATES + j] = dKinf_drho(i,j);
+                }
+            }
+        }
+        
+        if (dPinf_drho_out) {
+            for (int i = 0; i < NSTATES; i++) {
+                for (int j = 0; j < NSTATES; j++) {
+                    dPinf_drho_out[i * NSTATES + j] = dPinf_drho(i,j);
+                }
+            }
+        }
+        
+        if (dC1_drho_out) {
+            for (int i = 0; i < NINPUTS; i++) {
+                for (int j = 0; j < NINPUTS; j++) {
+                    dC1_drho_out[i * NINPUTS + j] = dC1_drho(i,j);
+                }
+            }
+        }
+        
+        if (dC2_drho_out) {
+            for (int i = 0; i < NSTATES; i++) {
+                for (int j = 0; j < NSTATES; j++) {
+                    dC2_drho_out[i * NSTATES + j] = dC2_drho(i,j);
+                }
+            }
         }
     }
 };
@@ -192,14 +223,14 @@ struct tiny_problem {
     int status;                   // Solver status (0=not converged, 1=converged)
     int iter;                     // Current iteration count
     int max_iter;                 // Maximum iterations
-    float abs_tol;               // Absolute tolerance
+    float abs_tol;                // Absolute tolerance
     
     // Timing
     uint32_t solve_time;          // Total solve time
     uint32_t admm_time;           // ADMM iteration time
-    uint32_t rho_time;           // Rho adaptation time
-    uint32_t init_time;  // Add this field
-    int solve_count = 0;  // Add this line
+    uint32_t rho_time;            // Rho adaptation time
+    uint32_t init_time;           // Initialization time
+    int solve_count = 0;          // Solve count
 
     // Separate timing structs for each solver
     SolverTimings fixed_timings;

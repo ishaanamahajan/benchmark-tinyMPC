@@ -8,6 +8,8 @@ Modified to generate 1000 random controllable matrices.
 
 import numpy as np
 import os
+from autograd import jacobian
+import autograd.numpy as anp
 
 def export_xref_to_c(declare, data, nx):
     string = declare + "= {\n"
@@ -369,15 +371,196 @@ def generate_1000_matrices(nx=12, nu=4):
     
     print(f"Successfully generated 1000 random controllable systems in {output_dir}")
 
-if __name__ == '__main__':
-    # Generate 1000 random controllable matrices (12 states, 4 inputs)
-    generate_1000_matrices(12, 4)
+def export_matrix_to_c(name, matrix, precision=16):
+    """Export a matrix to C format with specified precision"""
+    rows, cols = matrix.shape
+    result = f"const PROGMEM tinytype {name}[{rows}*{cols}] = {{\n"
     
-    # Comment out the original code
-    # nu = 4
-    # Nh = 10
-    # Nsim = 200
-    # for nx in [10]:
-    #     os.system('mkdir random_problems/prob_nx_'+str(nx))
-    #     generate_data(nx, nu, Nh, Nsim)
-    #     print('generated: random_problems/prob_nx_'+str(nx))
+    for i in range(rows):
+        result += "  "
+        for j in range(cols):
+            result += f"{matrix[i, j]:.{precision}f},\t"
+        result += "\n"
+    
+    result += "};\n\n"
+    return result
+
+def export_vector_to_c(name, vector, precision=16):
+    """Export a vector to C format with specified precision"""
+    size = len(vector)
+    result = f"const PROGMEM tinytype {name}[{size}] = {{"
+    
+    for i in range(size):
+        if i % 10 == 0:
+            result += "\n  "
+        result += f"{vector[i]:.{precision}f},"
+    
+    result += "\n};\n\n"
+    return result
+
+def generate_random_system(nx=12, nu=4):
+    """Generate a random controllable system"""
+    while True:
+        # Generate random A matrix with scaled singular values
+        A = np.random.uniform(low=-0.5, high=0.5, size=(nx, nx))
+        U, S, Vh = np.linalg.svd(A)
+        E = np.zeros((U.shape[0], Vh.shape[0]))
+        S = S / np.max(S) * 0.5  # Scale singular values for stability
+        np.fill_diagonal(E, S)
+        A = U @ E @ Vh
+
+        # Generate random B matrix
+        B = np.random.uniform(low=-1, high=1, size=(nx, nu))
+
+        # Check controllability
+        C = np.zeros((nx, nx*nu))
+        Ak = np.eye(nx)
+        for k in range(nx):
+            C[:, k*nu:(k+1)*nu] = Ak @ B
+            Ak = Ak @ A
+
+        if np.linalg.matrix_rank(C) == nx:
+            break
+    
+    # Generate cost matrices
+    Q_diag = np.random.uniform(low=0.5, high=10, size=nx)
+    Q = np.diag(Q_diag)
+    Qf = Q * 9  # Terminal cost is higher
+    R = np.diag(np.ones(nu) * 0.1)
+    
+    # Compute LQR gain and related matrices
+    rho = 85.0
+    R_rho = R + rho * np.eye(nu)
+    P = Q.copy()
+    
+    # Iterate to find steady-state solution
+    for _ in range(100):
+        K = np.linalg.inv(R_rho + B.T @ P @ B) @ B.T @ P @ A
+        P = Q + A.T @ P @ (A - B @ K)
+    
+    K = np.linalg.inv(R_rho + B.T @ P @ B) @ B.T @ P @ A
+    C1 = np.linalg.inv(R_rho + B.T @ P @ B)
+    C2 = A - B @ K
+    
+    # Compute sensitivity matrices using autograd
+    def lqr_direct(rho_val):
+        R_rho_auto = anp.diag(np.ones(nu) * 0.1) + rho_val * anp.eye(nu)
+        A_auto, B_auto = anp.array(A), anp.array(B)
+        Q_auto = anp.diag(Q_diag)
+        
+        # Compute P
+        P_auto = Q_auto.copy()
+        for _ in range(100):
+            K_auto = anp.linalg.solve(R_rho_auto + B_auto.T @ P_auto @ B_auto, B_auto.T @ P_auto @ A_auto)
+            P_auto = Q_auto + A_auto.T @ P_auto @ (A_auto - B_auto @ K_auto)
+        
+        K_auto = anp.linalg.solve(R_rho_auto + B_auto.T @ P_auto @ B_auto, B_auto.T @ P_auto @ A_auto)
+        C1_auto = anp.linalg.inv(R_rho_auto + B_auto.T @ P_auto @ B_auto)
+        C2_auto = A_auto - B_auto @ K_auto
+        
+        return anp.concatenate([K_auto.flatten(), P_auto.flatten(), C1_auto.flatten(), C2_auto.flatten()])
+    
+    # Get derivatives using autodiff
+    derivs = jacobian(lqr_direct)(rho)
+    
+    # Reshape derivatives into matrices
+    k_size = nu * nx
+    p_size = nx * nx
+    c1_size = nu * nu
+    c2_size = nx * nx
+    
+    dKinf_drho = derivs[:k_size].reshape(nu, nx)
+    dPinf_drho = derivs[k_size:k_size+p_size].reshape(nx, nx)
+    dC1_drho = derivs[k_size+p_size:k_size+p_size+c1_size].reshape(nu, nu)
+    dC2_drho = derivs[k_size+p_size+c1_size:].reshape(nx, nx)
+    
+    return {
+        'A': A,
+        'B': B,
+        'Q': Q_diag,  # Just the diagonal
+        'Qf': Q_diag * 9,  # Just the diagonal
+        'R': np.ones(nu) * 0.1,  # Just the diagonal
+        'rho': rho,
+        'Kinf': K,
+        'Pinf': P,
+        'Quu_inv': C1,
+        'AmBKt': C2,
+        'coeff_d2p': P @ B @ C1,
+        'dKinf_drho': dKinf_drho,
+        'dPinf_drho': dPinf_drho,
+        'dC1_drho': dC1_drho,
+        'dC2_drho': dC2_drho
+    }
+
+def generate_header_file(system, filename, nx=12, nu=4):
+    """Generate a header file for the given system"""
+    with open(filename, 'w') as f:
+        f.write("#pragma once\n\n")
+        f.write("typedef float tinytype;\n\n")
+        
+        f.write(export_matrix_to_c("Adyn_data", system['A']))
+        f.write(export_matrix_to_c("Bdyn_data", system['B']))
+        f.write(export_vector_to_c("Q_data", system['Q']))
+        f.write(export_vector_to_c("Qf_data", system['Qf']))
+        f.write(export_vector_to_c("R_data", system['R']))
+        
+        # Input constraints
+        f.write("const PROGMEM tinytype umin[4] = {\n")
+        for i in range(nu):
+            f.write(f"  -3.0,\t\n")
+        f.write("};\n\n")
+        
+        f.write("const PROGMEM tinytype umax[4] = {\n")
+        for i in range(nu):
+            f.write(f"  3.0,\t\n")
+        f.write("};\n\n")
+        
+        # State constraints
+        f.write(f"const PROGMEM tinytype xmin[{nx}] = {{\n")
+        for i in range(nx):
+            f.write(f"  -10000.0,\t\n")
+        f.write("};\n\n")
+        
+        f.write(f"const PROGMEM tinytype xmax[{nx}] = {{\n")
+        for i in range(nx):
+            f.write(f"  10000.0,\t\n")
+        f.write("};\n\n")
+        
+        f.write("const PROGMEM tinytype rho_value = 85.0;\n\n")
+        
+        # Pre-computed matrices
+        f.write(export_matrix_to_c("Kinf_data", system['Kinf']))
+        f.write(export_matrix_to_c("Pinf_data", system['Pinf']))
+        f.write(export_matrix_to_c("Quu_inv_data", system['Quu_inv']))
+        f.write(export_matrix_to_c("AmBKt_data", system['AmBKt']))
+        f.write(export_matrix_to_c("coeff_d2p_data", system['coeff_d2p']))
+        
+        # Sensitivity matrices
+        f.write(export_matrix_to_c("dKinf_drho_data", system['dKinf_drho']))
+        f.write(export_matrix_to_c("dPinf_drho_data", system['dPinf_drho']))
+        f.write(export_matrix_to_c("dC1_drho_data", system['dC1_drho']))
+        f.write(export_matrix_to_c("dC2_drho_data", system['dC2_drho']))
+
+def main():
+    output_dir = "/Users/ishaanmahajan/benchmark-tinyMPC/ICRA_benchmarks/teensy_tinympc_benchmark/include/problem_data"
+    os.makedirs(output_dir, exist_ok=True)
+    
+    # Generate 100 random systems
+    for i in range(1, 101):
+        try:
+            system = generate_random_system(nx=12, nu=4)
+            filename = f"{output_dir}/rand_system_{i}.hpp"
+            generate_header_file(system, filename)
+            print(f"Generated system {i}")
+        except Exception as e:
+            print(f"Error generating system {i}: {e}")
+            continue
+    
+    # Create an index file
+    with open(f"{output_dir}/all_systems.hpp", "w") as f:
+        f.write("#pragma once\n\n")
+        for i in range(1, 101):
+            f.write(f"#include \"rand_system_{i}.hpp\"\n")
+
+if __name__ == "__main__":
+    main()

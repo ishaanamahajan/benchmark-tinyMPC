@@ -44,10 +44,10 @@ extern float C1[BENCH_NU][BENCH_NU];
 extern float C2[BENCH_NX][BENCH_NX];
 
 // Derivative matrices for analytical method
-extern const float dKinf_drho[BENCH_NU][BENCH_NX];
-extern const float dPinf_drho[BENCH_NX][BENCH_NX];
-extern const float dC1_drho[BENCH_NU][BENCH_NU];
-extern const float dC2_drho[BENCH_NX][BENCH_NX];
+extern float dKinf_drho[BENCH_NU][BENCH_NX];
+extern float dPinf_drho[BENCH_NX][BENCH_NX];
+extern float dC1_drho[BENCH_NU][BENCH_NU];
+extern float dC2_drho[BENCH_NX][BENCH_NX];
 
 // System matrices
 extern const float A[BENCH_NX][BENCH_NX];
