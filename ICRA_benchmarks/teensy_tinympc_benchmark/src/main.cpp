@@ -140,7 +140,7 @@ void setup() {
 
 
         params.rho = 85.0f;
-        params.compute_cache_terms();
+        //params.compute_cache_terms();
         
         solve_admm(&problem, &params);
         
@@ -191,7 +191,7 @@ void setup() {
         
         // Reset rho to base value
         params.rho = adapter.rho_base;
-        params.compute_cache_terms();
+        //params.compute_cache_terms();
         
         solve_admm_adaptive(&problem, &params, &adapter);
         

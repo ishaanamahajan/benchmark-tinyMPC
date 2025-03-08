@@ -1,12 +1,25 @@
 #pragma once
 
+// First, undefine F macro before including Eigen
+#ifdef F
+#undef F
+#endif
+
+// Now include Eigen
 #include <Eigen.h>
 #include <Eigen/LU>
 #include <Eigen/Cholesky>
+
+// Include Arduino after Eigen
 #include "constants.hpp"
 #include "Arduino.h"
 #include "rho_benchmark.hpp"
 #include "problem_data/rand_prob_tinympc_params.hpp"  // Contains all the matrix data
+
+// Redefine F macro for Arduino if needed
+#ifndef F
+#define F(string_literal) ((const __FlashStringHelper *)(string_literal))
+#endif
 
 using Eigen::Matrix;
 

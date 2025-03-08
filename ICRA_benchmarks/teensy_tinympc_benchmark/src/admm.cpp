@@ -51,7 +51,7 @@ void solve_admm(struct tiny_problem *problem, struct tiny_params *params) {
     problem->fixed_timings.total_time = 0;
     
     // Reset cache terms in params
-    params->compute_cache_terms();
+    //params->compute_cache_terms();
     
     startTimestamp = micros();
     

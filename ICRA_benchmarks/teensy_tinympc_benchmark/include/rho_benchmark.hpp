@@ -4,7 +4,18 @@
 #include <cstring>
 #include <cmath>
 #include <algorithm>
-#include <Arduino.h>
+
+// Add this at the top of your file, before including Arduino.h
+#ifdef F
+#undef F
+#endif
+
+#include "Arduino.h"
+
+// After including all Arduino headers, redefine F for Arduino strings if needed
+#ifndef F
+#define F(string_literal) ((const __FlashStringHelper *)(string_literal))
+#endif
 
 // Dimensions
 #define BENCH_NX 12
