@@ -6,8 +6,8 @@
 #include "constants.hpp"
 #include "Arduino.h"
 #include "rho_benchmark.hpp"
-#include "problem_data/rand_prob_tinympc_params.hpp"  // Contains all the matrix data
-
+//#include "problem_data/rand_prob_tinympc_params.hpp"  // Contains all the matrix data
+#include "problem_data/problem_12.hpp"
 using Eigen::Matrix;
 
 // Move typedefs outside extern "C"
@@ -95,6 +95,13 @@ struct tiny_params {
     }
 
     void compute_cache_terms() {
+
+        // load_matrix_from_progmem(Kinf, Kinf_data);
+        // load_matrix_from_progmem(Pinf, Pinf_data);
+        // load_matrix_from_progmem(C1, Quu_inv_data);  // C1 is Quu_inv
+        // load_matrix_from_progmem(C2, AmBKt_data); 
+
+
         // Add regularization
         tiny_MatrixNuNu R_rho = R + rho * tiny_MatrixNuNu::Identity();
         tiny_MatrixNxN Q_rho = Q + rho * tiny_MatrixNxN::Identity();
@@ -152,6 +159,22 @@ struct tiny_params {
         matrix.setZero();
         for (int i = 0; i < NINPUTS; i++) {
             matrix(i,i) = pgm_read_float(&data[i]);
+        }
+    }
+
+    void load_matrix_from_progmem(tiny_MatrixNuN &matrix, const tinytype *data) {
+        for (int i = 0; i < NINPUTS; i++) {
+            for (int j = 0; j < NSTATES; j++) {
+                matrix(i,j) = pgm_read_float(&data[i * NSTATES + j]);
+            }
+        }
+    }
+
+    void load_matrix_from_progmem(tiny_MatrixNuNu &matrix, const tinytype *data) {
+        for (int i = 0; i < NINPUTS; i++) {
+            for (int j = 0; j < NINPUTS; j++) {
+                matrix(i,j) = pgm_read_float(&data[i * NINPUTS + j]);
+            }
         }
     }
 };

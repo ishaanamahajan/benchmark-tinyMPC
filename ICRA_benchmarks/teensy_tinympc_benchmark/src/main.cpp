@@ -1,9 +1,12 @@
 #include <Arduino.h>
 #undef F
 #include "admm.hpp"
-#include "problem_data/rand_prob_tinympc_params.hpp"
+//#include "problem_data/rand_prob_tinympc_params.hpp"
+#include "problem_data/problem_12.hpp"
 #include "types.hpp"
 #include "rho_benchmark.hpp"
+
+const int NUM_TRIALS = 1000;
 
 // Add struct for collecting stats
 struct SolverStats {
@@ -15,10 +18,10 @@ struct SolverStats {
     float std_iters;
     
     // Arrays to store raw data
-    float solve_times[1000];
-    float admm_times[1000];
-    float rho_times[1000];
-    float iterations[1000];
+    float solve_times[NUM_TRIALS];
+    float admm_times[NUM_TRIALS];
+    float rho_times[NUM_TRIALS];
+    float iterations[NUM_TRIALS];
 };
 
 // Function to compute statistics
@@ -87,7 +90,7 @@ void setup() {
     adapter.tolerance = 1.1f;
     adapter.clip = true;
     
-    const int NUM_TRIALS = 1000;
+    
     SolverStats fixed_stats = {0};
     SolverStats adaptive_stats = {0};
     
@@ -132,7 +135,7 @@ void setup() {
     problem.status = 0;
     problem.iter = 0;
     params.rho = adapter.rho_base;
-    params.compute_cache_terms();
+    //params.compute_cache_terms();
     solve_admm_adaptive(&problem, &params, &adapter);
     Serial.print("Adaptive Hover,");
     Serial.print("-1,");
@@ -159,12 +162,17 @@ void setup() {
         problem.fixed_timings.admm_time = 0;
         problem.fixed_timings.rho_time = 0;
         
-        // Set test conditions
+        // Set deterministic seed based on trial number
+        randomSeed(42 + i);
+        
+        // Set test conditions using deterministic random generation
         problem.x.setZero();
         problem.x.col(0) << 1.0f, 2.0f, 3.0f, 4.0f;
         problem.u.setRandom();
         params.Xref.setRandom();
         params.Uref.setRandom();
+
+        params.rho = 85.0f;
         
         solve_admm(&problem, &params);
         
@@ -201,7 +209,10 @@ void setup() {
         problem.adaptive_timings.admm_time = 0;
         problem.adaptive_timings.rho_time = 0;
         
-        // Use same test conditions as fixed version
+        // Set deterministic seed based on trial number
+        randomSeed(42 + i);
+        
+        // Use same test conditions by using the same seed
         problem.x.setZero();
         problem.x.col(0) << 1.0f, 2.0f, 3.0f, 4.0f;
         problem.u.setRandom();
@@ -210,7 +221,6 @@ void setup() {
         
         // Reset rho to base value
         params.rho = adapter.rho_base;
-        params.compute_cache_terms();
         
         solve_admm_adaptive(&problem, &params, &adapter);
         
