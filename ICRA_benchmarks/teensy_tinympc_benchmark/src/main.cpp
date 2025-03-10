@@ -1,7 +1,7 @@
 #include <Arduino.h>
 #undef F
 #include "admm.hpp"
-#include "problem_data/rand_prob_tinympc_params.hpp"
+#include "problem_data/rand_system_10.hpp"
 #include "types.hpp"
 #include "rho_benchmark.hpp"
 
@@ -77,7 +77,7 @@ void setup() {
     // Set ADMM tolerances
     params.abs_pri_tol = 1e-2f;
     params.abs_dua_tol = 1e-2f;
-    params.max_iter = 5000;
+    params.max_iter = 500;
     
     // Initialize RhoAdapter
     RhoAdapter adapter;
@@ -132,7 +132,7 @@ void setup() {
         //            0.0f, 0.0f, 0.0f,    // zero velocity
         //            0.0f, 0.0f, 0.0f;    // zero angular rates
 
-        problem.x.col(0) << 1.0f, 2.0f, 3.0f, 4.0f ; // position offset
+        // problem.x.col(0) << 1.0f, 2.0f, 3.0f, 4.0f ; // position offset
         problem.u = trial_u_init[i];        
         params.Xref = trial_Xrefs[i];      
         params.Uref = trial_Urefs[i]; 
@@ -184,7 +184,7 @@ void setup() {
         //            0.0f, 0.0f, 0.0f,    // zero velocity
         //            0.0f, 0.0f, 0.0f;    // zero angular rates
 
-        problem.x.col(0) << 1.0f, 2.0f, 3.0f, 4.0f ;
+        // problem.x.col(0) << 1.0f, 2.0f, 3.0f, 4.0f ;
         problem.u = trial_u_init[i];        
         params.Xref = trial_Xrefs[i];      
         params.Uref = trial_Urefs[i]; 

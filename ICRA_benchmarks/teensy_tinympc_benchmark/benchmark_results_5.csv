@@ -1,0 +1,620 @@
+Starting MPC Benchmark Test
+Method,Trial,SolveTime,ADMMTime,RhoTime,Iterations,FinalRho
+=== tiny_problem constructor running! ===
+
+=== Starting Fixed Rho Trial 0 ===
+Fixed,0,351800,351800,0,5000,85.00
+
+=== Starting Fixed Rho Trial 1 ===
+Fixed,1,351798,351798,0,5000,85.00
+
+=== Starting Fixed Rho Trial 2 ===
+Fixed,2,351798,351798,0,5000,85.00
+
+=== Starting Fixed Rho Trial 3 ===
+Fixed,3,351798,351798,0,5000,85.00
+
+=== Starting Fixed Rho Trial 4 ===
+Fixed,4,351798,351798,0,5000,85.00
+
+=== Starting Fixed Rho Trial 5 ===
+Fixed,5,351798,351798,0,5000,85.00
+
+=== Starting Fixed Rho Trial 6 ===
+Fixed,6,351799,351799,0,5000,85.00
+
+=== Starting Fixed Rho Trial 7 ===
+Fixed,7,351799,351799,0,5000,85.00
+
+=== Starting Fixed Rho Trial 8 ===
+Fixed,8,351799,351799,0,5000,85.00
+
+=== Starting Fixed Rho Trial 9 ===
+Fixed,9,351799,351799,0,5000,85.00
+
+=== Starting Fixed Rho Trial 10 ===
+Fixed,10,351799,351799,0,5000,85.00
+
+=== Starting Fixed Rho Trial 11 ===
+Fixed,11,351799,351799,0,5000,85.00
+
+=== Starting Fixed Rho Trial 12 ===
+Fixed,12,351799,351799,0,5000,85.00
+
+=== Starting Fixed Rho Trial 13 ===
+Fixed,13,351799,351799,0,5000,85.00
+
+=== Starting Fixed Rho Trial 14 ===
+Fixed,14,351799,351799,0,5000,85.00
+
+=== Starting Fixed Rho Trial 15 ===
+Fixed,15,351799,351799,0,5000,85.00
+
+=== Starting Fixed Rho Trial 16 ===
+Fixed,16,351799,351799,0,5000,85.00
+
+=== Starting Fixed Rho Trial 17 ===
+Fixed,17,351799,351799,0,5000,85.00
+
+=== Starting Fixed Rho Trial 18 ===
+Fixed,18,351799,351799,0,5000,85.00
+
+=== Starting Fixed Rho Trial 19 ===
+Fixed,19,351799,351799,0,5000,85.00
+
+=== Starting Fixed Rho Trial 20 ===
+Fixed,20,351799,351799,0,5000,85.00
+
+=== Starting Fixed Rho Trial 21 ===
+Fixed,21,351799,351799,0,5000,85.00
+
+=== Starting Fixed Rho Trial 22 ===
+Fixed,22,351799,351799,0,5000,85.00
+
+=== Starting Fixed Rho Trial 23 ===
+Fixed,23,351799,351799,0,5000,85.00
+
+=== Starting Fixed Rho Trial 24 ===
+Fixed,24,351799,351799,0,5000,85.00
+
+=== Starting Fixed Rho Trial 25 ===
+Fixed,25,351799,351799,0,5000,85.00
+
+=== Starting Fixed Rho Trial 26 ===
+Fixed,26,351799,351799,0,5000,85.00
+
+=== Starting Fixed Rho Trial 27 ===
+Fixed,27,351799,351799,0,5000,85.00
+
+=== Starting Fixed Rho Trial 28 ===
+Fixed,28,351799,351799,0,5000,85.00
+
+=== Starting Fixed Rho Trial 29 ===
+Fixed,29,351799,351799,0,5000,85.00
+
+=== Starting Fixed Rho Trial 30 ===
+Fixed,30,351799,351799,0,5000,85.00
+
+=== Starting Fixed Rho Trial 31 ===
+Fixed,31,351799,351799,0,5000,85.00
+
+=== Starting Fixed Rho Trial 32 ===
+Fixed,32,351799,351799,0,5000,85.00
+
+=== Starting Fixed Rho Trial 33 ===
+Fixed,33,351799,351799,0,5000,85.00
+
+=== Starting Fixed Rho Trial 34 ===
+Fixed,34,351799,351799,0,5000,85.00
+
+=== Starting Fixed Rho Trial 35 ===
+Fixed,35,351799,351799,0,5000,85.00
+
+=== Starting Fixed Rho Trial 36 ===
+Fixed,36,351799,351799,0,5000,85.00
+
+=== Starting Fixed Rho Trial 37 ===
+Fixed,37,351799,351799,0,5000,85.00
+
+=== Starting Fixed Rho Trial 38 ===
+Fixed,38,351799,351799,0,5000,85.00
+
+=== Starting Fixed Rho Trial 39 ===
+Fixed,39,351799,351799,0,5000,85.00
+
+=== Starting Fixed Rho Trial 40 ===
+Fixed,40,351799,351799,0,5000,85.00
+
+=== Starting Fixed Rho Trial 41 ===
+Fixed,41,351799,351799,0,5000,85.00
+
+=== Starting Fixed Rho Trial 42 ===
+Fixed,42,351799,351799,0,5000,85.00
+
+=== Starting Fixed Rho Trial 43 ===
+Fixed,43,351799,351799,0,5000,85.00
+
+=== Starting Fixed Rho Trial 44 ===
+Fixed,44,351799,351799,0,5000,85.00
+
+=== Starting Fixed Rho Trial 45 ===
+Fixed,45,351799,351799,0,5000,85.00
+
+=== Starting Fixed Rho Trial 46 ===
+Fixed,46,351799,351799,0,5000,85.00
+
+=== Starting Fixed Rho Trial 47 ===
+Fixed,47,351799,351799,0,5000,85.00
+
+=== Starting Fixed Rho Trial 48 ===
+Fixed,48,351799,351799,0,5000,85.00
+
+=== Starting Fixed Rho Trial 49 ===
+Fixed,49,351799,351799,0,5000,85.00
+
+=== Starting Fixed Rho Trial 50 ===
+Fixed,50,351799,351799,0,5000,85.00
+
+=== Starting Fixed Rho Trial 51 ===
+Fixed,51,351799,351799,0,5000,85.00
+
+=== Starting Fixed Rho Trial 52 ===
+Fixed,52,351799,351799,0,5000,85.00
+
+=== Starting Fixed Rho Trial 53 ===
+Fixed,53,351799,351799,0,5000,85.00
+
+=== Starting Fixed Rho Trial 54 ===
+Fixed,54,351799,351799,0,5000,85.00
+
+=== Starting Fixed Rho Trial 55 ===
+Fixed,55,351799,351799,0,5000,85.00
+
+=== Starting Fixed Rho Trial 56 ===
+Fixed,56,351799,351799,0,5000,85.00
+
+=== Starting Fixed Rho Trial 57 ===
+Fixed,57,351799,351799,0,5000,85.00
+
+=== Starting Fixed Rho Trial 58 ===
+Fixed,58,351799,351799,0,5000,85.00
+
+=== Starting Fixed Rho Trial 59 ===
+Fixed,59,351799,351799,0,5000,85.00
+
+=== Starting Fixed Rho Trial 60 ===
+Fixed,60,351799,351799,0,5000,85.00
+
+=== Starting Fixed Rho Trial 61 ===
+Fixed,61,351799,351799,0,5000,85.00
+
+=== Starting Fixed Rho Trial 62 ===
+Fixed,62,351799,351799,0,5000,85.00
+
+=== Starting Fixed Rho Trial 63 ===
+Fixed,63,351799,351799,0,5000,85.00
+
+=== Starting Fixed Rho Trial 64 ===
+Fixed,64,351799,351799,0,5000,85.00
+
+=== Starting Fixed Rho Trial 65 ===
+Fixed,65,351799,351799,0,5000,85.00
+
+=== Starting Fixed Rho Trial 66 ===
+Fixed,66,351799,351799,0,5000,85.00
+
+=== Starting Fixed Rho Trial 67 ===
+Fixed,67,351799,351799,0,5000,85.00
+
+=== Starting Fixed Rho Trial 68 ===
+Fixed,68,351799,351799,0,5000,85.00
+
+=== Starting Fixed Rho Trial 69 ===
+Fixed,69,351799,351799,0,5000,85.00
+
+=== Starting Fixed Rho Trial 70 ===
+Fixed,70,351799,351799,0,5000,85.00
+
+=== Starting Fixed Rho Trial 71 ===
+Fixed,71,351799,351799,0,5000,85.00
+
+=== Starting Fixed Rho Trial 72 ===
+Fixed,72,351799,351799,0,5000,85.00
+
+=== Starting Fixed Rho Trial 73 ===
+Fixed,73,351799,351799,0,5000,85.00
+
+=== Starting Fixed Rho Trial 74 ===
+Fixed,74,351799,351799,0,5000,85.00
+
+=== Starting Fixed Rho Trial 75 ===
+Fixed,75,351799,351799,0,5000,85.00
+
+=== Starting Fixed Rho Trial 76 ===
+Fixed,76,351799,351799,0,5000,85.00
+
+=== Starting Fixed Rho Trial 77 ===
+Fixed,77,351799,351799,0,5000,85.00
+
+=== Starting Fixed Rho Trial 78 ===
+Fixed,78,351799,351799,0,5000,85.00
+
+=== Starting Fixed Rho Trial 79 ===
+Fixed,79,351799,351799,0,5000,85.00
+
+=== Starting Fixed Rho Trial 80 ===
+Fixed,80,351799,351799,0,5000,85.00
+
+=== Starting Fixed Rho Trial 81 ===
+Fixed,81,351799,351799,0,5000,85.00
+
+=== Starting Fixed Rho Trial 82 ===
+Fixed,82,351799,351799,0,5000,85.00
+
+=== Starting Fixed Rho Trial 83 ===
+Fixed,83,351799,351799,0,5000,85.00
+
+=== Starting Fixed Rho Trial 84 ===
+Fixed,84,351799,351799,0,5000,85.00
+
+=== Starting Fixed Rho Trial 85 ===
+Fixed,85,351799,351799,0,5000,85.00
+
+=== Starting Fixed Rho Trial 86 ===
+Fixed,86,351799,351799,0,5000,85.00
+
+=== Starting Fixed Rho Trial 87 ===
+Fixed,87,351799,351799,0,5000,85.00
+
+=== Starting Fixed Rho Trial 88 ===
+Fixed,88,351799,351799,0,5000,85.00
+
+=== Starting Fixed Rho Trial 89 ===
+Fixed,89,351799,351799,0,5000,85.00
+
+=== Starting Fixed Rho Trial 90 ===
+Fixed,90,351799,351799,0,5000,85.00
+
+=== Starting Fixed Rho Trial 91 ===
+Fixed,91,351799,351799,0,5000,85.00
+
+=== Starting Fixed Rho Trial 92 ===
+Fixed,92,351799,351799,0,5000,85.00
+
+=== Starting Fixed Rho Trial 93 ===
+Fixed,93,351799,351799,0,5000,85.00
+
+=== Starting Fixed Rho Trial 94 ===
+Fixed,94,351799,351799,0,5000,85.00
+
+=== Starting Fixed Rho Trial 95 ===
+Fixed,95,351799,351799,0,5000,85.00
+
+=== Starting Fixed Rho Trial 96 ===
+Fixed,96,351799,351799,0,5000,85.00
+
+=== Starting Fixed Rho Trial 97 ===
+Fixed,97,351799,351799,0,5000,85.00
+
+=== Starting Fixed Rho Trial 98 ===
+Fixed,98,351799,351799,0,5000,85.00
+
+=== Starting Fixed Rho Trial 99 ===
+Fixed,99,351799,351799,0,5000,85.00
+
+=== Starting Adaptive Rho Trial 0 ===
+Adaptive,0,365587,359460,6125,5000,85.00
+
+=== Starting Adaptive Rho Trial 1 ===
+Adaptive,1,365597,359460,6136,5000,85.00
+
+=== Starting Adaptive Rho Trial 2 ===
+Adaptive,2,365598,359460,6136,5000,85.00
+
+=== Starting Adaptive Rho Trial 3 ===
+Adaptive,3,365599,359460,6138,5000,85.00
+
+=== Starting Adaptive Rho Trial 4 ===
+Adaptive,4,365600,359460,6139,5000,85.00
+
+=== Starting Adaptive Rho Trial 5 ===
+Adaptive,5,365595,359460,6134,5000,85.00
+
+=== Starting Adaptive Rho Trial 6 ===
+Adaptive,6,365604,359460,6143,5000,85.00
+
+=== Starting Adaptive Rho Trial 7 ===
+Adaptive,7,365599,359459,6139,5000,85.00
+
+=== Starting Adaptive Rho Trial 8 ===
+Adaptive,8,365597,359460,6136,5000,85.00
+
+=== Starting Adaptive Rho Trial 9 ===
+Adaptive,9,365597,359460,6135,5000,85.00
+
+=== Starting Adaptive Rho Trial 10 ===
+Adaptive,10,365596,359459,6135,5000,85.00
+
+=== Starting Adaptive Rho Trial 11 ===
+Adaptive,11,365596,359460,6134,5000,85.00
+
+=== Starting Adaptive Rho Trial 12 ===
+Adaptive,12,365602,359460,6140,5000,85.00
+
+=== Starting Adaptive Rho Trial 13 ===
+Adaptive,13,365594,359460,6132,5000,85.00
+
+=== Starting Adaptive Rho Trial 14 ===
+Adaptive,14,365597,359458,6137,5000,85.00
+
+=== Starting Adaptive Rho Trial 15 ===
+Adaptive,15,365600,359459,6139,5000,85.00
+
+=== Starting Adaptive Rho Trial 16 ===
+Adaptive,16,365593,359460,6131,5000,85.00
+
+=== Starting Adaptive Rho Trial 17 ===
+Adaptive,17,365603,359459,6143,5000,85.00
+
+=== Starting Adaptive Rho Trial 18 ===
+Adaptive,18,365596,359460,6134,5000,85.00
+
+=== Starting Adaptive Rho Trial 19 ===
+Adaptive,19,365598,359460,6136,5000,85.00
+
+=== Starting Adaptive Rho Trial 20 ===
+Adaptive,20,365593,359460,6131,5000,85.00
+
+=== Starting Adaptive Rho Trial 21 ===
+Adaptive,21,365596,359460,6134,5000,85.00
+
+=== Starting Adaptive Rho Trial 22 ===
+Adaptive,22,365594,359459,6133,5000,85.00
+
+=== Starting Adaptive Rho Trial 23 ===
+Adaptive,23,365599,359459,6138,5000,85.00
+
+=== Starting Adaptive Rho Trial 24 ===
+Adaptive,24,365600,359460,6138,5000,85.00
+
+=== Starting Adaptive Rho Trial 25 ===
+Adaptive,25,365597,359459,6136,5000,85.00
+
+=== Starting Adaptive Rho Trial 26 ===
+Adaptive,26,365594,359460,6132,5000,85.00
+
+=== Starting Adaptive Rho Trial 27 ===
+Adaptive,27,365603,359460,6141,5000,85.00
+
+=== Starting Adaptive Rho Trial 28 ===
+Adaptive,28,365594,359460,6132,5000,85.00
+
+=== Starting Adaptive Rho Trial 29 ===
+Adaptive,29,365595,359460,6133,5000,85.00
+
+=== Starting Adaptive Rho Trial 30 ===
+Adaptive,30,365598,359460,6136,5000,85.00
+
+=== Starting Adaptive Rho Trial 31 ===
+Adaptive,31,365597,359460,6135,5000,85.00
+
+=== Starting Adaptive Rho Trial 32 ===
+Adaptive,32,365598,359460,6137,5000,85.00
+
+=== Starting Adaptive Rho Trial 33 ===
+Adaptive,33,365599,359460,6137,5000,85.00
+
+=== Starting Adaptive Rho Trial 34 ===
+Adaptive,34,365603,359459,6142,5000,85.00
+
+=== Starting Adaptive Rho Trial 35 ===
+Adaptive,35,365595,359460,6133,5000,85.00
+
+=== Starting Adaptive Rho Trial 36 ===
+Adaptive,36,365600,359460,6138,5000,85.00
+
+=== Starting Adaptive Rho Trial 37 ===
+Adaptive,37,365598,359460,6136,5000,85.00
+
+=== Starting Adaptive Rho Trial 38 ===
+Adaptive,38,365596,359460,6134,5000,85.00
+
+=== Starting Adaptive Rho Trial 39 ===
+Adaptive,39,365592,359458,6132,5000,85.00
+
+=== Starting Adaptive Rho Trial 40 ===
+Adaptive,40,365596,359460,6134,5000,85.00
+
+=== Starting Adaptive Rho Trial 41 ===
+Adaptive,41,365600,359460,6138,5000,85.00
+
+=== Starting Adaptive Rho Trial 42 ===
+Adaptive,42,365601,359458,6141,5000,85.00
+
+=== Starting Adaptive Rho Trial 43 ===
+Adaptive,43,365595,359459,6134,5000,85.00
+
+=== Starting Adaptive Rho Trial 44 ===
+Adaptive,44,365597,359460,6135,5000,85.00
+
+=== Starting Adaptive Rho Trial 45 ===
+Adaptive,45,365596,359460,6134,5000,85.00
+
+=== Starting Adaptive Rho Trial 46 ===
+Adaptive,46,365592,359460,6130,5000,85.00
+
+=== Starting Adaptive Rho Trial 47 ===
+Adaptive,47,365600,359459,6139,5000,85.00
+
+=== Starting Adaptive Rho Trial 48 ===
+Adaptive,48,365596,359460,6134,5000,85.00
+
+=== Starting Adaptive Rho Trial 49 ===
+Adaptive,49,365596,359460,6134,5000,85.00
+
+=== Starting Adaptive Rho Trial 50 ===
+Adaptive,50,365599,359460,6137,5000,85.00
+
+=== Starting Adaptive Rho Trial 51 ===
+Adaptive,51,365596,359459,6135,5000,85.00
+
+=== Starting Adaptive Rho Trial 52 ===
+Adaptive,52,365597,359460,6135,5000,85.00
+
+=== Starting Adaptive Rho Trial 53 ===
+Adaptive,53,365594,359460,6132,5000,85.00
+
+=== Starting Adaptive Rho Trial 54 ===
+Adaptive,54,365595,359460,6133,5000,85.00
+
+=== Starting Adaptive Rho Trial 55 ===
+Adaptive,55,365600,359460,6138,5000,85.00
+
+=== Starting Adaptive Rho Trial 56 ===
+Adaptive,56,365599,359460,6137,5000,85.00
+
+=== Starting Adaptive Rho Trial 57 ===
+Adaptive,57,365593,359460,6131,5000,85.00
+
+=== Starting Adaptive Rho Trial 58 ===
+Adaptive,58,365596,359460,6134,5000,85.00
+
+=== Starting Adaptive Rho Trial 59 ===
+Adaptive,59,365603,359459,6142,5000,85.00
+
+=== Starting Adaptive Rho Trial 60 ===
+Adaptive,60,365601,359460,6139,5000,85.00
+
+=== Starting Adaptive Rho Trial 61 ===
+Adaptive,61,365593,359460,6131,5000,85.00
+
+=== Starting Adaptive Rho Trial 62 ===
+Adaptive,62,365594,359460,6132,5000,85.00
+
+=== Starting Adaptive Rho Trial 63 ===
+Adaptive,63,365599,359460,6137,5000,85.00
+
+=== Starting Adaptive Rho Trial 64 ===
+Adaptive,64,365589,359460,6127,5000,85.00
+
+=== Starting Adaptive Rho Trial 65 ===
+Adaptive,65,365595,359460,6133,5000,85.00
+
+=== Starting Adaptive Rho Trial 66 ===
+Adaptive,66,365593,359460,6131,5000,85.00
+
+=== Starting Adaptive Rho Trial 67 ===
+Adaptive,67,365598,359460,6136,5000,85.00
+
+=== Starting Adaptive Rho Trial 68 ===
+Adaptive,68,365600,359460,6138,5000,85.00
+
+=== Starting Adaptive Rho Trial 69 ===
+Adaptive,69,365596,359460,6134,5000,85.00
+
+=== Starting Adaptive Rho Trial 70 ===
+Adaptive,70,365597,359460,6135,5000,85.00
+
+=== Starting Adaptive Rho Trial 71 ===
+Adaptive,71,365595,359459,6134,5000,85.00
+
+=== Starting Adaptive Rho Trial 72 ===
+Adaptive,72,365598,359460,6136,5000,85.00
+
+=== Starting Adaptive Rho Trial 73 ===
+Adaptive,73,365596,359460,6134,5000,85.00
+
+=== Starting Adaptive Rho Trial 74 ===
+Adaptive,74,365587,359460,6125,5000,85.00
+
+=== Starting Adaptive Rho Trial 75 ===
+Adaptive,75,365594,359460,6132,5000,85.00
+
+=== Starting Adaptive Rho Trial 76 ===
+Adaptive,76,365606,359460,6144,5000,85.00
+
+=== Starting Adaptive Rho Trial 77 ===
+Adaptive,77,365598,359460,6136,5000,85.00
+
+=== Starting Adaptive Rho Trial 78 ===
+Adaptive,78,365595,359460,6133,5000,85.00
+
+=== Starting Adaptive Rho Trial 79 ===
+Adaptive,79,365595,359460,6133,5000,85.00
+
+=== Starting Adaptive Rho Trial 80 ===
+Adaptive,80,365602,359459,6141,5000,85.00
+
+=== Starting Adaptive Rho Trial 81 ===
+Adaptive,81,365595,359460,6133,5000,85.00
+
+=== Starting Adaptive Rho Trial 82 ===
+Adaptive,82,365597,359460,6136,5000,85.00
+
+=== Starting Adaptive Rho Trial 83 ===
+Adaptive,83,365597,359460,6135,5000,85.00
+
+=== Starting Adaptive Rho Trial 84 ===
+Adaptive,84,365598,359458,6138,5000,85.00
+
+=== Starting Adaptive Rho Trial 85 ===
+Adaptive,85,365599,359460,6137,5000,85.00
+
+=== Starting Adaptive Rho Trial 86 ===
+Adaptive,86,365591,359460,6130,5000,85.00
+
+=== Starting Adaptive Rho Trial 87 ===
+Adaptive,87,365598,359460,6136,5000,85.00
+
+=== Starting Adaptive Rho Trial 88 ===
+Adaptive,88,365598,359460,6136,5000,85.00
+
+=== Starting Adaptive Rho Trial 89 ===
+Adaptive,89,365595,359460,6133,5000,85.00
+
+=== Starting Adaptive Rho Trial 90 ===
+Adaptive,90,365598,359460,6136,5000,85.00
+
+=== Starting Adaptive Rho Trial 91 ===
+Adaptive,91,365593,359460,6132,5000,85.00
+
+=== Starting Adaptive Rho Trial 92 ===
+Adaptive,92,365600,359460,6139,5000,85.00
+
+=== Starting Adaptive Rho Trial 93 ===
+Adaptive,93,365596,359460,6134,5000,85.00
+
+=== Starting Adaptive Rho Trial 94 ===
+Adaptive,94,365592,359460,6130,5000,85.00
+
+=== Starting Adaptive Rho Trial 95 ===
+Adaptive,95,365597,359460,6135,5000,85.00
+
+=== Starting Adaptive Rho Trial 96 ===
+Adaptive,96,365601,359460,6139,5000,85.00
+
+=== Starting Adaptive Rho Trial 97 ===
+Adaptive,97,365597,359460,6135,5000,85.00
+
+=== Starting Adaptive Rho Trial 98 ===
+Adaptive,98,365597,359460,6135,5000,85.00
+
+=== Starting Adaptive Rho Trial 99 ===
+Adaptive,99,365594,359459,6133,5000,85.00
+
+=== Fixed Rho Statistics ===
+Average solve time: 351799.47 µs
+Average ADMM time: 351799.47 µs
+Average rho time: 0.00 µs
+Average iterations: 5000.00
+Std Dev solve time: 0.56 µs
+Std Dev iterations: 0.00
+
+=== Adaptive Rho Statistics ===
+Average solve time: 365596.72 µs
+Average ADMM time: 359459.84 µs
+Average rho time: 6135.20 µs
+Average iterations: 5000.00
+Std Dev solve time: 3.31 µs
+Std Dev iterations: 0.00
+Benchmark Complete!

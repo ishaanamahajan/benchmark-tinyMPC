@@ -4,7 +4,7 @@
 
 #include "rho_benchmark.hpp"
 
-#include "problem_data/rand_prob_tinympc_params.hpp"
+#include "problem_data/rand_system_10.hpp"
 
 #include <Eigen/Cholesky>
 

@@ -2,7 +2,7 @@
 
 typedef float tinytype;
 
-#define NSTATES 4
+#define NSTATES 12
 
 #define NINPUTS 4
 
