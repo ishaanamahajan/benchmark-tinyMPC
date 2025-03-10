@@ -7,7 +7,7 @@
 #include <Arduino.h>
 
 // Dimensions
-#define BENCH_NX 12
+#define BENCH_NX 10
 #define BENCH_NU 4
 #define BENCH_N 10  // Horizon length, adjust as needed
 

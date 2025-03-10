@@ -181,7 +181,7 @@ if __name__ == "__main__":
    
     
     # Replace this with the path to your data file
-    file_path = "/Users/ishaanmahajan/replicate/benchmark-tinyMPC/ICRA_benchmarks/teensy_tinympc_benchmark/benchmark_results_12.csv"
+    file_path = "/Users/ishaanmahajan/replicate/benchmark-tinyMPC/ICRA_benchmarks/teensy_tinympc_benchmark/benchmark_results_12_rho85.csv"
     
     try:
         # Try to parse from file first

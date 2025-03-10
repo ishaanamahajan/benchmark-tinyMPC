@@ -144,14 +144,16 @@ def process_problem_file(file_path):
     Q = np.diag(Q_diag)
     R = np.diag(R_diag)
     
-    # Extract rho value
-    rho_match = re.search(r'rho_value = ([\d\.e\-]+)', content)
-    if rho_match:
-        rho_base = float(rho_match.group(1))
-    else:
-        rho_base = 0.1  # Default value
+    # # Extract rho value
+    # rho_match = re.search(r'rho_value = ([\d\.e\-]+)', content)
+    # if rho_match:
+    #     rho_base = float(rho_match.group(1))
+    # else:
+    #     rho_base = 0.1  # Default value
     
-    print(f"Using rho value: {rho_base}")
+    # print(f"Using rho value: {rho_base}")
+
+    rho_base = 85.0
     
     # Compute LQR sensitivity
     dK_drho, dP_drho, dC1_drho, dC2_drho = compute_lqr_sensitivity(A, B, Q, R, rho_base)
@@ -171,7 +173,7 @@ def process_problem_file(file_path):
 
 def main():
     # Path to the problem data file
-    file_path = "/Users/ishaanmahajan/replicate/benchmark-tinyMPC/ICRA_benchmarks/teensy_tinympc_benchmark/include/problem_data/problem_12.hpp"
+    file_path = "/Users/ishaanmahajan/replicate/benchmark-tinyMPC/ICRA_benchmarks/teensy_tinympc_benchmark/include/problem_data/problem_10.hpp"
     
     # Process the file
     process_problem_file(file_path)

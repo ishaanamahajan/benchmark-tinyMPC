@@ -1,7 +1,7 @@
 #include "rho_benchmark.hpp"
 #include "mpc_matrices.hpp"
 #include <Arduino.h>
-#include "problem_data/problem_12.hpp"
+#include "problem_data/problem_10.hpp"
 
 // These need to be non-const to match header
 float Kinf[BENCH_NU][BENCH_NX];
