@@ -2,7 +2,7 @@
 #undef F
 #include "admm.hpp"
 //#include "problem_data/rand_prob_tinympc_params.hpp"
-#include "problem_data/problem_4.hpp"
+#include "problem_data/problem_8.hpp"
 #include "types.hpp"
 #include "rho_benchmark.hpp"
 
@@ -129,6 +129,19 @@ void setup() {
     Serial.print(problem.iter);
     Serial.print(",");
     Serial.println(params.rho);
+
+    problem.x.setZero();
+    problem.x.col(0) << 0.2f, 0.2f, -0.2f,  // position offset
+                        1.0f, 0.0f, 0.0f,    // roll offset
+                        0.0f, 0.0f, 0.0f,    // zero velocity
+                        0.0f, 0.0f, 0.0f;    // zero angular rates
+    
+    params.Xref.setZero();  // target hover state
+    params.Uref.setZero();
+    // Set hover thrust for all timesteps
+    for(int k = 0; k < NHORIZON-1; k++) {
+        params.Uref.col(k) << hover_thrust, hover_thrust, hover_thrust, hover_thrust;
+    }
     
     // Test adaptive rho for hover
     Serial.println("\n=== Hover with Adaptive Rho ===");
