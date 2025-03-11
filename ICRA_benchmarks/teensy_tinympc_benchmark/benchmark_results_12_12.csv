@@ -1,0 +1,6028 @@
+Starting MPC Benchmark Test
+Method,Trial,SolveTime,ADMMTime,RhoTime,Iterations,FinalRho
+=== tiny_problem constructor running! ===
+
+=== Starting Hover Tests ===
+
+=== Hover with Fixed Rho ===
+Fixed Hover,-1,34606,34605,0,490,85.00
+
+=== Hover with Adaptive Rho ===
+Adaptive Hover,-1,202,137,65,0,70.00
+
+=== Starting Fixed Rho Trial 0 ===
+Fixed,0,16697,16697,0,236,85.00
+
+=== Starting Fixed Rho Trial 1 ===
+Fixed,1,35231,35231,0,500,85.00
+
+=== Starting Fixed Rho Trial 2 ===
+Fixed,2,21841,21841,0,309,85.00
+
+=== Starting Fixed Rho Trial 3 ===
+Fixed,3,19235,19235,0,272,85.00
+
+=== Starting Fixed Rho Trial 4 ===
+Fixed,4,35231,35231,0,500,85.00
+
+=== Starting Fixed Rho Trial 5 ===
+Fixed,5,35228,35228,0,500,85.00
+
+=== Starting Fixed Rho Trial 6 ===
+Fixed,6,14797,14797,0,209,85.00
+
+=== Starting Fixed Rho Trial 7 ===
+Fixed,7,25504,25504,0,361,85.00
+
+=== Starting Fixed Rho Trial 8 ===
+Fixed,8,35230,35230,0,500,85.00
+
+=== Starting Fixed Rho Trial 9 ===
+Fixed,9,24239,24239,0,343,85.00
+
+=== Starting Fixed Rho Trial 10 ===
+Fixed,10,15360,15360,0,217,85.00
+
+=== Starting Fixed Rho Trial 11 ===
+Fixed,11,35224,35224,0,500,85.00
+
+=== Starting Fixed Rho Trial 12 ===
+Fixed,12,10358,10358,0,146,85.00
+
+=== Starting Fixed Rho Trial 13 ===
+Fixed,13,14022,14022,0,198,85.00
+
+=== Starting Fixed Rho Trial 14 ===
+Fixed,14,9160,9160,0,129,85.00
+
+=== Starting Fixed Rho Trial 15 ===
+Fixed,15,12613,12613,0,178,85.00
+
+=== Starting Fixed Rho Trial 16 ===
+Fixed,16,30863,30863,0,437,85.00
+
+=== Starting Fixed Rho Trial 17 ===
+Fixed,17,27694,27694,0,392,85.00
+
+=== Starting Fixed Rho Trial 18 ===
+Fixed,18,20928,20928,0,296,85.00
+
+=== Starting Fixed Rho Trial 19 ===
+Fixed,19,23885,23885,0,338,85.00
+
+=== Starting Fixed Rho Trial 20 ===
+Fixed,20,26918,26918,0,381,85.00
+
+=== Starting Fixed Rho Trial 21 ===
+Fixed,21,23392,23392,0,331,85.00
+
+=== Starting Fixed Rho Trial 22 ===
+Fixed,22,25298,25298,0,358,85.00
+
+=== Starting Fixed Rho Trial 23 ===
+Fixed,23,18461,18461,0,261,85.00
+
+=== Starting Fixed Rho Trial 24 ===
+Fixed,24,19589,19589,0,277,85.00
+
+=== Starting Fixed Rho Trial 25 ===
+Fixed,25,22195,22195,0,314,85.00
+
+=== Starting Fixed Rho Trial 26 ===
+Fixed,26,31075,31075,0,440,85.00
+
+=== Starting Fixed Rho Trial 27 ===
+Fixed,27,21984,21984,0,311,85.00
+
+=== Starting Fixed Rho Trial 28 ===
+Fixed,28,8103,8103,0,114,85.00
+
+=== Starting Fixed Rho Trial 29 ===
+Fixed,29,22126,22126,0,313,85.00
+
+=== Starting Fixed Rho Trial 30 ===
+Fixed,30,17405,17405,0,246,85.00
+
+=== Starting Fixed Rho Trial 31 ===
+Fixed,31,11697,11697,0,165,85.00
+
+=== Starting Fixed Rho Trial 32 ===
+Fixed,32,14021,14021,0,198,85.00
+
+=== Starting Fixed Rho Trial 33 ===
+Fixed,33,11697,11697,0,165,85.00
+
+=== Starting Fixed Rho Trial 34 ===
+Fixed,34,16066,16066,0,227,85.00
+
+=== Starting Fixed Rho Trial 35 ===
+Fixed,35,32273,32273,0,457,85.00
+
+=== Starting Fixed Rho Trial 36 ===
+Fixed,36,35232,35232,0,500,85.00
+
+=== Starting Fixed Rho Trial 37 ===
+Fixed,37,15361,15361,0,217,85.00
+
+=== Starting Fixed Rho Trial 38 ===
+Fixed,38,13529,13529,0,191,85.00
+
+=== Starting Fixed Rho Trial 39 ===
+Fixed,39,26353,26353,0,373,85.00
+
+=== Starting Fixed Rho Trial 40 ===
+Fixed,40,35232,35232,0,500,85.00
+
+=== Starting Fixed Rho Trial 41 ===
+Fixed,41,22334,22334,0,316,85.00
+
+=== Starting Fixed Rho Trial 42 ===
+Fixed,42,25576,25576,0,362,85.00
+
+=== Starting Fixed Rho Trial 43 ===
+Fixed,43,24733,24733,0,350,85.00
+
+=== Starting Fixed Rho Trial 44 ===
+Fixed,44,31283,31283,0,443,85.00
+
+=== Starting Fixed Rho Trial 45 ===
+Fixed,45,21349,21349,0,302,85.00
+
+=== Starting Fixed Rho Trial 46 ===
+Fixed,46,35231,35231,0,500,85.00
+
+=== Starting Fixed Rho Trial 47 ===
+Fixed,47,25015,25015,0,354,85.00
+
+=== Starting Fixed Rho Trial 48 ===
+Fixed,48,27550,27550,0,390,85.00
+
+=== Starting Fixed Rho Trial 49 ===
+Fixed,49,19237,19237,0,272,85.00
+
+=== Starting Fixed Rho Trial 50 ===
+Fixed,50,18039,18039,0,255,85.00
+
+=== Starting Fixed Rho Trial 51 ===
+Fixed,51,14938,14938,0,211,85.00
+
+=== Starting Fixed Rho Trial 52 ===
+Fixed,52,13246,13246,0,187,85.00
+
+=== Starting Fixed Rho Trial 53 ===
+Fixed,53,34102,34102,0,483,85.00
+
+=== Starting Fixed Rho Trial 54 ===
+Fixed,54,26635,26635,0,377,85.00
+
+=== Starting Fixed Rho Trial 55 ===
+Fixed,55,25996,25996,0,368,85.00
+
+=== Starting Fixed Rho Trial 56 ===
+Fixed,56,35231,35231,0,500,85.00
+
+=== Starting Fixed Rho Trial 57 ===
+Fixed,57,22830,22830,0,323,85.00
+
+=== Starting Fixed Rho Trial 58 ===
+Fixed,58,35227,35227,0,500,85.00
+
+=== Starting Fixed Rho Trial 59 ===
+Fixed,59,21489,21489,0,304,85.00
+
+=== Starting Fixed Rho Trial 60 ===
+Fixed,60,14796,14796,0,209,85.00
+
+=== Starting Fixed Rho Trial 61 ===
+Fixed,61,35230,35230,0,500,85.00
+
+=== Starting Fixed Rho Trial 62 ===
+Fixed,62,19025,19025,0,269,85.00
+
+=== Starting Fixed Rho Trial 63 ===
+Fixed,63,19730,19730,0,279,85.00
+
+=== Starting Fixed Rho Trial 64 ===
+Fixed,64,35231,35231,0,500,85.00
+
+=== Starting Fixed Rho Trial 65 ===
+Fixed,65,16277,16277,0,230,85.00
+
+=== Starting Fixed Rho Trial 66 ===
+Fixed,66,11486,11486,0,162,85.00
+
+=== Starting Fixed Rho Trial 67 ===
+Fixed,67,17896,17896,0,253,85.00
+
+=== Starting Fixed Rho Trial 68 ===
+Fixed,68,25647,25647,0,363,85.00
+
+=== Starting Fixed Rho Trial 69 ===
+Fixed,69,22547,22547,0,319,85.00
+
+=== Starting Fixed Rho Trial 70 ===
+Fixed,70,16771,16771,0,237,85.00
+
+=== Starting Fixed Rho Trial 71 ===
+Fixed,71,14867,14867,0,210,85.00
+
+=== Starting Fixed Rho Trial 72 ===
+Fixed,72,13742,13742,0,194,85.00
+
+=== Starting Fixed Rho Trial 73 ===
+Fixed,73,16983,16983,0,240,85.00
+
+=== Starting Fixed Rho Trial 74 ===
+Fixed,74,20928,20928,0,296,85.00
+
+=== Starting Fixed Rho Trial 75 ===
+Fixed,75,13881,13881,0,196,85.00
+
+=== Starting Fixed Rho Trial 76 ===
+Fixed,76,25787,25787,0,365,85.00
+
+=== Starting Fixed Rho Trial 77 ===
+Fixed,77,20716,20716,0,293,85.00
+
+=== Starting Fixed Rho Trial 78 ===
+Fixed,78,35229,35229,0,500,85.00
+
+=== Starting Fixed Rho Trial 79 ===
+Fixed,79,33114,33114,0,469,85.00
+
+=== Starting Fixed Rho Trial 80 ===
+Fixed,80,35229,35229,0,500,85.00
+
+=== Starting Fixed Rho Trial 81 ===
+Fixed,81,18109,18109,0,256,85.00
+
+=== Starting Fixed Rho Trial 82 ===
+Fixed,82,18393,18393,0,260,85.00
+
+=== Starting Fixed Rho Trial 83 ===
+Fixed,83,13599,13599,0,192,85.00
+
+=== Starting Fixed Rho Trial 84 ===
+Fixed,84,32482,32482,0,460,85.00
+
+=== Starting Fixed Rho Trial 85 ===
+Fixed,85,24096,24096,0,341,85.00
+
+=== Starting Fixed Rho Trial 86 ===
+Fixed,86,22973,22973,0,325,85.00
+
+=== Starting Fixed Rho Trial 87 ===
+Fixed,87,14586,14586,0,206,85.00
+
+=== Starting Fixed Rho Trial 88 ===
+Fixed,88,35231,35231,0,500,85.00
+
+=== Starting Fixed Rho Trial 89 ===
+Fixed,89,17052,17052,0,241,85.00
+
+=== Starting Fixed Rho Trial 90 ===
+Fixed,90,21562,21562,0,305,85.00
+
+=== Starting Fixed Rho Trial 91 ===
+Fixed,91,35233,35233,0,500,85.00
+
+=== Starting Fixed Rho Trial 92 ===
+Fixed,92,25646,25646,0,363,85.00
+
+=== Starting Fixed Rho Trial 93 ===
+Fixed,93,11909,11909,0,168,85.00
+
+=== Starting Fixed Rho Trial 94 ===
+Fixed,94,35229,35229,0,500,85.00
+
+=== Starting Fixed Rho Trial 95 ===
+Fixed,95,16419,16419,0,232,85.00
+
+=== Starting Fixed Rho Trial 96 ===
+Fixed,96,11697,11697,0,165,85.00
+
+=== Starting Fixed Rho Trial 97 ===
+Fixed,97,12260,12260,0,173,85.00
+
+=== Starting Fixed Rho Trial 98 ===
+Fixed,98,15713,15713,0,222,85.00
+
+=== Starting Fixed Rho Trial 99 ===
+Fixed,99,35158,35158,0,498,85.00
+
+=== Starting Fixed Rho Trial 100 ===
+Fixed,100,17615,17614,0,249,85.00
+
+=== Starting Fixed Rho Trial 101 ===
+Fixed,101,18673,18672,0,264,85.00
+
+=== Starting Fixed Rho Trial 102 ===
+Fixed,102,21843,21843,0,309,85.00
+
+=== Starting Fixed Rho Trial 103 ===
+Fixed,103,21632,21632,0,306,85.00
+
+=== Starting Fixed Rho Trial 104 ===
+Fixed,104,22829,22829,0,323,85.00
+
+=== Starting Fixed Rho Trial 105 ===
+Fixed,105,32197,32197,0,456,85.00
+
+=== Starting Fixed Rho Trial 106 ===
+Fixed,106,14163,14163,0,200,85.00
+
+=== Starting Fixed Rho Trial 107 ===
+Fixed,107,22548,22548,0,319,85.00
+
+=== Starting Fixed Rho Trial 108 ===
+Fixed,108,14728,14727,0,208,85.00
+
+=== Starting Fixed Rho Trial 109 ===
+Fixed,109,18179,18179,0,257,85.00
+
+=== Starting Fixed Rho Trial 110 ===
+Fixed,110,19236,19236,0,272,85.00
+
+=== Starting Fixed Rho Trial 111 ===
+Fixed,111,20506,20505,0,290,85.00
+
+=== Starting Fixed Rho Trial 112 ===
+Fixed,112,21632,21631,0,306,85.00
+
+=== Starting Fixed Rho Trial 113 ===
+Fixed,113,33326,33326,0,472,85.00
+
+=== Starting Fixed Rho Trial 114 ===
+Fixed,114,9584,9583,0,135,85.00
+
+=== Starting Fixed Rho Trial 115 ===
+Fixed,115,10712,10712,0,151,85.00
+
+=== Starting Fixed Rho Trial 116 ===
+Fixed,116,31779,31779,0,450,85.00
+
+=== Starting Fixed Rho Trial 117 ===
+Fixed,117,13601,13600,0,192,85.00
+
+=== Starting Fixed Rho Trial 118 ===
+Fixed,118,23392,23392,0,331,85.00
+
+=== Starting Fixed Rho Trial 119 ===
+Fixed,119,35232,35232,0,500,85.00
+
+=== Starting Fixed Rho Trial 120 ===
+Fixed,120,18249,18249,0,258,85.00
+
+=== Starting Fixed Rho Trial 121 ===
+Fixed,121,12049,12049,0,170,85.00
+
+=== Starting Fixed Rho Trial 122 ===
+Fixed,122,27197,27197,0,385,85.00
+
+=== Starting Fixed Rho Trial 123 ===
+Fixed,123,25505,25505,0,361,85.00
+
+=== Starting Fixed Rho Trial 124 ===
+Fixed,124,13036,13036,0,184,85.00
+
+=== Starting Fixed Rho Trial 125 ===
+Fixed,125,35235,35235,0,500,85.00
+
+=== Starting Fixed Rho Trial 126 ===
+Fixed,126,21701,21701,0,307,85.00
+
+=== Starting Fixed Rho Trial 127 ===
+Fixed,127,35228,35227,0,500,85.00
+
+=== Starting Fixed Rho Trial 128 ===
+Fixed,128,20011,20010,0,283,85.00
+
+=== Starting Fixed Rho Trial 129 ===
+Fixed,129,9231,9230,0,130,85.00
+
+=== Starting Fixed Rho Trial 130 ===
+Fixed,130,25505,25505,0,361,85.00
+
+=== Starting Fixed Rho Trial 131 ===
+Fixed,131,14939,14939,0,211,85.00
+
+=== Starting Fixed Rho Trial 132 ===
+Fixed,132,18251,18251,0,258,85.00
+
+=== Starting Fixed Rho Trial 133 ===
+Fixed,133,18180,18179,0,257,85.00
+
+=== Starting Fixed Rho Trial 134 ===
+Fixed,134,15361,15361,0,217,85.00
+
+=== Starting Fixed Rho Trial 135 ===
+Fixed,135,10781,10781,0,152,85.00
+
+=== Starting Fixed Rho Trial 136 ===
+Fixed,136,25928,25928,0,367,85.00
+
+=== Starting Fixed Rho Trial 137 ===
+Fixed,137,23672,23671,0,335,85.00
+
+=== Starting Fixed Rho Trial 138 ===
+Fixed,138,35233,35233,0,500,85.00
+
+=== Starting Fixed Rho Trial 139 ===
+Fixed,139,10851,10851,0,153,85.00
+
+=== Starting Fixed Rho Trial 140 ===
+Fixed,140,17263,17262,0,244,85.00
+
+=== Starting Fixed Rho Trial 141 ===
+Fixed,141,23040,23040,0,326,85.00
+
+=== Starting Fixed Rho Trial 142 ===
+Fixed,142,22052,22052,0,312,85.00
+
+=== Starting Fixed Rho Trial 143 ===
+Fixed,143,35232,35232,0,500,85.00
+
+=== Starting Fixed Rho Trial 144 ===
+Fixed,144,26565,26565,0,376,85.00
+
+=== Starting Fixed Rho Trial 145 ===
+Fixed,145,21913,21912,0,310,85.00
+
+=== Starting Fixed Rho Trial 146 ===
+Fixed,146,27760,27760,0,393,85.00
+
+=== Starting Fixed Rho Trial 147 ===
+Fixed,147,24311,24310,0,344,85.00
+
+=== Starting Fixed Rho Trial 148 ===
+Fixed,148,13247,13247,0,187,85.00
+
+=== Starting Fixed Rho Trial 149 ===
+Fixed,149,27623,27623,0,391,85.00
+
+=== Starting Fixed Rho Trial 150 ===
+Fixed,150,15222,15221,0,215,85.00
+
+=== Starting Fixed Rho Trial 151 ===
+Fixed,151,35229,35228,0,500,85.00
+
+=== Starting Fixed Rho Trial 152 ===
+Fixed,152,11346,11346,0,160,85.00
+
+=== Starting Fixed Rho Trial 153 ===
+Fixed,153,13600,13600,0,192,85.00
+
+=== Starting Fixed Rho Trial 154 ===
+Fixed,154,10923,10922,0,154,85.00
+
+=== Starting Fixed Rho Trial 155 ===
+Fixed,155,14303,14303,0,202,85.00
+
+=== Starting Fixed Rho Trial 156 ===
+Fixed,156,8316,8315,0,117,85.00
+
+=== Starting Fixed Rho Trial 157 ===
+Fixed,157,17616,17616,0,249,85.00
+
+=== Starting Fixed Rho Trial 158 ===
+Fixed,158,19376,19376,0,274,85.00
+
+=== Starting Fixed Rho Trial 159 ===
+Fixed,159,19800,19800,0,280,85.00
+
+=== Starting Fixed Rho Trial 160 ===
+Fixed,160,18462,18461,0,261,85.00
+
+=== Starting Fixed Rho Trial 161 ===
+Fixed,161,35233,35232,0,500,85.00
+
+=== Starting Fixed Rho Trial 162 ===
+Fixed,162,11909,11909,0,168,85.00
+
+=== Starting Fixed Rho Trial 163 ===
+Fixed,163,35232,35232,0,500,85.00
+
+=== Starting Fixed Rho Trial 164 ===
+Fixed,164,24733,24733,0,350,85.00
+
+=== Starting Fixed Rho Trial 165 ===
+Fixed,165,17473,17472,0,247,85.00
+
+=== Starting Fixed Rho Trial 166 ===
+Fixed,166,32267,32267,0,457,85.00
+
+=== Starting Fixed Rho Trial 167 ===
+Fixed,167,17122,17122,0,242,85.00
+
+=== Starting Fixed Rho Trial 168 ===
+Fixed,168,24803,24803,0,351,85.00
+
+=== Starting Fixed Rho Trial 169 ===
+Fixed,169,28605,28604,0,405,85.00
+
+=== Starting Fixed Rho Trial 170 ===
+Fixed,170,34173,34173,0,484,85.00
+
+=== Starting Fixed Rho Trial 171 ===
+Fixed,171,21419,21419,0,303,85.00
+
+=== Starting Fixed Rho Trial 172 ===
+Fixed,172,26496,26496,0,375,85.00
+
+=== Starting Fixed Rho Trial 173 ===
+Fixed,173,10359,10359,0,146,85.00
+
+=== Starting Fixed Rho Trial 174 ===
+Fixed,174,35233,35233,0,500,85.00
+
+=== Starting Fixed Rho Trial 175 ===
+Fixed,175,24805,24804,0,351,85.00
+
+=== Starting Fixed Rho Trial 176 ===
+Fixed,176,14305,14305,0,202,85.00
+
+=== Starting Fixed Rho Trial 177 ===
+Fixed,177,20364,20364,0,288,85.00
+
+=== Starting Fixed Rho Trial 178 ===
+Fixed,178,19731,19730,0,279,85.00
+
+=== Starting Fixed Rho Trial 179 ===
+Fixed,179,13882,13881,0,196,85.00
+
+=== Starting Fixed Rho Trial 180 ===
+Fixed,180,31774,31773,0,450,85.00
+
+=== Starting Fixed Rho Trial 181 ===
+Fixed,181,20082,20082,0,284,85.00
+
+=== Starting Fixed Rho Trial 182 ===
+Fixed,182,35233,35233,0,500,85.00
+
+=== Starting Fixed Rho Trial 183 ===
+Fixed,183,19166,19166,0,271,85.00
+
+=== Starting Fixed Rho Trial 184 ===
+Fixed,184,8667,8667,0,122,85.00
+
+=== Starting Fixed Rho Trial 185 ===
+Fixed,185,25787,25786,0,365,85.00
+
+=== Starting Fixed Rho Trial 186 ===
+Fixed,186,9162,9161,0,129,85.00
+
+=== Starting Fixed Rho Trial 187 ===
+Fixed,187,35226,35226,0,500,85.00
+
+=== Starting Fixed Rho Trial 188 ===
+Fixed,188,35231,35231,0,500,85.00
+
+=== Starting Fixed Rho Trial 189 ===
+Fixed,189,22409,22409,0,317,85.00
+
+=== Starting Fixed Rho Trial 190 ===
+Fixed,190,22901,22901,0,324,85.00
+
+=== Starting Fixed Rho Trial 191 ===
+Fixed,191,35229,35229,0,500,85.00
+
+=== Starting Fixed Rho Trial 192 ===
+Fixed,192,16700,16700,0,236,85.00
+
+=== Starting Fixed Rho Trial 193 ===
+Fixed,193,8244,8244,0,116,85.00
+
+=== Starting Fixed Rho Trial 194 ===
+Fixed,194,28325,28324,0,401,85.00
+
+=== Starting Fixed Rho Trial 195 ===
+Fixed,195,35228,35228,0,500,85.00
+
+=== Starting Fixed Rho Trial 196 ===
+Fixed,196,15714,15714,0,222,85.00
+
+=== Starting Fixed Rho Trial 197 ===
+Fixed,197,35227,35227,0,500,85.00
+
+=== Starting Fixed Rho Trial 198 ===
+Fixed,198,15080,15080,0,213,85.00
+
+=== Starting Fixed Rho Trial 199 ===
+Fixed,199,16630,16629,0,235,85.00
+
+=== Starting Fixed Rho Trial 200 ===
+Fixed,200,35230,35230,0,500,85.00
+
+=== Starting Fixed Rho Trial 201 ===
+Fixed,201,22970,22969,0,325,85.00
+
+=== Starting Fixed Rho Trial 202 ===
+Fixed,202,35227,35227,0,500,85.00
+
+=== Starting Fixed Rho Trial 203 ===
+Fixed,203,10499,10499,0,148,85.00
+
+=== Starting Fixed Rho Trial 204 ===
+Fixed,204,20503,20503,0,290,85.00
+
+=== Starting Fixed Rho Trial 205 ===
+Fixed,205,14797,14797,0,209,85.00
+
+=== Starting Fixed Rho Trial 206 ===
+Fixed,206,16910,16910,0,239,85.00
+
+=== Starting Fixed Rho Trial 207 ===
+Fixed,207,16276,16276,0,230,85.00
+
+=== Starting Fixed Rho Trial 208 ===
+Fixed,208,22335,22335,0,316,85.00
+
+=== Starting Fixed Rho Trial 209 ===
+Fixed,209,29167,29166,0,413,85.00
+
+=== Starting Fixed Rho Trial 210 ===
+Fixed,210,35228,35228,0,500,85.00
+
+=== Starting Fixed Rho Trial 211 ===
+Fixed,211,28889,28889,0,409,85.00
+
+=== Starting Fixed Rho Trial 212 ===
+Fixed,212,11345,11345,0,160,85.00
+
+=== Starting Fixed Rho Trial 213 ===
+Fixed,213,29800,29800,0,422,85.00
+
+=== Starting Fixed Rho Trial 214 ===
+Fixed,214,34736,34735,0,492,85.00
+
+=== Starting Fixed Rho Trial 215 ===
+Fixed,215,17545,17545,0,248,85.00
+
+=== Starting Fixed Rho Trial 216 ===
+Fixed,216,21914,21914,0,310,85.00
+
+=== Starting Fixed Rho Trial 217 ===
+Fixed,217,19378,19377,0,274,85.00
+
+=== Starting Fixed Rho Trial 218 ===
+Fixed,218,18181,18180,0,257,85.00
+
+=== Starting Fixed Rho Trial 219 ===
+Fixed,219,25364,25363,0,359,85.00
+
+=== Starting Fixed Rho Trial 220 ===
+Fixed,220,20575,20575,0,291,85.00
+
+=== Starting Fixed Rho Trial 221 ===
+Fixed,221,13037,13036,0,184,85.00
+
+=== Starting Fixed Rho Trial 222 ===
+Fixed,222,12895,12895,0,182,85.00
+
+=== Starting Fixed Rho Trial 223 ===
+Fixed,223,11556,11556,0,163,85.00
+
+=== Starting Fixed Rho Trial 224 ===
+Fixed,224,35230,35230,0,500,85.00
+
+=== Starting Fixed Rho Trial 225 ===
+Fixed,225,24521,24521,0,347,85.00
+
+=== Starting Fixed Rho Trial 226 ===
+Fixed,226,13035,13034,0,184,85.00
+
+=== Starting Fixed Rho Trial 227 ===
+Fixed,227,29873,29873,0,423,85.00
+
+=== Starting Fixed Rho Trial 228 ===
+Fixed,228,22053,22053,0,312,85.00
+
+=== Starting Fixed Rho Trial 229 ===
+Fixed,229,18390,18390,0,260,85.00
+
+=== Starting Fixed Rho Trial 230 ===
+Fixed,230,15923,15923,0,225,85.00
+
+=== Starting Fixed Rho Trial 231 ===
+Fixed,231,22830,22830,0,323,85.00
+
+=== Starting Fixed Rho Trial 232 ===
+Fixed,232,17545,17545,0,248,85.00
+
+=== Starting Fixed Rho Trial 233 ===
+Fixed,233,9372,9372,0,132,85.00
+
+=== Starting Fixed Rho Trial 234 ===
+Fixed,234,11838,11838,0,167,85.00
+
+=== Starting Fixed Rho Trial 235 ===
+Fixed,235,18181,18180,0,257,85.00
+
+=== Starting Fixed Rho Trial 236 ===
+Fixed,236,28046,28045,0,397,85.00
+
+=== Starting Fixed Rho Trial 237 ===
+Fixed,237,18813,18813,0,266,85.00
+
+=== Starting Fixed Rho Trial 238 ===
+Fixed,238,23603,23603,0,334,85.00
+
+=== Starting Fixed Rho Trial 239 ===
+Fixed,239,35233,35233,0,500,85.00
+
+=== Starting Fixed Rho Trial 240 ===
+Fixed,240,22408,22408,0,317,85.00
+
+=== Starting Fixed Rho Trial 241 ===
+Fixed,241,15292,15292,0,216,85.00
+
+=== Starting Fixed Rho Trial 242 ===
+Fixed,242,16205,16205,0,229,85.00
+
+=== Starting Fixed Rho Trial 243 ===
+Fixed,243,28112,28112,0,398,85.00
+
+=== Starting Fixed Rho Trial 244 ===
+Fixed,244,24943,24942,0,353,85.00
+
+=== Starting Fixed Rho Trial 245 ===
+Fixed,245,8246,8245,0,116,85.00
+
+=== Starting Fixed Rho Trial 246 ===
+Fixed,246,35235,35234,0,500,85.00
+
+=== Starting Fixed Rho Trial 247 ===
+Fixed,247,17613,17613,0,249,85.00
+
+=== Starting Fixed Rho Trial 248 ===
+Fixed,248,8950,8949,0,126,85.00
+
+=== Starting Fixed Rho Trial 249 ===
+Fixed,249,27480,27479,0,389,85.00
+
+=== Starting Fixed Rho Trial 250 ===
+Fixed,250,28394,28394,0,402,85.00
+
+=== Starting Fixed Rho Trial 251 ===
+Fixed,251,34738,34737,0,492,85.00
+
+=== Starting Fixed Rho Trial 252 ===
+Fixed,252,14232,14232,0,201,85.00
+
+=== Starting Fixed Rho Trial 253 ===
+Fixed,253,15080,15080,0,213,85.00
+
+=== Starting Fixed Rho Trial 254 ===
+Fixed,254,20576,20576,0,291,85.00
+
+=== Starting Fixed Rho Trial 255 ===
+Fixed,255,28820,28819,0,408,85.00
+
+=== Starting Fixed Rho Trial 256 ===
+Fixed,256,26282,26282,0,372,85.00
+
+=== Starting Fixed Rho Trial 257 ===
+Fixed,257,35224,35224,0,500,85.00
+
+=== Starting Fixed Rho Trial 258 ===
+Fixed,258,35231,35231,0,500,85.00
+
+=== Starting Fixed Rho Trial 259 ===
+Fixed,259,15855,15855,0,224,85.00
+
+=== Starting Fixed Rho Trial 260 ===
+Fixed,260,16770,16770,0,237,85.00
+
+=== Starting Fixed Rho Trial 261 ===
+Fixed,261,28958,28958,0,410,85.00
+
+=== Starting Fixed Rho Trial 262 ===
+Fixed,262,15502,15502,0,219,85.00
+
+=== Starting Fixed Rho Trial 263 ===
+Fixed,263,16700,16700,0,236,85.00
+
+=== Starting Fixed Rho Trial 264 ===
+Fixed,264,27338,27338,0,387,85.00
+
+=== Starting Fixed Rho Trial 265 ===
+Fixed,265,16630,16630,0,235,85.00
+
+=== Starting Fixed Rho Trial 266 ===
+Fixed,266,35231,35231,0,500,85.00
+
+=== Starting Fixed Rho Trial 267 ===
+Fixed,267,35228,35228,0,500,85.00
+
+=== Starting Fixed Rho Trial 268 ===
+Fixed,268,31145,31144,0,441,85.00
+
+=== Starting Fixed Rho Trial 269 ===
+Fixed,269,18391,18391,0,260,85.00
+
+=== Starting Fixed Rho Trial 270 ===
+Fixed,270,30580,30580,0,433,85.00
+
+=== Starting Fixed Rho Trial 271 ===
+Fixed,271,35232,35231,0,500,85.00
+
+=== Starting Fixed Rho Trial 272 ===
+Fixed,272,30860,30860,0,437,85.00
+
+=== Starting Fixed Rho Trial 273 ===
+Fixed,273,13882,13882,0,196,85.00
+
+=== Starting Fixed Rho Trial 274 ===
+Fixed,274,35232,35232,0,500,85.00
+
+=== Starting Fixed Rho Trial 275 ===
+Fixed,275,16067,16066,0,227,85.00
+
+=== Starting Fixed Rho Trial 276 ===
+Fixed,276,14939,14939,0,211,85.00
+
+=== Starting Fixed Rho Trial 277 ===
+Fixed,277,10147,10147,0,143,85.00
+
+=== Starting Fixed Rho Trial 278 ===
+Fixed,278,25789,25789,0,365,85.00
+
+=== Starting Fixed Rho Trial 279 ===
+Fixed,279,12964,12964,0,183,85.00
+
+=== Starting Fixed Rho Trial 280 ===
+Fixed,280,24593,24593,0,348,85.00
+
+=== Starting Fixed Rho Trial 281 ===
+Fixed,281,11627,11627,0,164,85.00
+
+=== Starting Fixed Rho Trial 282 ===
+Fixed,282,19305,19305,0,273,85.00
+
+=== Starting Fixed Rho Trial 283 ===
+Fixed,283,35235,35234,0,500,85.00
+
+=== Starting Fixed Rho Trial 284 ===
+Fixed,284,35227,35227,0,500,85.00
+
+=== Starting Fixed Rho Trial 285 ===
+Fixed,285,29942,29942,0,424,85.00
+
+=== Starting Fixed Rho Trial 286 ===
+Fixed,286,21632,21632,0,306,85.00
+
+=== Starting Fixed Rho Trial 287 ===
+Fixed,287,23394,23393,0,331,85.00
+
+=== Starting Fixed Rho Trial 288 ===
+Fixed,288,15080,15079,0,213,85.00
+
+=== Starting Fixed Rho Trial 289 ===
+Fixed,289,35233,35232,0,500,85.00
+
+=== Starting Fixed Rho Trial 290 ===
+Fixed,290,15783,15783,0,223,85.00
+
+=== Starting Fixed Rho Trial 291 ===
+Fixed,291,35229,35229,0,500,85.00
+
+=== Starting Fixed Rho Trial 292 ===
+Fixed,292,19024,19024,0,269,85.00
+
+=== Starting Fixed Rho Trial 293 ===
+Fixed,293,9302,9302,0,131,85.00
+
+=== Starting Fixed Rho Trial 294 ===
+Fixed,294,31427,31427,0,445,85.00
+
+=== Starting Fixed Rho Trial 295 ===
+Fixed,295,35233,35232,0,500,85.00
+
+=== Starting Fixed Rho Trial 296 ===
+Fixed,296,15644,15644,0,221,85.00
+
+=== Starting Fixed Rho Trial 297 ===
+Fixed,297,15152,15151,0,214,85.00
+
+=== Starting Fixed Rho Trial 298 ===
+Fixed,298,15571,15571,0,220,85.00
+
+=== Starting Fixed Rho Trial 299 ===
+Fixed,299,35230,35230,0,500,85.00
+
+=== Starting Fixed Rho Trial 300 ===
+Fixed,300,28957,28957,0,410,85.00
+
+=== Starting Fixed Rho Trial 301 ===
+Fixed,301,34452,34452,0,488,85.00
+
+=== Starting Fixed Rho Trial 302 ===
+Fixed,302,13811,13811,0,195,85.00
+
+=== Starting Fixed Rho Trial 303 ===
+Fixed,303,8385,8385,0,118,85.00
+
+=== Starting Fixed Rho Trial 304 ===
+Fixed,304,13529,13529,0,191,85.00
+
+=== Starting Fixed Rho Trial 305 ===
+Fixed,305,11344,11344,0,160,85.00
+
+=== Starting Fixed Rho Trial 306 ===
+Fixed,306,11344,11344,0,160,85.00
+
+=== Starting Fixed Rho Trial 307 ===
+Fixed,307,28960,28960,0,410,85.00
+
+=== Starting Fixed Rho Trial 308 ===
+Fixed,308,30721,30721,0,435,85.00
+
+=== Starting Fixed Rho Trial 309 ===
+Fixed,309,16277,16277,0,230,85.00
+
+=== Starting Fixed Rho Trial 310 ===
+Fixed,310,13882,13882,0,196,85.00
+
+=== Starting Fixed Rho Trial 311 ===
+Fixed,311,26847,26847,0,380,85.00
+
+=== Starting Fixed Rho Trial 312 ===
+Fixed,312,15292,15291,0,216,85.00
+
+=== Starting Fixed Rho Trial 313 ===
+Fixed,313,29943,29943,0,424,85.00
+
+=== Starting Fixed Rho Trial 314 ===
+Fixed,314,35161,35161,0,498,85.00
+
+=== Starting Fixed Rho Trial 315 ===
+Fixed,315,13742,13741,0,194,85.00
+
+=== Starting Fixed Rho Trial 316 ===
+Fixed,316,30931,30931,0,438,85.00
+
+=== Starting Fixed Rho Trial 317 ===
+Fixed,317,30861,30861,0,437,85.00
+
+=== Starting Fixed Rho Trial 318 ===
+Fixed,318,29172,29172,0,413,85.00
+
+=== Starting Fixed Rho Trial 319 ===
+Fixed,319,16488,16488,0,233,85.00
+
+=== Starting Fixed Rho Trial 320 ===
+Fixed,320,26285,26284,0,372,85.00
+
+=== Starting Fixed Rho Trial 321 ===
+Fixed,321,17050,17050,0,241,85.00
+
+=== Starting Fixed Rho Trial 322 ===
+Fixed,322,15431,15431,0,218,85.00
+
+=== Starting Fixed Rho Trial 323 ===
+Fixed,323,34384,34384,0,487,85.00
+
+=== Starting Fixed Rho Trial 324 ===
+Fixed,324,35233,35233,0,500,85.00
+
+=== Starting Fixed Rho Trial 325 ===
+Fixed,325,14655,14655,0,207,85.00
+
+=== Starting Fixed Rho Trial 326 ===
+Fixed,326,8527,8527,0,120,85.00
+
+=== Starting Fixed Rho Trial 327 ===
+Fixed,327,11697,11697,0,165,85.00
+
+=== Starting Fixed Rho Trial 328 ===
+Fixed,328,16488,16488,0,233,85.00
+
+=== Starting Fixed Rho Trial 329 ===
+Fixed,329,12614,12613,0,178,85.00
+
+=== Starting Fixed Rho Trial 330 ===
+Fixed,330,28607,28607,0,405,85.00
+
+=== Starting Fixed Rho Trial 331 ===
+Fixed,331,35231,35230,0,500,85.00
+
+=== Starting Fixed Rho Trial 332 ===
+Fixed,332,35226,35226,0,500,85.00
+
+=== Starting Fixed Rho Trial 333 ===
+Fixed,333,22198,22197,0,314,85.00
+
+=== Starting Fixed Rho Trial 334 ===
+Fixed,334,35230,35230,0,500,85.00
+
+=== Starting Fixed Rho Trial 335 ===
+Fixed,335,17194,17193,0,243,85.00
+
+=== Starting Fixed Rho Trial 336 ===
+Fixed,336,24871,24871,0,352,85.00
+
+=== Starting Fixed Rho Trial 337 ===
+Fixed,337,30861,30861,0,437,85.00
+
+=== Starting Fixed Rho Trial 338 ===
+Fixed,338,35231,35231,0,500,85.00
+
+=== Starting Fixed Rho Trial 339 ===
+Fixed,339,35235,35234,0,500,85.00
+
+=== Starting Fixed Rho Trial 340 ===
+Fixed,340,21282,21281,0,301,85.00
+
+=== Starting Fixed Rho Trial 341 ===
+Fixed,341,26986,26986,0,382,85.00
+
+=== Starting Fixed Rho Trial 342 ===
+Fixed,342,31565,31565,0,447,85.00
+
+=== Starting Fixed Rho Trial 343 ===
+Fixed,343,16487,16487,0,233,85.00
+
+=== Starting Fixed Rho Trial 344 ===
+Fixed,344,35231,35230,0,500,85.00
+
+=== Starting Fixed Rho Trial 345 ===
+Fixed,345,17757,17757,0,251,85.00
+
+=== Starting Fixed Rho Trial 346 ===
+Fixed,346,30089,30088,0,426,85.00
+
+=== Starting Fixed Rho Trial 347 ===
+Fixed,347,26634,26634,0,377,85.00
+
+=== Starting Fixed Rho Trial 348 ===
+Fixed,348,21420,21420,0,303,85.00
+
+=== Starting Fixed Rho Trial 349 ===
+Fixed,349,22759,22759,0,322,85.00
+
+=== Starting Fixed Rho Trial 350 ===
+Fixed,350,15149,15149,0,214,85.00
+
+=== Starting Fixed Rho Trial 351 ===
+Fixed,351,15573,15573,0,220,85.00
+
+=== Starting Fixed Rho Trial 352 ===
+Fixed,352,13388,13388,0,189,85.00
+
+=== Starting Fixed Rho Trial 353 ===
+Fixed,353,35232,35232,0,500,85.00
+
+=== Starting Fixed Rho Trial 354 ===
+Fixed,354,26142,26141,0,370,85.00
+
+=== Starting Fixed Rho Trial 355 ===
+Fixed,355,29663,29662,0,420,85.00
+
+=== Starting Fixed Rho Trial 356 ===
+Fixed,356,35234,35233,0,500,85.00
+
+=== Starting Fixed Rho Trial 357 ===
+Fixed,357,20997,20997,0,297,85.00
+
+=== Starting Fixed Rho Trial 358 ===
+Fixed,358,35233,35232,0,500,85.00
+
+=== Starting Fixed Rho Trial 359 ===
+Fixed,359,22761,22761,0,322,85.00
+
+=== Starting Fixed Rho Trial 360 ===
+Fixed,360,15218,15218,0,215,85.00
+
+=== Starting Fixed Rho Trial 361 ===
+Fixed,361,35230,35229,0,500,85.00
+
+=== Starting Fixed Rho Trial 362 ===
+Fixed,362,15292,15292,0,216,85.00
+
+=== Starting Fixed Rho Trial 363 ===
+Fixed,363,12754,12753,0,180,85.00
+
+=== Starting Fixed Rho Trial 364 ===
+Fixed,364,35227,35227,0,500,85.00
+
+=== Starting Fixed Rho Trial 365 ===
+Fixed,365,16910,16910,0,239,85.00
+
+=== Starting Fixed Rho Trial 366 ===
+Fixed,366,29382,29381,0,416,85.00
+
+=== Starting Fixed Rho Trial 367 ===
+Fixed,367,35228,35228,0,500,85.00
+
+=== Starting Fixed Rho Trial 368 ===
+Fixed,368,22620,22620,0,320,85.00
+
+=== Starting Fixed Rho Trial 369 ===
+Fixed,369,12472,12472,0,176,85.00
+
+=== Starting Fixed Rho Trial 370 ===
+Fixed,370,18179,18178,0,257,85.00
+
+=== Starting Fixed Rho Trial 371 ===
+Fixed,371,18319,18319,0,259,85.00
+
+=== Starting Fixed Rho Trial 372 ===
+Fixed,372,26705,26705,0,378,85.00
+
+=== Starting Fixed Rho Trial 373 ===
+Fixed,373,15994,15994,0,226,85.00
+
+=== Starting Fixed Rho Trial 374 ===
+Fixed,374,35233,35232,0,500,85.00
+
+=== Starting Fixed Rho Trial 375 ===
+Fixed,375,35228,35228,0,500,85.00
+
+=== Starting Fixed Rho Trial 376 ===
+Fixed,376,12472,12472,0,176,85.00
+
+=== Starting Fixed Rho Trial 377 ===
+Fixed,377,11415,11415,0,161,85.00
+
+=== Starting Fixed Rho Trial 378 ===
+Fixed,378,22195,22194,0,314,85.00
+
+=== Starting Fixed Rho Trial 379 ===
+Fixed,379,16559,16559,0,234,85.00
+
+=== Starting Fixed Rho Trial 380 ===
+Fixed,380,20928,20928,0,296,85.00
+
+=== Starting Fixed Rho Trial 381 ===
+Fixed,381,14023,14022,0,198,85.00
+
+=== Starting Fixed Rho Trial 382 ===
+Fixed,382,35228,35228,0,500,85.00
+
+=== Starting Fixed Rho Trial 383 ===
+Fixed,383,10781,10781,0,152,85.00
+
+=== Starting Fixed Rho Trial 384 ===
+Fixed,384,28819,28819,0,408,85.00
+
+=== Starting Fixed Rho Trial 385 ===
+Fixed,385,15431,15431,0,218,85.00
+
+=== Starting Fixed Rho Trial 386 ===
+Fixed,386,15711,15711,0,222,85.00
+
+=== Starting Fixed Rho Trial 387 ===
+Fixed,387,16839,16839,0,238,85.00
+
+=== Starting Fixed Rho Trial 388 ===
+Fixed,388,26916,26916,0,381,85.00
+
+=== Starting Fixed Rho Trial 389 ===
+Fixed,389,30648,30648,0,434,85.00
+
+=== Starting Fixed Rho Trial 390 ===
+Fixed,390,27406,27406,0,388,85.00
+
+=== Starting Fixed Rho Trial 391 ===
+Fixed,391,25859,25859,0,366,85.00
+
+=== Starting Fixed Rho Trial 392 ===
+Fixed,392,26140,26140,0,370,85.00
+
+=== Starting Fixed Rho Trial 393 ===
+Fixed,393,35229,35229,0,500,85.00
+
+=== Starting Fixed Rho Trial 394 ===
+Fixed,394,23675,23675,0,335,85.00
+
+=== Starting Fixed Rho Trial 395 ===
+Fixed,395,35225,35225,0,500,85.00
+
+=== Starting Fixed Rho Trial 396 ===
+Fixed,396,19447,19446,0,275,85.00
+
+=== Starting Fixed Rho Trial 397 ===
+Fixed,397,24241,24240,0,343,85.00
+
+=== Starting Fixed Rho Trial 398 ===
+Fixed,398,20574,20574,0,291,85.00
+
+=== Starting Fixed Rho Trial 399 ===
+Fixed,399,35231,35230,0,500,85.00
+
+=== Starting Fixed Rho Trial 400 ===
+Fixed,400,31564,31563,0,447,85.00
+
+=== Starting Fixed Rho Trial 401 ===
+Fixed,401,18392,18392,0,260,85.00
+
+=== Starting Fixed Rho Trial 402 ===
+Fixed,402,28252,28252,0,400,85.00
+
+=== Starting Fixed Rho Trial 403 ===
+Fixed,403,19024,19024,0,269,85.00
+
+=== Starting Fixed Rho Trial 404 ===
+Fixed,404,21351,21351,0,302,85.00
+
+=== Starting Fixed Rho Trial 405 ===
+Fixed,405,24663,24662,0,349,85.00
+
+=== Starting Fixed Rho Trial 406 ===
+Fixed,406,13036,13036,0,184,85.00
+
+=== Starting Fixed Rho Trial 407 ===
+Fixed,407,24308,24307,0,344,85.00
+
+=== Starting Fixed Rho Trial 408 ===
+Fixed,408,35229,35229,0,500,85.00
+
+=== Starting Fixed Rho Trial 409 ===
+Fixed,409,35231,35231,0,500,85.00
+
+=== Starting Fixed Rho Trial 410 ===
+Fixed,410,26283,26283,0,372,85.00
+
+=== Starting Fixed Rho Trial 411 ===
+Fixed,411,14870,14869,0,210,85.00
+
+=== Starting Fixed Rho Trial 412 ===
+Fixed,412,11626,11625,0,164,85.00
+
+=== Starting Fixed Rho Trial 413 ===
+Fixed,413,22690,22690,0,321,85.00
+
+=== Starting Fixed Rho Trial 414 ===
+Fixed,414,17403,17403,0,246,85.00
+
+=== Starting Fixed Rho Trial 415 ===
+Fixed,415,13035,13035,0,184,85.00
+
+=== Starting Fixed Rho Trial 416 ===
+Fixed,416,27833,27833,0,394,85.00
+
+=== Starting Fixed Rho Trial 417 ===
+Fixed,417,35228,35227,0,500,85.00
+
+=== Starting Fixed Rho Trial 418 ===
+Fixed,418,11838,11838,0,167,85.00
+
+=== Starting Fixed Rho Trial 419 ===
+Fixed,419,17403,17403,0,246,85.00
+
+=== Starting Fixed Rho Trial 420 ===
+Fixed,420,25084,25084,0,355,85.00
+
+=== Starting Fixed Rho Trial 421 ===
+Fixed,421,13599,13599,0,192,85.00
+
+=== Starting Fixed Rho Trial 422 ===
+Fixed,422,23534,23533,0,333,85.00
+
+=== Starting Fixed Rho Trial 423 ===
+Fixed,423,25720,25720,0,364,85.00
+
+=== Starting Fixed Rho Trial 424 ===
+Fixed,424,28746,28746,0,407,85.00
+
+=== Starting Fixed Rho Trial 425 ===
+Fixed,425,11485,11485,0,162,85.00
+
+=== Starting Fixed Rho Trial 426 ===
+Fixed,426,26849,26848,0,380,85.00
+
+=== Starting Fixed Rho Trial 427 ===
+Fixed,427,23886,23885,0,338,85.00
+
+=== Starting Fixed Rho Trial 428 ===
+Fixed,428,18675,18674,0,264,85.00
+
+=== Starting Fixed Rho Trial 429 ===
+Fixed,429,23465,23465,0,332,85.00
+
+=== Starting Fixed Rho Trial 430 ===
+Fixed,430,15926,15926,0,225,85.00
+
+=== Starting Fixed Rho Trial 431 ===
+Fixed,431,35229,35229,0,500,85.00
+
+=== Starting Fixed Rho Trial 432 ===
+Fixed,432,16065,16065,0,227,85.00
+
+=== Starting Fixed Rho Trial 433 ===
+Fixed,433,13106,13106,0,185,85.00
+
+=== Starting Fixed Rho Trial 434 ===
+Fixed,434,35229,35229,0,500,85.00
+
+=== Starting Fixed Rho Trial 435 ===
+Fixed,435,35230,35230,0,500,85.00
+
+=== Starting Fixed Rho Trial 436 ===
+Fixed,436,16207,16207,0,229,85.00
+
+=== Starting Fixed Rho Trial 437 ===
+Fixed,437,9090,9090,0,128,85.00
+
+=== Starting Fixed Rho Trial 438 ===
+Fixed,438,9724,9724,0,137,85.00
+
+=== Starting Fixed Rho Trial 439 ===
+Fixed,439,21067,21066,0,298,85.00
+
+=== Starting Fixed Rho Trial 440 ===
+Fixed,440,35232,35231,0,500,85.00
+
+=== Starting Fixed Rho Trial 441 ===
+Fixed,441,8950,8950,0,126,85.00
+
+=== Starting Fixed Rho Trial 442 ===
+Fixed,442,26775,26774,0,379,85.00
+
+=== Starting Fixed Rho Trial 443 ===
+Fixed,443,14937,14937,0,211,85.00
+
+=== Starting Fixed Rho Trial 444 ===
+Fixed,444,21489,21489,0,304,85.00
+
+=== Starting Fixed Rho Trial 445 ===
+Fixed,445,35233,35232,0,500,85.00
+
+=== Starting Fixed Rho Trial 446 ===
+Fixed,446,18954,18953,0,268,85.00
+
+=== Starting Fixed Rho Trial 447 ===
+Fixed,447,16136,16136,0,228,85.00
+
+=== Starting Fixed Rho Trial 448 ===
+Fixed,448,15360,15360,0,217,85.00
+
+=== Starting Fixed Rho Trial 449 ===
+Fixed,449,20505,20505,0,290,85.00
+
+=== Starting Fixed Rho Trial 450 ===
+Fixed,450,14939,14938,0,211,85.00
+
+=== Starting Fixed Rho Trial 451 ===
+Fixed,451,24381,24381,0,345,85.00
+
+=== Starting Fixed Rho Trial 452 ===
+Fixed,452,21913,21912,0,310,85.00
+
+=== Starting Fixed Rho Trial 453 ===
+Fixed,453,11415,11415,0,161,85.00
+
+=== Starting Fixed Rho Trial 454 ===
+Fixed,454,17473,17473,0,247,85.00
+
+=== Starting Fixed Rho Trial 455 ===
+Fixed,455,21071,21070,0,298,85.00
+
+=== Starting Fixed Rho Trial 456 ===
+Fixed,456,20574,20574,0,291,85.00
+
+=== Starting Fixed Rho Trial 457 ===
+Fixed,457,28608,28608,0,405,85.00
+
+=== Starting Fixed Rho Trial 458 ===
+Fixed,458,24593,24592,0,348,85.00
+
+=== Starting Fixed Rho Trial 459 ===
+Fixed,459,23959,23958,0,339,85.00
+
+=== Starting Fixed Rho Trial 460 ===
+Fixed,460,35230,35230,0,500,85.00
+
+=== Starting Fixed Rho Trial 461 ===
+Fixed,461,14869,14869,0,210,85.00
+
+=== Starting Fixed Rho Trial 462 ===
+Fixed,462,30369,30368,0,430,85.00
+
+=== Starting Fixed Rho Trial 463 ===
+Fixed,463,16983,16982,0,240,85.00
+
+=== Starting Fixed Rho Trial 464 ===
+Fixed,464,21704,21704,0,307,85.00
+
+=== Starting Fixed Rho Trial 465 ===
+Fixed,465,19515,19515,0,276,85.00
+
+=== Starting Fixed Rho Trial 466 ===
+Fixed,466,15501,15501,0,219,85.00
+
+=== Starting Fixed Rho Trial 467 ===
+Fixed,467,26424,26423,0,374,85.00
+
+=== Starting Fixed Rho Trial 468 ===
+Fixed,468,35229,35229,0,500,85.00
+
+=== Starting Fixed Rho Trial 469 ===
+Fixed,469,26208,26208,0,371,85.00
+
+=== Starting Fixed Rho Trial 470 ===
+Fixed,470,22757,22757,0,322,85.00
+
+=== Starting Fixed Rho Trial 471 ===
+Fixed,471,24802,24802,0,351,85.00
+
+=== Starting Fixed Rho Trial 472 ===
+Fixed,472,15008,15008,0,212,85.00
+
+=== Starting Fixed Rho Trial 473 ===
+Fixed,473,29523,29522,0,418,85.00
+
+=== Starting Fixed Rho Trial 474 ===
+Fixed,474,25508,25507,0,361,85.00
+
+=== Starting Fixed Rho Trial 475 ===
+Fixed,475,35229,35228,0,500,85.00
+
+=== Starting Fixed Rho Trial 476 ===
+Fixed,476,24872,24872,0,352,85.00
+
+=== Starting Fixed Rho Trial 477 ===
+Fixed,477,35232,35231,0,500,85.00
+
+=== Starting Fixed Rho Trial 478 ===
+Fixed,478,24523,24522,0,347,85.00
+
+=== Starting Fixed Rho Trial 479 ===
+Fixed,479,22968,22968,0,325,85.00
+
+=== Starting Fixed Rho Trial 480 ===
+Fixed,480,8949,8949,0,126,85.00
+
+=== Starting Fixed Rho Trial 481 ===
+Fixed,481,19939,19939,0,282,85.00
+
+=== Starting Fixed Rho Trial 482 ===
+Fixed,482,20859,20859,0,295,85.00
+
+=== Starting Fixed Rho Trial 483 ===
+Fixed,483,34171,34171,0,484,85.00
+
+=== Starting Fixed Rho Trial 484 ===
+Fixed,484,35226,35226,0,500,85.00
+
+=== Starting Fixed Rho Trial 485 ===
+Fixed,485,27551,27551,0,390,85.00
+
+=== Starting Fixed Rho Trial 486 ===
+Fixed,486,35230,35229,0,500,85.00
+
+=== Starting Fixed Rho Trial 487 ===
+Fixed,487,32062,32061,0,454,85.00
+
+=== Starting Fixed Rho Trial 488 ===
+Fixed,488,35227,35227,0,500,85.00
+
+=== Starting Fixed Rho Trial 489 ===
+Fixed,489,28039,28039,0,397,85.00
+
+=== Starting Fixed Rho Trial 490 ===
+Fixed,490,11697,11697,0,165,85.00
+
+=== Starting Fixed Rho Trial 491 ===
+Fixed,491,30299,30298,0,429,85.00
+
+=== Starting Fixed Rho Trial 492 ===
+Fixed,492,14939,14939,0,211,85.00
+
+=== Starting Fixed Rho Trial 493 ===
+Fixed,493,35227,35227,0,500,85.00
+
+=== Starting Fixed Rho Trial 494 ===
+Fixed,494,14305,14305,0,202,85.00
+
+=== Starting Fixed Rho Trial 495 ===
+Fixed,495,12473,12472,0,176,85.00
+
+=== Starting Fixed Rho Trial 496 ===
+Fixed,496,19869,19869,0,281,85.00
+
+=== Starting Fixed Rho Trial 497 ===
+Fixed,497,35232,35231,0,500,85.00
+
+=== Starting Fixed Rho Trial 498 ===
+Fixed,498,27552,27552,0,390,85.00
+
+=== Starting Fixed Rho Trial 499 ===
+Fixed,499,16136,16136,0,228,85.00
+
+=== Starting Fixed Rho Trial 500 ===
+Fixed,500,33964,33964,0,481,85.00
+
+=== Starting Fixed Rho Trial 501 ===
+Fixed,501,19447,19446,0,275,85.00
+
+=== Starting Fixed Rho Trial 502 ===
+Fixed,502,30791,30791,0,436,85.00
+
+=== Starting Fixed Rho Trial 503 ===
+Fixed,503,19308,19307,0,273,85.00
+
+=== Starting Fixed Rho Trial 504 ===
+Fixed,504,35232,35232,0,500,85.00
+
+=== Starting Fixed Rho Trial 505 ===
+Fixed,505,12190,12190,0,172,85.00
+
+=== Starting Fixed Rho Trial 506 ===
+Fixed,506,11838,11838,0,167,85.00
+
+=== Starting Fixed Rho Trial 507 ===
+Fixed,507,22056,22056,0,312,85.00
+
+=== Starting Fixed Rho Trial 508 ===
+Fixed,508,25012,25012,0,354,85.00
+
+=== Starting Fixed Rho Trial 509 ===
+Fixed,509,29172,29172,0,413,85.00
+
+=== Starting Fixed Rho Trial 510 ===
+Fixed,510,35229,35229,0,500,85.00
+
+=== Starting Fixed Rho Trial 511 ===
+Fixed,511,25651,25650,0,363,85.00
+
+=== Starting Fixed Rho Trial 512 ===
+Fixed,512,11416,11415,0,161,85.00
+
+=== Starting Fixed Rho Trial 513 ===
+Fixed,513,11133,11133,0,157,85.00
+
+=== Starting Fixed Rho Trial 514 ===
+Fixed,514,20293,20293,0,287,85.00
+
+=== Starting Fixed Rho Trial 515 ===
+Fixed,515,30439,30438,0,431,85.00
+
+=== Starting Fixed Rho Trial 516 ===
+Fixed,516,29454,29454,0,417,85.00
+
+=== Starting Fixed Rho Trial 517 ===
+Fixed,517,24593,24592,0,348,85.00
+
+=== Starting Fixed Rho Trial 518 ===
+Fixed,518,35233,35233,0,500,85.00
+
+=== Starting Fixed Rho Trial 519 ===
+Fixed,519,19729,19729,0,279,85.00
+
+=== Starting Fixed Rho Trial 520 ===
+Fixed,520,21561,21561,0,305,85.00
+
+=== Starting Fixed Rho Trial 521 ===
+Fixed,521,35226,35226,0,500,85.00
+
+=== Starting Fixed Rho Trial 522 ===
+Fixed,522,25013,25012,0,354,85.00
+
+=== Starting Fixed Rho Trial 523 ===
+Fixed,523,27128,27128,0,384,85.00
+
+=== Starting Fixed Rho Trial 524 ===
+Fixed,524,21843,21842,0,309,85.00
+
+=== Starting Fixed Rho Trial 525 ===
+Fixed,525,29804,29804,0,422,85.00
+
+=== Starting Fixed Rho Trial 526 ===
+Fixed,526,11064,11064,0,156,85.00
+
+=== Starting Fixed Rho Trial 527 ===
+Fixed,527,23325,23324,0,330,85.00
+
+=== Starting Fixed Rho Trial 528 ===
+Fixed,528,11133,11133,0,157,85.00
+
+=== Starting Fixed Rho Trial 529 ===
+Fixed,529,15007,15007,0,212,85.00
+
+=== Starting Fixed Rho Trial 530 ===
+Fixed,530,9092,9091,0,128,85.00
+
+=== Starting Fixed Rho Trial 531 ===
+Fixed,531,35227,35227,0,500,85.00
+
+=== Starting Fixed Rho Trial 532 ===
+Fixed,532,35229,35229,0,500,85.00
+
+=== Starting Fixed Rho Trial 533 ===
+Fixed,533,17191,17191,0,243,85.00
+
+=== Starting Fixed Rho Trial 534 ===
+Fixed,534,34032,34032,0,482,85.00
+
+=== Starting Fixed Rho Trial 535 ===
+Fixed,535,22056,22055,0,312,85.00
+
+=== Starting Fixed Rho Trial 536 ===
+Fixed,536,17544,17544,0,248,85.00
+
+=== Starting Fixed Rho Trial 537 ===
+Fixed,537,17686,17686,0,250,85.00
+
+=== Starting Fixed Rho Trial 538 ===
+Fixed,538,29662,29662,0,420,85.00
+
+=== Starting Fixed Rho Trial 539 ===
+Fixed,539,20082,20081,0,284,85.00
+
+=== Starting Fixed Rho Trial 540 ===
+Fixed,540,35233,35232,0,500,85.00
+
+=== Starting Fixed Rho Trial 541 ===
+Fixed,541,30793,30792,0,436,85.00
+
+=== Starting Fixed Rho Trial 542 ===
+Fixed,542,25716,25716,0,364,85.00
+
+=== Starting Fixed Rho Trial 543 ===
+Fixed,543,18320,18319,0,259,85.00
+
+=== Starting Fixed Rho Trial 544 ===
+Fixed,544,17687,17687,0,250,85.00
+
+=== Starting Fixed Rho Trial 545 ===
+Fixed,545,20364,20364,0,288,85.00
+
+=== Starting Fixed Rho Trial 546 ===
+Fixed,546,18954,18954,0,268,85.00
+
+=== Starting Fixed Rho Trial 547 ===
+Fixed,547,16628,16628,0,235,85.00
+
+=== Starting Fixed Rho Trial 548 ===
+Fixed,548,10358,10358,0,146,85.00
+
+=== Starting Fixed Rho Trial 549 ===
+Fixed,549,23041,23040,0,326,85.00
+
+=== Starting Fixed Rho Trial 550 ===
+Fixed,550,13670,13669,0,193,85.00
+
+=== Starting Fixed Rho Trial 551 ===
+Fixed,551,30158,30157,0,427,85.00
+
+=== Starting Fixed Rho Trial 552 ===
+Fixed,552,12824,12824,0,181,85.00
+
+=== Starting Fixed Rho Trial 553 ===
+Fixed,553,10639,10639,0,150,85.00
+
+=== Starting Fixed Rho Trial 554 ===
+Fixed,554,35228,35227,0,500,85.00
+
+=== Starting Fixed Rho Trial 555 ===
+Fixed,555,16982,16982,0,240,85.00
+
+=== Starting Fixed Rho Trial 556 ===
+Fixed,556,26141,26141,0,370,85.00
+
+=== Starting Fixed Rho Trial 557 ===
+Fixed,557,20928,20927,0,296,85.00
+
+=== Starting Fixed Rho Trial 558 ===
+Fixed,558,35234,35234,0,500,85.00
+
+=== Starting Fixed Rho Trial 559 ===
+Fixed,559,21348,21348,0,302,85.00
+
+=== Starting Fixed Rho Trial 560 ===
+Fixed,560,17616,17615,0,249,85.00
+
+=== Starting Fixed Rho Trial 561 ===
+Fixed,561,21704,21704,0,307,85.00
+
+=== Starting Fixed Rho Trial 562 ===
+Fixed,562,35233,35233,0,500,85.00
+
+=== Starting Fixed Rho Trial 563 ===
+Fixed,563,22267,22267,0,315,85.00
+
+=== Starting Fixed Rho Trial 564 ===
+Fixed,564,19872,19871,0,281,85.00
+
+=== Starting Fixed Rho Trial 565 ===
+Fixed,565,25012,25012,0,354,85.00
+
+=== Starting Fixed Rho Trial 566 ===
+Fixed,566,12472,12472,0,176,85.00
+
+=== Starting Fixed Rho Trial 567 ===
+Fixed,567,14092,14091,0,199,85.00
+
+=== Starting Fixed Rho Trial 568 ===
+Fixed,568,19167,19167,0,271,85.00
+
+=== Starting Fixed Rho Trial 569 ===
+Fixed,569,11839,11839,0,167,85.00
+
+=== Starting Fixed Rho Trial 570 ===
+Fixed,570,26988,26987,0,382,85.00
+
+=== Starting Fixed Rho Trial 571 ===
+Fixed,571,35231,35231,0,500,85.00
+
+=== Starting Fixed Rho Trial 572 ===
+Fixed,572,22195,22194,0,314,85.00
+
+=== Starting Fixed Rho Trial 573 ===
+Fixed,573,18109,18109,0,256,85.00
+
+=== Starting Fixed Rho Trial 574 ===
+Fixed,574,28819,28818,0,408,85.00
+
+=== Starting Fixed Rho Trial 575 ===
+Fixed,575,15361,15361,0,217,85.00
+
+=== Starting Fixed Rho Trial 576 ===
+Fixed,576,19165,19165,0,271,85.00
+
+=== Starting Fixed Rho Trial 577 ===
+Fixed,577,14657,14657,0,207,85.00
+
+=== Starting Fixed Rho Trial 578 ===
+Fixed,578,35230,35230,0,500,85.00
+
+=== Starting Fixed Rho Trial 579 ===
+Fixed,579,25367,25366,0,359,85.00
+
+=== Starting Fixed Rho Trial 580 ===
+Fixed,580,13529,13528,0,191,85.00
+
+=== Starting Fixed Rho Trial 581 ===
+Fixed,581,22195,22195,0,314,85.00
+
+=== Starting Fixed Rho Trial 582 ===
+Fixed,582,35229,35229,0,500,85.00
+
+=== Starting Fixed Rho Trial 583 ===
+Fixed,583,21068,21067,0,298,85.00
+
+=== Starting Fixed Rho Trial 584 ===
+Fixed,584,35227,35227,0,500,85.00
+
+=== Starting Fixed Rho Trial 585 ===
+Fixed,585,15290,15290,0,216,85.00
+
+=== Starting Fixed Rho Trial 586 ===
+Fixed,586,15151,15150,0,214,85.00
+
+=== Starting Fixed Rho Trial 587 ===
+Fixed,587,35229,35229,0,500,85.00
+
+=== Starting Fixed Rho Trial 588 ===
+Fixed,588,24376,24376,0,345,85.00
+
+=== Starting Fixed Rho Trial 589 ===
+Fixed,589,15221,15221,0,215,85.00
+
+=== Starting Fixed Rho Trial 590 ===
+Fixed,590,13249,13248,0,187,85.00
+
+=== Starting Fixed Rho Trial 591 ===
+Fixed,591,10077,10077,0,142,85.00
+
+=== Starting Fixed Rho Trial 592 ===
+Fixed,592,35234,35233,0,500,85.00
+
+=== Starting Fixed Rho Trial 593 ===
+Fixed,593,20295,20295,0,287,85.00
+
+=== Starting Fixed Rho Trial 594 ===
+Fixed,594,21281,21280,0,301,85.00
+
+=== Starting Fixed Rho Trial 595 ===
+Fixed,595,8949,8949,0,126,85.00
+
+=== Starting Fixed Rho Trial 596 ===
+Fixed,596,26003,26003,0,368,85.00
+
+=== Starting Fixed Rho Trial 597 ===
+Fixed,597,35230,35230,0,500,85.00
+
+=== Starting Fixed Rho Trial 598 ===
+Fixed,598,16067,16067,0,227,85.00
+
+=== Starting Fixed Rho Trial 599 ===
+Fixed,599,11627,11626,0,164,85.00
+
+=== Starting Fixed Rho Trial 600 ===
+Fixed,600,19166,19166,0,271,85.00
+
+=== Starting Fixed Rho Trial 601 ===
+Fixed,601,14515,14515,0,205,85.00
+
+=== Starting Fixed Rho Trial 602 ===
+Fixed,602,16700,16699,0,236,85.00
+
+=== Starting Fixed Rho Trial 603 ===
+Fixed,603,16488,16488,0,233,85.00
+
+=== Starting Fixed Rho Trial 604 ===
+Fixed,604,9795,9795,0,138,85.00
+
+=== Starting Fixed Rho Trial 605 ===
+Fixed,605,35228,35228,0,500,85.00
+
+=== Starting Fixed Rho Trial 606 ===
+Fixed,606,35231,35230,0,500,85.00
+
+=== Starting Fixed Rho Trial 607 ===
+Fixed,607,16630,16630,0,235,85.00
+
+=== Starting Fixed Rho Trial 608 ===
+Fixed,608,16349,16348,0,231,85.00
+
+=== Starting Fixed Rho Trial 609 ===
+Fixed,609,20009,20009,0,283,85.00
+
+=== Starting Fixed Rho Trial 610 ===
+Fixed,610,29591,29591,0,419,85.00
+
+=== Starting Fixed Rho Trial 611 ===
+Fixed,611,35230,35230,0,500,85.00
+
+=== Starting Fixed Rho Trial 612 ===
+Fixed,612,12755,12755,0,180,85.00
+
+=== Starting Fixed Rho Trial 613 ===
+Fixed,613,10429,10429,0,147,85.00
+
+=== Starting Fixed Rho Trial 614 ===
+Fixed,614,29098,29098,0,412,85.00
+
+=== Starting Fixed Rho Trial 615 ===
+Fixed,615,19518,19518,0,276,85.00
+
+=== Starting Fixed Rho Trial 616 ===
+Fixed,616,34810,34809,0,493,85.00
+
+=== Starting Fixed Rho Trial 617 ===
+Fixed,617,31425,31425,0,445,85.00
+
+=== Starting Fixed Rho Trial 618 ===
+Fixed,618,29169,29169,0,413,85.00
+
+=== Starting Fixed Rho Trial 619 ===
+Fixed,619,28746,28746,0,407,85.00
+
+=== Starting Fixed Rho Trial 620 ===
+Fixed,620,11979,11979,0,169,85.00
+
+=== Starting Fixed Rho Trial 621 ===
+Fixed,621,29592,29592,0,419,85.00
+
+=== Starting Fixed Rho Trial 622 ===
+Fixed,622,18602,18602,0,263,85.00
+
+=== Starting Fixed Rho Trial 623 ===
+Fixed,623,18886,18886,0,267,85.00
+
+=== Starting Fixed Rho Trial 624 ===
+Fixed,624,12261,12261,0,173,85.00
+
+=== Starting Fixed Rho Trial 625 ===
+Fixed,625,24590,24590,0,348,85.00
+
+=== Starting Fixed Rho Trial 626 ===
+Fixed,626,19238,19237,0,272,85.00
+
+=== Starting Fixed Rho Trial 627 ===
+Fixed,627,28113,28113,0,398,85.00
+
+=== Starting Fixed Rho Trial 628 ===
+Fixed,628,19448,19448,0,275,85.00
+
+=== Starting Fixed Rho Trial 629 ===
+Fixed,629,19025,19024,0,269,85.00
+
+=== Starting Fixed Rho Trial 630 ===
+Fixed,630,35233,35233,0,500,85.00
+
+=== Starting Fixed Rho Trial 631 ===
+Fixed,631,30300,30299,0,429,85.00
+
+=== Starting Fixed Rho Trial 632 ===
+Fixed,632,35232,35232,0,500,85.00
+
+=== Starting Fixed Rho Trial 633 ===
+Fixed,633,15997,15996,0,226,85.00
+
+=== Starting Fixed Rho Trial 634 ===
+Fixed,634,14797,14797,0,209,85.00
+
+=== Starting Fixed Rho Trial 635 ===
+Fixed,635,35229,35229,0,500,85.00
+
+=== Starting Fixed Rho Trial 636 ===
+Fixed,636,29734,29734,0,421,85.00
+
+=== Starting Fixed Rho Trial 637 ===
+Fixed,637,32626,32626,0,462,85.00
+
+=== Starting Fixed Rho Trial 638 ===
+Fixed,638,10851,10851,0,153,85.00
+
+=== Starting Fixed Rho Trial 639 ===
+Fixed,639,35230,35230,0,500,85.00
+
+=== Starting Fixed Rho Trial 640 ===
+Fixed,640,35229,35229,0,500,85.00
+
+=== Starting Fixed Rho Trial 641 ===
+Fixed,641,25363,25362,0,359,85.00
+
+=== Starting Fixed Rho Trial 642 ===
+Fixed,642,21138,21137,0,299,85.00
+
+=== Starting Fixed Rho Trial 643 ===
+Fixed,643,35232,35232,0,500,85.00
+
+=== Starting Fixed Rho Trial 644 ===
+Fixed,644,21067,21067,0,298,85.00
+
+=== Starting Fixed Rho Trial 645 ===
+Fixed,645,29660,29660,0,420,85.00
+
+=== Starting Fixed Rho Trial 646 ===
+Fixed,646,24377,24377,0,345,85.00
+
+=== Starting Fixed Rho Trial 647 ===
+Fixed,647,32553,32553,0,461,85.00
+
+=== Starting Fixed Rho Trial 648 ===
+Fixed,648,21210,21209,0,300,85.00
+
+=== Starting Fixed Rho Trial 649 ===
+Fixed,649,19871,19871,0,281,85.00
+
+=== Starting Fixed Rho Trial 650 ===
+Fixed,650,14164,14164,0,200,85.00
+
+=== Starting Fixed Rho Trial 651 ===
+Fixed,651,35232,35231,0,500,85.00
+
+=== Starting Fixed Rho Trial 652 ===
+Fixed,652,25717,25717,0,364,85.00
+
+=== Starting Fixed Rho Trial 653 ===
+Fixed,653,16558,16558,0,234,85.00
+
+=== Starting Fixed Rho Trial 654 ===
+Fixed,654,16842,16841,0,238,85.00
+
+=== Starting Fixed Rho Trial 655 ===
+Fixed,655,31073,31073,0,440,85.00
+
+=== Starting Fixed Rho Trial 656 ===
+Fixed,656,17051,17051,0,241,85.00
+
+=== Starting Fixed Rho Trial 657 ===
+Fixed,657,14940,14939,0,211,85.00
+
+=== Starting Fixed Rho Trial 658 ===
+Fixed,658,33400,33400,0,473,85.00
+
+=== Starting Fixed Rho Trial 659 ===
+Fixed,659,25224,25224,0,357,85.00
+
+=== Starting Fixed Rho Trial 660 ===
+Fixed,660,18110,18110,0,256,85.00
+
+=== Starting Fixed Rho Trial 661 ===
+Fixed,661,35229,35228,0,500,85.00
+
+=== Starting Fixed Rho Trial 662 ===
+Fixed,662,10710,10710,0,151,85.00
+
+=== Starting Fixed Rho Trial 663 ===
+Fixed,663,13106,13106,0,185,85.00
+
+=== Starting Fixed Rho Trial 664 ===
+Fixed,664,17405,17404,0,246,85.00
+
+=== Starting Fixed Rho Trial 665 ===
+Fixed,665,25930,25930,0,367,85.00
+
+=== Starting Fixed Rho Trial 666 ===
+Fixed,666,27268,27267,0,386,85.00
+
+=== Starting Fixed Rho Trial 667 ===
+Fixed,667,27973,27973,0,396,85.00
+
+=== Starting Fixed Rho Trial 668 ===
+Fixed,668,35226,35225,0,500,85.00
+
+=== Starting Fixed Rho Trial 669 ===
+Fixed,669,17194,17194,0,243,85.00
+
+=== Starting Fixed Rho Trial 670 ===
+Fixed,670,17616,17616,0,249,85.00
+
+=== Starting Fixed Rho Trial 671 ===
+Fixed,671,21068,21068,0,298,85.00
+
+=== Starting Fixed Rho Trial 672 ===
+Fixed,672,35229,35228,0,500,85.00
+
+=== Starting Fixed Rho Trial 673 ===
+Fixed,673,11133,11133,0,157,85.00
+
+=== Starting Fixed Rho Trial 674 ===
+Fixed,674,31424,31424,0,445,85.00
+
+=== Starting Fixed Rho Trial 675 ===
+Fixed,675,18180,18180,0,257,85.00
+
+=== Starting Fixed Rho Trial 676 ===
+Fixed,676,23462,23462,0,332,85.00
+
+=== Starting Fixed Rho Trial 677 ===
+Fixed,677,13176,13176,0,186,85.00
+
+=== Starting Fixed Rho Trial 678 ===
+Fixed,678,22265,22264,0,315,85.00
+
+=== Starting Fixed Rho Trial 679 ===
+Fixed,679,35231,35231,0,500,85.00
+
+=== Starting Fixed Rho Trial 680 ===
+Fixed,680,27480,27480,0,389,85.00
+
+=== Starting Fixed Rho Trial 681 ===
+Fixed,681,26491,26491,0,375,85.00
+
+=== Starting Fixed Rho Trial 682 ===
+Fixed,682,18530,18530,0,262,85.00
+
+=== Starting Fixed Rho Trial 683 ===
+Fixed,683,10781,10781,0,152,85.00
+
+=== Starting Fixed Rho Trial 684 ===
+Fixed,684,35228,35228,0,500,85.00
+
+=== Starting Fixed Rho Trial 685 ===
+Fixed,685,35228,35228,0,500,85.00
+
+=== Starting Fixed Rho Trial 686 ===
+Fixed,686,20225,20225,0,286,85.00
+
+=== Starting Fixed Rho Trial 687 ===
+Fixed,687,35231,35231,0,500,85.00
+
+=== Starting Fixed Rho Trial 688 ===
+Fixed,688,9937,9936,0,140,85.00
+
+=== Starting Fixed Rho Trial 689 ===
+Fixed,689,31635,31635,0,448,85.00
+
+=== Starting Fixed Rho Trial 690 ===
+Fixed,690,29941,29941,0,424,85.00
+
+=== Starting Fixed Rho Trial 691 ===
+Fixed,691,35158,35158,0,498,85.00
+
+=== Starting Fixed Rho Trial 692 ===
+Fixed,692,26843,26842,0,380,85.00
+
+=== Starting Fixed Rho Trial 693 ===
+Fixed,693,22546,22546,0,319,85.00
+
+=== Starting Fixed Rho Trial 694 ===
+Fixed,694,31003,31002,0,439,85.00
+
+=== Starting Fixed Rho Trial 695 ===
+Fixed,695,18601,18601,0,263,85.00
+
+=== Starting Fixed Rho Trial 696 ===
+Fixed,696,22969,22969,0,325,85.00
+
+=== Starting Fixed Rho Trial 697 ===
+Fixed,697,12966,12966,0,183,85.00
+
+=== Starting Fixed Rho Trial 698 ===
+Fixed,698,10499,10499,0,148,85.00
+
+=== Starting Fixed Rho Trial 699 ===
+Fixed,699,14869,14869,0,210,85.00
+
+=== Starting Fixed Rho Trial 700 ===
+Fixed,700,24379,24378,0,345,85.00
+
+=== Starting Fixed Rho Trial 701 ===
+Fixed,701,9090,9090,0,128,85.00
+
+=== Starting Fixed Rho Trial 702 ===
+Fixed,702,15221,15221,0,215,85.00
+
+=== Starting Fixed Rho Trial 703 ===
+Fixed,703,17756,17756,0,251,85.00
+
+=== Starting Fixed Rho Trial 704 ===
+Fixed,704,23747,23747,0,336,85.00
+
+=== Starting Fixed Rho Trial 705 ===
+Fixed,705,35230,35229,0,500,85.00
+
+=== Starting Fixed Rho Trial 706 ===
+Fixed,706,35232,35232,0,500,85.00
+
+=== Starting Fixed Rho Trial 707 ===
+Fixed,707,28116,28116,0,398,85.00
+
+=== Starting Fixed Rho Trial 708 ===
+Fixed,708,35229,35229,0,500,85.00
+
+=== Starting Fixed Rho Trial 709 ===
+Fixed,709,13599,13598,0,192,85.00
+
+=== Starting Fixed Rho Trial 710 ===
+Fixed,710,35229,35228,0,500,85.00
+
+=== Starting Fixed Rho Trial 711 ===
+Fixed,711,16840,16840,0,238,85.00
+
+=== Starting Fixed Rho Trial 712 ===
+Fixed,712,22267,22267,0,315,85.00
+
+=== Starting Fixed Rho Trial 713 ===
+Fixed,713,23041,23040,0,326,85.00
+
+=== Starting Fixed Rho Trial 714 ===
+Fixed,714,15502,15501,0,219,85.00
+
+=== Starting Fixed Rho Trial 715 ===
+Fixed,715,16839,16838,0,238,85.00
+
+=== Starting Fixed Rho Trial 716 ===
+Fixed,716,31495,31494,0,446,85.00
+
+=== Starting Fixed Rho Trial 717 ===
+Fixed,717,17195,17194,0,243,85.00
+
+=== Starting Fixed Rho Trial 718 ===
+Fixed,718,12612,12612,0,178,85.00
+
+=== Starting Fixed Rho Trial 719 ===
+Fixed,719,11979,11978,0,169,85.00
+
+=== Starting Fixed Rho Trial 720 ===
+Fixed,720,28042,28041,0,397,85.00
+
+=== Starting Fixed Rho Trial 721 ===
+Fixed,721,8245,8245,0,116,85.00
+
+=== Starting Fixed Rho Trial 722 ===
+Fixed,722,12756,12755,0,180,85.00
+
+=== Starting Fixed Rho Trial 723 ===
+Fixed,723,18036,18035,0,255,85.00
+
+=== Starting Fixed Rho Trial 724 ===
+Fixed,724,11276,11275,0,159,85.00
+
+=== Starting Fixed Rho Trial 725 ===
+Fixed,725,20646,20645,0,292,85.00
+
+=== Starting Fixed Rho Trial 726 ===
+Fixed,726,19448,19448,0,275,85.00
+
+=== Starting Fixed Rho Trial 727 ===
+Fixed,727,35230,35230,0,500,85.00
+
+=== Starting Fixed Rho Trial 728 ===
+Fixed,728,35233,35232,0,500,85.00
+
+=== Starting Fixed Rho Trial 729 ===
+Fixed,729,10077,10077,0,142,85.00
+
+=== Starting Fixed Rho Trial 730 ===
+Fixed,730,34525,34525,0,489,85.00
+
+=== Starting Fixed Rho Trial 731 ===
+Fixed,731,20502,20502,0,290,85.00
+
+=== Starting Fixed Rho Trial 732 ===
+Fixed,732,21844,21843,0,309,85.00
+
+=== Starting Fixed Rho Trial 733 ===
+Fixed,733,27200,27200,0,385,85.00
+
+=== Starting Fixed Rho Trial 734 ===
+Fixed,734,16488,16488,0,233,85.00
+
+=== Starting Fixed Rho Trial 735 ===
+Fixed,735,16911,16911,0,239,85.00
+
+=== Starting Fixed Rho Trial 736 ===
+Fixed,736,16843,16842,0,238,85.00
+
+=== Starting Fixed Rho Trial 737 ===
+Fixed,737,35231,35230,0,500,85.00
+
+=== Starting Fixed Rho Trial 738 ===
+Fixed,738,35233,35233,0,500,85.00
+
+=== Starting Fixed Rho Trial 739 ===
+Fixed,739,14164,14164,0,200,85.00
+
+=== Starting Fixed Rho Trial 740 ===
+Fixed,740,24098,24098,0,341,85.00
+
+=== Starting Fixed Rho Trial 741 ===
+Fixed,741,15009,15008,0,212,85.00
+
+=== Starting Fixed Rho Trial 742 ===
+Fixed,742,13740,13740,0,194,85.00
+
+=== Starting Fixed Rho Trial 743 ===
+Fixed,743,16490,16489,0,233,85.00
+
+=== Starting Fixed Rho Trial 744 ===
+Fixed,744,10006,10006,0,141,85.00
+
+=== Starting Fixed Rho Trial 745 ===
+Fixed,745,12331,12330,0,174,85.00
+
+=== Starting Fixed Rho Trial 746 ===
+Fixed,746,12896,12896,0,182,85.00
+
+=== Starting Fixed Rho Trial 747 ===
+Fixed,747,31850,31850,0,451,85.00
+
+=== Starting Fixed Rho Trial 748 ===
+Fixed,748,21982,21982,0,311,85.00
+
+=== Starting Fixed Rho Trial 749 ===
+Fixed,749,19378,19378,0,274,85.00
+
+=== Starting Fixed Rho Trial 750 ===
+Fixed,750,9794,9794,0,138,85.00
+
+=== Starting Fixed Rho Trial 751 ===
+Fixed,751,21422,21421,0,303,85.00
+
+=== Starting Fixed Rho Trial 752 ===
+Fixed,752,19446,19446,0,275,85.00
+
+=== Starting Fixed Rho Trial 753 ===
+Fixed,753,13670,13670,0,193,85.00
+
+=== Starting Fixed Rho Trial 754 ===
+Fixed,754,24734,24734,0,350,85.00
+
+=== Starting Fixed Rho Trial 755 ===
+Fixed,755,31779,31779,0,450,85.00
+
+=== Starting Fixed Rho Trial 756 ===
+Fixed,756,26139,26138,0,370,85.00
+
+=== Starting Fixed Rho Trial 757 ===
+Fixed,757,16417,16416,0,232,85.00
+
+=== Starting Fixed Rho Trial 758 ===
+Fixed,758,35231,35230,0,500,85.00
+
+=== Starting Fixed Rho Trial 759 ===
+Fixed,759,16843,16842,0,238,85.00
+
+=== Starting Fixed Rho Trial 760 ===
+Fixed,760,17193,17193,0,243,85.00
+
+=== Starting Fixed Rho Trial 761 ===
+Fixed,761,14022,14022,0,198,85.00
+
+=== Starting Fixed Rho Trial 762 ===
+Fixed,762,35229,35229,0,500,85.00
+
+=== Starting Fixed Rho Trial 763 ===
+Fixed,763,21985,21985,0,311,85.00
+
+=== Starting Fixed Rho Trial 764 ===
+Fixed,764,23957,23956,0,339,85.00
+
+=== Starting Fixed Rho Trial 765 ===
+Fixed,765,35230,35230,0,500,85.00
+
+=== Starting Fixed Rho Trial 766 ===
+Fixed,766,22761,22761,0,322,85.00
+
+=== Starting Fixed Rho Trial 767 ===
+Fixed,767,28961,28960,0,410,85.00
+
+=== Starting Fixed Rho Trial 768 ===
+Fixed,768,13318,13318,0,188,85.00
+
+=== Starting Fixed Rho Trial 769 ===
+Fixed,769,12754,12753,0,180,85.00
+
+=== Starting Fixed Rho Trial 770 ===
+Fixed,770,13248,13247,0,187,85.00
+
+=== Starting Fixed Rho Trial 771 ===
+Fixed,771,23603,23602,0,334,85.00
+
+=== Starting Fixed Rho Trial 772 ===
+Fixed,772,18955,18955,0,268,85.00
+
+=== Starting Fixed Rho Trial 773 ===
+Fixed,773,20999,20998,0,297,85.00
+
+=== Starting Fixed Rho Trial 774 ===
+Fixed,774,24661,24660,0,349,85.00
+
+=== Starting Fixed Rho Trial 775 ===
+Fixed,775,16629,16629,0,235,85.00
+
+=== Starting Fixed Rho Trial 776 ===
+Fixed,776,35231,35231,0,500,85.00
+
+=== Starting Fixed Rho Trial 777 ===
+Fixed,777,21421,21421,0,303,85.00
+
+=== Starting Fixed Rho Trial 778 ===
+Fixed,778,12895,12894,0,182,85.00
+
+=== Starting Fixed Rho Trial 779 ===
+Fixed,779,13529,13529,0,191,85.00
+
+=== Starting Fixed Rho Trial 780 ===
+Fixed,780,11205,11205,0,158,85.00
+
+=== Starting Fixed Rho Trial 781 ===
+Fixed,781,35227,35227,0,500,85.00
+
+=== Starting Fixed Rho Trial 782 ===
+Fixed,782,35228,35227,0,500,85.00
+
+=== Starting Fixed Rho Trial 783 ===
+Fixed,783,29311,29311,0,415,85.00
+
+=== Starting Fixed Rho Trial 784 ===
+Fixed,784,9724,9724,0,137,85.00
+
+=== Starting Fixed Rho Trial 785 ===
+Fixed,785,16418,16417,0,232,85.00
+
+=== Starting Fixed Rho Trial 786 ===
+Fixed,786,9866,9865,0,139,85.00
+
+=== Starting Fixed Rho Trial 787 ===
+Fixed,787,22053,22052,0,312,85.00
+
+=== Starting Fixed Rho Trial 788 ===
+Fixed,788,18180,18180,0,257,85.00
+
+=== Starting Fixed Rho Trial 789 ===
+Fixed,789,14515,14515,0,205,85.00
+
+=== Starting Fixed Rho Trial 790 ===
+Fixed,790,27973,27973,0,396,85.00
+
+=== Starting Fixed Rho Trial 791 ===
+Fixed,791,9513,9513,0,134,85.00
+
+=== Starting Fixed Rho Trial 792 ===
+Fixed,792,34455,34455,0,488,85.00
+
+=== Starting Fixed Rho Trial 793 ===
+Fixed,793,22756,22756,0,322,85.00
+
+=== Starting Fixed Rho Trial 794 ===
+Fixed,794,25365,25365,0,359,85.00
+
+=== Starting Fixed Rho Trial 795 ===
+Fixed,795,15995,15995,0,226,85.00
+
+=== Starting Fixed Rho Trial 796 ===
+Fixed,796,25156,25155,0,356,85.00
+
+=== Starting Fixed Rho Trial 797 ===
+Fixed,797,14868,14868,0,210,85.00
+
+=== Starting Fixed Rho Trial 798 ===
+Fixed,798,14163,14163,0,200,85.00
+
+=== Starting Fixed Rho Trial 799 ===
+Fixed,799,10852,10852,0,153,85.00
+
+=== Starting Fixed Rho Trial 800 ===
+Fixed,800,12896,12895,0,182,85.00
+
+=== Starting Fixed Rho Trial 801 ===
+Fixed,801,17688,17687,0,250,85.00
+
+=== Starting Fixed Rho Trial 802 ===
+Fixed,802,35235,35234,0,500,85.00
+
+=== Starting Fixed Rho Trial 803 ===
+Fixed,803,35232,35232,0,500,85.00
+
+=== Starting Fixed Rho Trial 804 ===
+Fixed,804,35233,35233,0,500,85.00
+
+=== Starting Fixed Rho Trial 805 ===
+Fixed,805,17193,17192,0,243,85.00
+
+=== Starting Fixed Rho Trial 806 ===
+Fixed,806,35230,35229,0,500,85.00
+
+=== Starting Fixed Rho Trial 807 ===
+Fixed,807,14022,14021,0,198,85.00
+
+=== Starting Fixed Rho Trial 808 ===
+Fixed,808,22831,22831,0,323,85.00
+
+=== Starting Fixed Rho Trial 809 ===
+Fixed,809,20996,20996,0,297,85.00
+
+=== Starting Fixed Rho Trial 810 ===
+Fixed,810,20293,20293,0,287,85.00
+
+=== Starting Fixed Rho Trial 811 ===
+Fixed,811,35230,35230,0,500,85.00
+
+=== Starting Fixed Rho Trial 812 ===
+Fixed,812,35231,35231,0,500,85.00
+
+=== Starting Fixed Rho Trial 813 ===
+Fixed,813,25578,25578,0,362,85.00
+
+=== Starting Fixed Rho Trial 814 ===
+Fixed,814,19870,19870,0,281,85.00
+
+=== Starting Fixed Rho Trial 815 ===
+Fixed,815,12682,12682,0,179,85.00
+
+=== Starting Fixed Rho Trial 816 ===
+Fixed,816,18813,18813,0,266,85.00
+
+=== Starting Fixed Rho Trial 817 ===
+Fixed,817,23110,23110,0,327,85.00
+
+=== Starting Fixed Rho Trial 818 ===
+Fixed,818,25787,25787,0,365,85.00
+
+=== Starting Fixed Rho Trial 819 ===
+Fixed,819,25154,25154,0,356,85.00
+
+=== Starting Fixed Rho Trial 820 ===
+Fixed,820,25999,25999,0,368,85.00
+
+=== Starting Fixed Rho Trial 821 ===
+Fixed,821,13528,13528,0,191,85.00
+
+=== Starting Fixed Rho Trial 822 ===
+Fixed,822,23182,23181,0,328,85.00
+
+=== Starting Fixed Rho Trial 823 ===
+Fixed,823,24238,24238,0,343,85.00
+
+=== Starting Fixed Rho Trial 824 ===
+Fixed,824,32765,32765,0,464,85.00
+
+=== Starting Fixed Rho Trial 825 ===
+Fixed,825,35231,35231,0,500,85.00
+
+=== Starting Fixed Rho Trial 826 ===
+Fixed,826,35230,35230,0,500,85.00
+
+=== Starting Fixed Rho Trial 827 ===
+Fixed,827,35233,35233,0,500,85.00
+
+=== Starting Fixed Rho Trial 828 ===
+Fixed,828,18108,18107,0,256,85.00
+
+=== Starting Fixed Rho Trial 829 ===
+Fixed,829,20927,20927,0,296,85.00
+
+=== Starting Fixed Rho Trial 830 ===
+Fixed,830,35230,35230,0,500,85.00
+
+=== Starting Fixed Rho Trial 831 ===
+Fixed,831,35233,35233,0,500,85.00
+
+=== Starting Fixed Rho Trial 832 ===
+Fixed,832,35232,35232,0,500,85.00
+
+=== Starting Fixed Rho Trial 833 ===
+Fixed,833,35230,35230,0,500,85.00
+
+=== Starting Fixed Rho Trial 834 ===
+Fixed,834,18601,18601,0,263,85.00
+
+=== Starting Fixed Rho Trial 835 ===
+Fixed,835,21000,20999,0,297,85.00
+
+=== Starting Fixed Rho Trial 836 ===
+Fixed,836,28889,28889,0,409,85.00
+
+=== Starting Fixed Rho Trial 837 ===
+Fixed,837,35230,35230,0,500,85.00
+
+=== Starting Fixed Rho Trial 838 ===
+Fixed,838,18178,18178,0,257,85.00
+
+=== Starting Fixed Rho Trial 839 ===
+Fixed,839,19590,19590,0,277,85.00
+
+=== Starting Fixed Rho Trial 840 ===
+Fixed,840,16137,16136,0,228,85.00
+
+=== Starting Fixed Rho Trial 841 ===
+Fixed,841,20294,20294,0,287,85.00
+
+=== Starting Fixed Rho Trial 842 ===
+Fixed,842,18251,18251,0,258,85.00
+
+=== Starting Fixed Rho Trial 843 ===
+Fixed,843,29031,29030,0,411,85.00
+
+=== Starting Fixed Rho Trial 844 ===
+Fixed,844,25717,25717,0,364,85.00
+
+=== Starting Fixed Rho Trial 845 ===
+Fixed,845,23322,23322,0,330,85.00
+
+=== Starting Fixed Rho Trial 846 ===
+Fixed,846,17405,17404,0,246,85.00
+
+=== Starting Fixed Rho Trial 847 ===
+Fixed,847,19868,19868,0,281,85.00
+
+=== Starting Fixed Rho Trial 848 ===
+Fixed,848,26845,26845,0,380,85.00
+
+=== Starting Fixed Rho Trial 849 ===
+Fixed,849,15995,15995,0,226,85.00
+
+=== Starting Fixed Rho Trial 850 ===
+Fixed,850,20224,20224,0,286,85.00
+
+=== Starting Fixed Rho Trial 851 ===
+Fixed,851,16277,16277,0,230,85.00
+
+=== Starting Fixed Rho Trial 852 ===
+Fixed,852,13389,13388,0,189,85.00
+
+=== Starting Fixed Rho Trial 853 ===
+Fixed,853,17756,17755,0,251,85.00
+
+=== Starting Fixed Rho Trial 854 ===
+Fixed,854,22406,22406,0,317,85.00
+
+=== Starting Fixed Rho Trial 855 ===
+Fixed,855,35228,35228,0,500,85.00
+
+=== Starting Fixed Rho Trial 856 ===
+Fixed,856,32833,32833,0,465,85.00
+
+=== Starting Fixed Rho Trial 857 ===
+Fixed,857,16701,16701,0,236,85.00
+
+=== Starting Fixed Rho Trial 858 ===
+Fixed,858,15503,15502,0,219,85.00
+
+=== Starting Fixed Rho Trial 859 ===
+Fixed,859,21844,21844,0,309,85.00
+
+=== Starting Fixed Rho Trial 860 ===
+Fixed,860,15855,15855,0,224,85.00
+
+=== Starting Fixed Rho Trial 861 ===
+Fixed,861,31492,31491,0,446,85.00
+
+=== Starting Fixed Rho Trial 862 ===
+Fixed,862,11768,11768,0,166,85.00
+
+=== Starting Fixed Rho Trial 863 ===
+Fixed,863,30298,30297,0,429,85.00
+
+=== Starting Fixed Rho Trial 864 ===
+Fixed,864,10924,10923,0,154,85.00
+
+=== Starting Fixed Rho Trial 865 ===
+Fixed,865,16982,16982,0,240,85.00
+
+=== Starting Fixed Rho Trial 866 ===
+Fixed,866,22690,22690,0,321,85.00
+
+=== Starting Fixed Rho Trial 867 ===
+Fixed,867,35231,35231,0,500,85.00
+
+=== Starting Fixed Rho Trial 868 ===
+Fixed,868,28255,28255,0,400,85.00
+
+=== Starting Fixed Rho Trial 869 ===
+Fixed,869,17897,17896,0,253,85.00
+
+=== Starting Fixed Rho Trial 870 ===
+Fixed,870,17051,17050,0,241,85.00
+
+=== Starting Fixed Rho Trial 871 ===
+Fixed,871,28112,28112,0,398,85.00
+
+=== Starting Fixed Rho Trial 872 ===
+Fixed,872,12683,12683,0,179,85.00
+
+=== Starting Fixed Rho Trial 873 ===
+Fixed,873,23321,23321,0,330,85.00
+
+=== Starting Fixed Rho Trial 874 ===
+Fixed,874,23817,23817,0,337,85.00
+
+=== Starting Fixed Rho Trial 875 ===
+Fixed,875,28115,28114,0,398,85.00
+
+=== Starting Fixed Rho Trial 876 ===
+Fixed,876,16207,16207,0,229,85.00
+
+=== Starting Fixed Rho Trial 877 ===
+Fixed,877,18533,18533,0,262,85.00
+
+=== Starting Fixed Rho Trial 878 ===
+Fixed,878,22263,22262,0,315,85.00
+
+=== Starting Fixed Rho Trial 879 ===
+Fixed,879,10077,10077,0,142,85.00
+
+=== Starting Fixed Rho Trial 880 ===
+Fixed,880,14233,14233,0,201,85.00
+
+=== Starting Fixed Rho Trial 881 ===
+Fixed,881,14303,14303,0,202,85.00
+
+=== Starting Fixed Rho Trial 882 ===
+Fixed,882,27267,27266,0,386,85.00
+
+=== Starting Fixed Rho Trial 883 ===
+Fixed,883,29242,29241,0,414,85.00
+
+=== Starting Fixed Rho Trial 884 ===
+Fixed,884,23183,23182,0,328,85.00
+
+=== Starting Fixed Rho Trial 885 ===
+Fixed,885,23958,23957,0,339,85.00
+
+=== Starting Fixed Rho Trial 886 ===
+Fixed,886,24658,24658,0,349,85.00
+
+=== Starting Fixed Rho Trial 887 ===
+Fixed,887,35229,35228,0,500,85.00
+
+=== Starting Fixed Rho Trial 888 ===
+Fixed,888,25508,25508,0,361,85.00
+
+=== Starting Fixed Rho Trial 889 ===
+Fixed,889,35234,35234,0,500,85.00
+
+=== Starting Fixed Rho Trial 890 ===
+Fixed,890,14373,14373,0,203,85.00
+
+=== Starting Fixed Rho Trial 891 ===
+Fixed,891,21067,21067,0,298,85.00
+
+=== Starting Fixed Rho Trial 892 ===
+Fixed,892,19942,19941,0,282,85.00
+
+=== Starting Fixed Rho Trial 893 ===
+Fixed,893,12261,12261,0,173,85.00
+
+=== Starting Fixed Rho Trial 894 ===
+Fixed,894,21985,21984,0,311,85.00
+
+=== Starting Fixed Rho Trial 895 ===
+Fixed,895,33047,33047,0,468,85.00
+
+=== Starting Fixed Rho Trial 896 ===
+Fixed,896,23885,23885,0,338,85.00
+
+=== Starting Fixed Rho Trial 897 ===
+Fixed,897,13318,13317,0,188,85.00
+
+=== Starting Fixed Rho Trial 898 ===
+Fixed,898,18954,18954,0,268,85.00
+
+=== Starting Fixed Rho Trial 899 ===
+Fixed,899,13811,13810,0,195,85.00
+
+=== Starting Fixed Rho Trial 900 ===
+Fixed,900,35228,35228,0,500,85.00
+
+=== Starting Fixed Rho Trial 901 ===
+Fixed,901,35086,35086,0,497,85.00
+
+=== Starting Fixed Rho Trial 902 ===
+Fixed,902,20433,20433,0,289,85.00
+
+=== Starting Fixed Rho Trial 903 ===
+Fixed,903,22761,22761,0,322,85.00
+
+=== Starting Fixed Rho Trial 904 ===
+Fixed,904,35225,35225,0,500,85.00
+
+=== Starting Fixed Rho Trial 905 ===
+Fixed,905,21352,21351,0,302,85.00
+
+=== Starting Fixed Rho Trial 906 ===
+Fixed,906,16417,16417,0,232,85.00
+
+=== Starting Fixed Rho Trial 907 ===
+Fixed,907,28889,28888,0,409,85.00
+
+=== Starting Fixed Rho Trial 908 ===
+Fixed,908,28538,28537,0,404,85.00
+
+=== Starting Fixed Rho Trial 909 ===
+Fixed,909,14796,14796,0,209,85.00
+
+=== Starting Fixed Rho Trial 910 ===
+Fixed,910,35234,35233,0,500,85.00
+
+=== Starting Fixed Rho Trial 911 ===
+Fixed,911,10147,10147,0,143,85.00
+
+=== Starting Fixed Rho Trial 912 ===
+Fixed,912,21209,21209,0,300,85.00
+
+=== Starting Fixed Rho Trial 913 ===
+Fixed,913,35232,35231,0,500,85.00
+
+=== Starting Fixed Rho Trial 914 ===
+Fixed,914,35232,35231,0,500,85.00
+
+=== Starting Fixed Rho Trial 915 ===
+Fixed,915,11698,11697,0,165,85.00
+
+=== Starting Fixed Rho Trial 916 ===
+Fixed,916,20857,20857,0,295,85.00
+
+=== Starting Fixed Rho Trial 917 ===
+Fixed,917,9865,9865,0,139,85.00
+
+=== Starting Fixed Rho Trial 918 ===
+Fixed,918,14868,14867,0,210,85.00
+
+=== Starting Fixed Rho Trial 919 ===
+Fixed,919,24240,24240,0,343,85.00
+
+=== Starting Fixed Rho Trial 920 ===
+Fixed,920,20011,20010,0,283,85.00
+
+=== Starting Fixed Rho Trial 921 ===
+Fixed,921,35232,35232,0,500,85.00
+
+=== Starting Fixed Rho Trial 922 ===
+Fixed,922,13739,13739,0,194,85.00
+
+=== Starting Fixed Rho Trial 923 ===
+Fixed,923,14727,14726,0,208,85.00
+
+=== Starting Fixed Rho Trial 924 ===
+Fixed,924,15714,15714,0,222,85.00
+
+=== Starting Fixed Rho Trial 925 ===
+Fixed,925,16208,16207,0,229,85.00
+
+=== Starting Fixed Rho Trial 926 ===
+Fixed,926,35230,35229,0,500,85.00
+
+=== Starting Fixed Rho Trial 927 ===
+Fixed,927,15574,15573,0,220,85.00
+
+=== Starting Fixed Rho Trial 928 ===
+Fixed,928,34314,34314,0,486,85.00
+
+=== Starting Fixed Rho Trial 929 ===
+Fixed,929,24028,24028,0,340,85.00
+
+=== Starting Fixed Rho Trial 930 ===
+Fixed,930,12824,12824,0,181,85.00
+
+=== Starting Fixed Rho Trial 931 ===
+Fixed,931,35231,35231,0,500,85.00
+
+=== Starting Fixed Rho Trial 932 ===
+Fixed,932,34035,34034,0,482,85.00
+
+=== Starting Fixed Rho Trial 933 ===
+Fixed,933,35229,35228,0,500,85.00
+
+=== Starting Fixed Rho Trial 934 ===
+Fixed,934,16067,16067,0,227,85.00
+
+=== Starting Fixed Rho Trial 935 ===
+Fixed,935,35233,35232,0,500,85.00
+
+=== Starting Fixed Rho Trial 936 ===
+Fixed,936,23818,23818,0,337,85.00
+
+=== Starting Fixed Rho Trial 937 ===
+Fixed,937,35229,35229,0,500,85.00
+
+=== Starting Fixed Rho Trial 938 ===
+Fixed,938,21489,21489,0,304,85.00
+
+=== Starting Fixed Rho Trial 939 ===
+Fixed,939,17123,17122,0,242,85.00
+
+=== Starting Fixed Rho Trial 940 ===
+Fixed,940,35231,35231,0,500,85.00
+
+=== Starting Fixed Rho Trial 941 ===
+Fixed,941,17474,17474,0,247,85.00
+
+=== Starting Fixed Rho Trial 942 ===
+Fixed,942,16418,16418,0,232,85.00
+
+=== Starting Fixed Rho Trial 943 ===
+Fixed,943,18109,18109,0,256,85.00
+
+=== Starting Fixed Rho Trial 944 ===
+Fixed,944,26423,26422,0,374,85.00
+
+=== Starting Fixed Rho Trial 945 ===
+Fixed,945,35235,35234,0,500,85.00
+
+=== Starting Fixed Rho Trial 946 ===
+Fixed,946,35232,35231,0,500,85.00
+
+=== Starting Fixed Rho Trial 947 ===
+Fixed,947,8808,8808,0,124,85.00
+
+=== Starting Fixed Rho Trial 948 ===
+Fixed,948,19448,19447,0,275,85.00
+
+=== Starting Fixed Rho Trial 949 ===
+Fixed,949,21348,21348,0,302,85.00
+
+=== Starting Fixed Rho Trial 950 ===
+Fixed,950,35234,35233,0,500,85.00
+
+=== Starting Fixed Rho Trial 951 ===
+Fixed,951,35229,35229,0,500,85.00
+
+=== Starting Fixed Rho Trial 952 ===
+Fixed,952,25790,25789,0,365,85.00
+
+=== Starting Fixed Rho Trial 953 ===
+Fixed,953,17547,17546,0,248,85.00
+
+=== Starting Fixed Rho Trial 954 ===
+Fixed,954,24875,24874,0,352,85.00
+
+=== Starting Fixed Rho Trial 955 ===
+Fixed,955,19730,19730,0,279,85.00
+
+=== Starting Fixed Rho Trial 956 ===
+Fixed,956,31707,31707,0,449,85.00
+
+=== Starting Fixed Rho Trial 957 ===
+Fixed,957,27125,27125,0,384,85.00
+
+=== Starting Fixed Rho Trial 958 ===
+Fixed,958,21281,21280,0,301,85.00
+
+=== Starting Fixed Rho Trial 959 ===
+Fixed,959,19589,19589,0,277,85.00
+
+=== Starting Fixed Rho Trial 960 ===
+Fixed,960,15220,15219,0,215,85.00
+
+=== Starting Fixed Rho Trial 961 ===
+Fixed,961,10146,10146,0,143,85.00
+
+=== Starting Fixed Rho Trial 962 ===
+Fixed,962,35231,35231,0,500,85.00
+
+=== Starting Fixed Rho Trial 963 ===
+Fixed,963,17616,17615,0,249,85.00
+
+=== Starting Fixed Rho Trial 964 ===
+Fixed,964,16488,16488,0,233,85.00
+
+=== Starting Fixed Rho Trial 965 ===
+Fixed,965,15784,15784,0,223,85.00
+
+=== Starting Fixed Rho Trial 966 ===
+Fixed,966,11627,11626,0,164,85.00
+
+=== Starting Fixed Rho Trial 967 ===
+Fixed,967,19800,19800,0,280,85.00
+
+=== Starting Fixed Rho Trial 968 ===
+Fixed,968,19166,19166,0,271,85.00
+
+=== Starting Fixed Rho Trial 969 ===
+Fixed,969,11767,11767,0,166,85.00
+
+=== Starting Fixed Rho Trial 970 ===
+Fixed,970,34877,34877,0,494,85.00
+
+=== Starting Fixed Rho Trial 971 ===
+Fixed,971,25437,25437,0,360,85.00
+
+=== Starting Fixed Rho Trial 972 ===
+Fixed,972,20788,20788,0,294,85.00
+
+=== Starting Fixed Rho Trial 973 ===
+Fixed,973,35232,35232,0,500,85.00
+
+=== Starting Fixed Rho Trial 974 ===
+Fixed,974,14799,14798,0,209,85.00
+
+=== Starting Fixed Rho Trial 975 ===
+Fixed,975,13388,13388,0,189,85.00
+
+=== Starting Fixed Rho Trial 976 ===
+Fixed,976,21843,21843,0,309,85.00
+
+=== Starting Fixed Rho Trial 977 ===
+Fixed,977,17967,17967,0,254,85.00
+
+=== Starting Fixed Rho Trial 978 ===
+Fixed,978,31005,31005,0,439,85.00
+
+=== Starting Fixed Rho Trial 979 ===
+Fixed,979,16489,16488,0,233,85.00
+
+=== Starting Fixed Rho Trial 980 ===
+Fixed,980,11205,11204,0,158,85.00
+
+=== Starting Fixed Rho Trial 981 ===
+Fixed,981,18111,18110,0,256,85.00
+
+=== Starting Fixed Rho Trial 982 ===
+Fixed,982,13035,13035,0,184,85.00
+
+=== Starting Fixed Rho Trial 983 ===
+Fixed,983,25507,25506,0,361,85.00
+
+=== Starting Fixed Rho Trial 984 ===
+Fixed,984,14233,14233,0,201,85.00
+
+=== Starting Fixed Rho Trial 985 ===
+Fixed,985,21209,21209,0,300,85.00
+
+=== Starting Fixed Rho Trial 986 ===
+Fixed,986,35232,35232,0,500,85.00
+
+=== Starting Fixed Rho Trial 987 ===
+Fixed,987,19449,19449,0,275,85.00
+
+=== Starting Fixed Rho Trial 988 ===
+Fixed,988,13248,13248,0,187,85.00
+
+=== Starting Fixed Rho Trial 989 ===
+Fixed,989,35231,35231,0,500,85.00
+
+=== Starting Fixed Rho Trial 990 ===
+Fixed,990,35232,35231,0,500,85.00
+
+=== Starting Fixed Rho Trial 991 ===
+Fixed,991,19026,19026,0,269,85.00
+
+=== Starting Fixed Rho Trial 992 ===
+Fixed,992,27125,27125,0,384,85.00
+
+=== Starting Fixed Rho Trial 993 ===
+Fixed,993,31993,31992,0,453,85.00
+
+=== Starting Fixed Rho Trial 994 ===
+Fixed,994,29029,29029,0,411,85.00
+
+=== Starting Fixed Rho Trial 995 ===
+Fixed,995,24733,24733,0,350,85.00
+
+=== Starting Fixed Rho Trial 996 ===
+Fixed,996,12119,12119,0,171,85.00
+
+=== Starting Fixed Rho Trial 997 ===
+Fixed,997,28327,28326,0,401,85.00
+
+=== Starting Fixed Rho Trial 998 ===
+Fixed,998,19236,19236,0,272,85.00
+
+=== Starting Fixed Rho Trial 999 ===
+Fixed,999,13037,13037,0,184,85.00
+
+=== Starting Adaptive Rho Trial 0 ===
+Adaptive,0,11427,10812,615,143,70.00
+
+=== Starting Adaptive Rho Trial 1 ===
+Adaptive,1,16110,15241,869,202,70.00
+
+=== Starting Adaptive Rho Trial 2 ===
+Adaptive,2,8117,7670,447,101,70.00
+
+=== Starting Adaptive Rho Trial 3 ===
+Adaptive,3,7399,6991,408,92,70.00
+
+=== Starting Adaptive Rho Trial 4 ===
+Adaptive,4,10424,9850,574,130,70.00
+
+=== Starting Adaptive Rho Trial 5 ===
+Adaptive,5,11430,10812,618,143,70.00
+
+=== Starting Adaptive Rho Trial 6 ===
+Adaptive,6,6279,5937,342,78,70.00
+
+=== Starting Adaptive Rho Trial 7 ===
+Adaptive,7,6208,5866,342,77,70.00
+
+=== Starting Adaptive Rho Trial 8 ===
+Adaptive,8,15458,14633,825,194,70.00
+
+=== Starting Adaptive Rho Trial 9 ===
+Adaptive,9,10892,10296,596,136,70.00
+
+=== Starting Adaptive Rho Trial 10 ===
+Adaptive,10,8330,7883,447,104,70.00
+
+=== Starting Adaptive Rho Trial 11 ===
+Adaptive,11,13082,12383,699,164,70.00
+
+=== Starting Adaptive Rho Trial 12 ===
+Adaptive,12,13803,13062,741,173,70.00
+
+=== Starting Adaptive Rho Trial 13 ===
+Adaptive,13,13337,12617,720,167,70.00
+
+=== Starting Adaptive Rho Trial 14 ===
+Adaptive,14,11033,10437,596,138,70.00
+
+=== Starting Adaptive Rho Trial 15 ===
+Adaptive,15,19348,18313,1035,243,70.00
+
+=== Starting Adaptive Rho Trial 16 ===
+Adaptive,16,12799,12100,699,160,70.00
+
+=== Starting Adaptive Rho Trial 17 ===
+Adaptive,17,17368,16438,930,218,70.00
+
+=== Starting Adaptive Rho Trial 18 ===
+Adaptive,18,10493,9920,573,131,70.00
+
+=== Starting Adaptive Rho Trial 19 ===
+Adaptive,19,15062,14258,804,189,70.00
+
+=== Starting Adaptive Rho Trial 20 ===
+Adaptive,20,18485,17492,993,232,70.00
+
+=== Starting Adaptive Rho Trial 21 ===
+Adaptive,21,6137,5794,342,76,70.00
+
+=== Starting Adaptive Rho Trial 22 ===
+Adaptive,22,8117,7670,447,101,70.00
+
+=== Starting Adaptive Rho Trial 23 ===
+Adaptive,23,14058,13296,762,176,70.00
+
+=== Starting Adaptive Rho Trial 24 ===
+Adaptive,24,6533,6170,363,81,70.00
+
+=== Starting Adaptive Rho Trial 25 ===
+Adaptive,25,12544,11866,678,157,70.00
+
+=== Starting Adaptive Rho Trial 26 ===
+Adaptive,26,10168,9616,552,127,70.00
+
+=== Starting Adaptive Rho Trial 27 ===
+Adaptive,27,9772,9241,531,122,70.00
+
+=== Starting Adaptive Rho Trial 28 ===
+Adaptive,28,9306,8796,510,116,70.00
+
+=== Starting Adaptive Rho Trial 29 ===
+Adaptive,29,12802,12100,702,160,70.00
+
+=== Starting Adaptive Rho Trial 30 ===
+Adaptive,30,8838,8349,489,110,70.00
+
+=== Starting Adaptive Rho Trial 31 ===
+Adaptive,31,12077,11420,657,151,70.00
+
+=== Starting Adaptive Rho Trial 32 ===
+Adaptive,32,14921,14116,805,187,70.00
+
+=== Starting Adaptive Rho Trial 33 ===
+Adaptive,33,12403,11725,678,155,70.00
+
+=== Starting Adaptive Rho Trial 34 ===
+Adaptive,34,10098,9545,553,126,70.00
+
+=== Starting Adaptive Rho Trial 35 ===
+Adaptive,35,6533,6170,363,81,70.00
+
+=== Starting Adaptive Rho Trial 36 ===
+Adaptive,36,12942,12241,701,162,70.00
+
+=== Starting Adaptive Rho Trial 37 ===
+Adaptive,37,8333,7883,450,104,70.00
+
+=== Starting Adaptive Rho Trial 38 ===
+Adaptive,38,8259,7812,447,103,70.00
+
+=== Starting Adaptive Rho Trial 39 ===
+Adaptive,39,10564,9991,573,132,70.00
+
+=== Starting Adaptive Rho Trial 40 ===
+Adaptive,40,15064,14258,806,189,70.00
+
+=== Starting Adaptive Rho Trial 41 ===
+Adaptive,41,11499,10883,615,144,70.00
+
+=== Starting Adaptive Rho Trial 42 ===
+Adaptive,42,13083,12383,700,164,70.00
+
+=== Starting Adaptive Rho Trial 43 ===
+Adaptive,43,6676,6312,364,83,70.00
+
+=== Starting Adaptive Rho Trial 44 ===
+Adaptive,44,12545,11867,678,157,70.00
+
+=== Starting Adaptive Rho Trial 45 ===
+Adaptive,45,10311,9758,553,129,70.00
+
+=== Starting Adaptive Rho Trial 46 ===
+Adaptive,46,14058,13296,762,176,70.00
+
+=== Starting Adaptive Rho Trial 47 ===
+Adaptive,47,9051,8562,489,113,70.00
+
+=== Starting Adaptive Rho Trial 48 ===
+Adaptive,48,7539,7133,406,94,70.00
+
+=== Starting Adaptive Rho Trial 49 ===
+Adaptive,49,10425,9850,575,130,70.00
+
+=== Starting Adaptive Rho Trial 50 ===
+Adaptive,50,17693,16742,951,222,70.00
+
+=== Starting Adaptive Rho Trial 51 ===
+Adaptive,51,15247,14421,825,191,70.00
+
+=== Starting Adaptive Rho Trial 52 ===
+Adaptive,52,20865,19742,1122,262,70.00
+
+=== Starting Adaptive Rho Trial 53 ===
+Adaptive,53,12545,11867,678,157,70.00
+
+=== Starting Adaptive Rho Trial 54 ===
+Adaptive,54,9771,9240,531,122,70.00
+
+=== Starting Adaptive Rho Trial 55 ===
+Adaptive,55,13011,12312,699,163,70.00
+
+=== Starting Adaptive Rho Trial 56 ===
+Adaptive,56,13591,12850,741,170,70.00
+
+=== Starting Adaptive Rho Trial 57 ===
+Adaptive,57,13988,13225,763,175,70.00
+
+=== Starting Adaptive Rho Trial 58 ===
+Adaptive,58,12081,11421,660,151,70.00
+
+=== Starting Adaptive Rho Trial 59 ===
+Adaptive,59,6858,6474,384,85,70.00
+
+=== Starting Adaptive Rho Trial 60 ===
+Adaptive,60,7722,7295,427,96,70.00
+
+=== Starting Adaptive Rho Trial 61 ===
+Adaptive,61,13266,12546,720,166,70.00
+
+=== Starting Adaptive Rho Trial 62 ===
+Adaptive,62,10891,10296,595,136,70.00
+
+=== Starting Adaptive Rho Trial 63 ===
+Adaptive,63,10706,10133,573,134,70.00
+
+=== Starting Adaptive Rho Trial 64 ===
+Adaptive,64,6746,6383,363,84,70.00
+
+=== Starting Adaptive Rho Trial 65 ===
+Adaptive,65,24500,23188,1312,308,70.00
+
+=== Starting Adaptive Rho Trial 66 ===
+Adaptive,66,10495,9921,574,131,70.00
+
+=== Starting Adaptive Rho Trial 67 ===
+Adaptive,67,16759,15850,909,210,70.00
+
+=== Starting Adaptive Rho Trial 68 ===
+Adaptive,68,9377,8866,510,117,70.00
+
+=== Starting Adaptive Rho Trial 69 ===
+Adaptive,69,18163,17188,975,228,70.00
+
+=== Starting Adaptive Rho Trial 70 ===
+Adaptive,70,9914,9383,531,124,70.00
+
+=== Starting Adaptive Rho Trial 71 ===
+Adaptive,71,16972,16063,909,213,70.00
+
+=== Starting Adaptive Rho Trial 72 ===
+Adaptive,72,15642,14796,846,196,70.00
+
+=== Starting Adaptive Rho Trial 73 ===
+Adaptive,73,10031,9475,556,125,70.00
+
+=== Starting Adaptive Rho Trial 74 ===
+Adaptive,74,15968,15100,868,200,70.00
+
+=== Starting Adaptive Rho Trial 75 ===
+Adaptive,75,14060,13296,764,176,70.00
+
+=== Starting Adaptive Rho Trial 76 ===
+Adaptive,76,8517,8045,472,106,70.00
+
+=== Starting Adaptive Rho Trial 77 ===
+Adaptive,77,8048,7600,448,100,70.00
+
+=== Starting Adaptive Rho Trial 78 ===
+Adaptive,78,9518,9008,510,119,70.00
+
+=== Starting Adaptive Rho Trial 79 ===
+Adaptive,79,9631,9100,531,120,70.00
+
+=== Starting Adaptive Rho Trial 80 ===
+Adaptive,80,12941,12241,700,162,70.00
+
+=== Starting Adaptive Rho Trial 81 ===
+Adaptive,81,9236,8724,512,115,70.00
+
+=== Starting Adaptive Rho Trial 82 ===
+Adaptive,82,9519,9008,511,119,70.00
+
+=== Starting Adaptive Rho Trial 83 ===
+Adaptive,83,14993,14188,804,188,70.00
+
+=== Starting Adaptive Rho Trial 84 ===
+Adaptive,84,7397,6991,405,92,70.00
+
+=== Starting Adaptive Rho Trial 85 ===
+Adaptive,85,12799,12100,699,160,70.00
+
+=== Starting Adaptive Rho Trial 86 ===
+Adaptive,86,9377,8866,511,117,70.00
+
+=== Starting Adaptive Rho Trial 87 ===
+Adaptive,87,11218,10600,617,140,70.00
+
+=== Starting Adaptive Rho Trial 88 ===
+Adaptive,88,10100,9546,553,126,70.00
+
+=== Starting Adaptive Rho Trial 89 ===
+Adaptive,89,11752,11116,636,147,70.00
+
+=== Starting Adaptive Rho Trial 90 ===
+Adaptive,90,9772,9241,531,122,70.00
+
+=== Starting Adaptive Rho Trial 91 ===
+Adaptive,91,12474,11795,678,156,70.00
+
+=== Starting Adaptive Rho Trial 92 ===
+Adaptive,92,14383,13600,783,180,70.00
+
+=== Starting Adaptive Rho Trial 93 ===
+Adaptive,93,6930,6545,384,86,70.00
+
+=== Starting Adaptive Rho Trial 94 ===
+Adaptive,94,7071,6687,384,88,70.00
+
+=== Starting Adaptive Rho Trial 95 ===
+Adaptive,95,8047,7600,447,100,70.00
+
+=== Starting Adaptive Rho Trial 96 ===
+Adaptive,96,9448,8937,510,118,70.00
+
+=== Starting Adaptive Rho Trial 97 ===
+Adaptive,97,7862,7436,426,98,70.00
+
+=== Starting Adaptive Rho Trial 98 ===
+Adaptive,98,15316,14491,825,192,70.00
+
+=== Starting Adaptive Rho Trial 99 ===
+Adaptive,99,19024,18009,1015,239,70.00
+
+=== Starting Adaptive Rho Trial 100 ===
+Adaptive,100,11103,10508,595,139,70.00
+
+=== Starting Adaptive Rho Trial 101 ===
+Adaptive,101,7721,7295,426,96,70.00
+
+=== Starting Adaptive Rho Trial 102 ===
+Adaptive,102,10565,9992,573,132,70.00
+
+=== Starting Adaptive Rho Trial 103 ===
+Adaptive,103,18018,17046,972,226,70.00
+
+=== Starting Adaptive Rho Trial 104 ===
+Adaptive,104,17439,16509,930,219,70.00
+
+=== Starting Adaptive Rho Trial 105 ===
+Adaptive,105,19930,18851,1079,250,70.00
+
+=== Starting Adaptive Rho Trial 106 ===
+Adaptive,106,6350,6008,342,79,70.00
+
+=== Starting Adaptive Rho Trial 107 ===
+Adaptive,107,14131,13366,765,177,70.00
+
+=== Starting Adaptive Rho Trial 108 ===
+Adaptive,108,10423,9850,573,130,70.00
+
+=== Starting Adaptive Rho Trial 109 ===
+Adaptive,109,6533,6170,363,81,70.00
+
+=== Starting Adaptive Rho Trial 110 ===
+Adaptive,110,9702,9171,531,121,70.00
+
+=== Starting Adaptive Rho Trial 111 ===
+Adaptive,111,16830,15921,909,211,70.00
+
+=== Starting Adaptive Rho Trial 112 ===
+Adaptive,112,10169,9616,553,127,70.00
+
+=== Starting Adaptive Rho Trial 113 ===
+Adaptive,113,7326,6921,405,91,70.00
+
+=== Starting Adaptive Rho Trial 114 ===
+Adaptive,114,9702,9171,531,121,70.00
+
+=== Starting Adaptive Rho Trial 115 ===
+Adaptive,115,9772,9241,531,122,70.00
+
+=== Starting Adaptive Rho Trial 116 ===
+Adaptive,116,12403,11725,678,155,70.00
+
+=== Starting Adaptive Rho Trial 117 ===
+Adaptive,117,12404,11725,679,155,70.00
+
+=== Starting Adaptive Rho Trial 118 ===
+Adaptive,118,5954,5633,321,74,70.00
+
+=== Starting Adaptive Rho Trial 119 ===
+Adaptive,119,21328,20188,1140,268,70.00
+
+=== Starting Adaptive Rho Trial 120 ===
+Adaptive,120,23239,21992,1247,292,70.00
+
+=== Starting Adaptive Rho Trial 121 ===
+Adaptive,121,14850,14046,804,186,70.00
+
+=== Starting Adaptive Rho Trial 122 ===
+Adaptive,122,11823,11187,636,148,70.00
+
+=== Starting Adaptive Rho Trial 123 ===
+Adaptive,123,16038,15171,867,201,70.00
+
+=== Starting Adaptive Rho Trial 124 ===
+Adaptive,124,11358,10742,615,142,70.00
+
+=== Starting Adaptive Rho Trial 125 ===
+Adaptive,125,14383,13600,783,180,70.00
+
+=== Starting Adaptive Rho Trial 126 ===
+Adaptive,126,10167,9615,552,127,70.00
+
+=== Starting Adaptive Rho Trial 127 ===
+Adaptive,127,10169,9616,553,127,70.00
+
+=== Starting Adaptive Rho Trial 128 ===
+Adaptive,128,9772,9241,531,122,70.00
+
+=== Starting Adaptive Rho Trial 129 ===
+Adaptive,129,12800,12100,700,160,70.00
+
+=== Starting Adaptive Rho Trial 130 ===
+Adaptive,130,14597,13813,784,183,70.00
+
+=== Starting Adaptive Rho Trial 131 ===
+Adaptive,131,13874,13133,741,174,70.00
+
+=== Starting Adaptive Rho Trial 132 ===
+Adaptive,132,13734,12992,742,172,70.00
+
+=== Starting Adaptive Rho Trial 133 ===
+Adaptive,133,11753,11117,636,147,70.00
+
+=== Starting Adaptive Rho Trial 134 ===
+Adaptive,134,19135,18100,1035,240,70.00
+
+=== Starting Adaptive Rho Trial 135 ===
+Adaptive,135,13086,12383,703,164,70.00
+
+=== Starting Adaptive Rho Trial 136 ===
+Adaptive,136,15249,14421,828,191,70.00
+
+=== Starting Adaptive Rho Trial 137 ===
+Adaptive,137,15854,15008,846,199,70.00
+
+=== Starting Adaptive Rho Trial 138 ===
+Adaptive,138,11032,10437,595,138,70.00
+
+=== Starting Adaptive Rho Trial 139 ===
+Adaptive,139,10099,9546,553,126,70.00
+
+=== Starting Adaptive Rho Trial 140 ===
+Adaptive,140,9772,9241,531,122,70.00
+
+=== Starting Adaptive Rho Trial 141 ===
+Adaptive,141,8839,8350,489,110,70.00
+
+=== Starting Adaptive Rho Trial 142 ===
+Adaptive,142,10097,9545,552,126,70.00
+
+=== Starting Adaptive Rho Trial 143 ===
+Adaptive,143,6929,6545,384,86,70.00
+
+=== Starting Adaptive Rho Trial 144 ===
+Adaptive,144,13083,12383,700,164,70.00
+
+=== Starting Adaptive Rho Trial 145 ===
+Adaptive,145,19025,18009,1016,239,70.00
+
+=== Starting Adaptive Rho Trial 146 ===
+Adaptive,146,11498,10883,615,144,70.00
+
+=== Starting Adaptive Rho Trial 147 ===
+Adaptive,147,11683,11046,637,146,70.00
+
+=== Starting Adaptive Rho Trial 148 ===
+Adaptive,148,6351,6008,343,79,70.00
+
+=== Starting Adaptive Rho Trial 149 ===
+Adaptive,149,14778,13974,804,185,70.00
+
+=== Starting Adaptive Rho Trial 150 ===
+Adaptive,150,20609,19508,1100,259,70.00
+
+=== Starting Adaptive Rho Trial 151 ===
+Adaptive,151,12292,11633,659,154,70.00
+
+=== Starting Adaptive Rho Trial 152 ===
+Adaptive,152,8655,8187,468,108,70.00
+
+=== Starting Adaptive Rho Trial 153 ===
+Adaptive,153,21117,19975,1142,265,70.00
+
+=== Starting Adaptive Rho Trial 154 ===
+Adaptive,154,12474,11796,678,156,70.00
+
+=== Starting Adaptive Rho Trial 155 ===
+Adaptive,155,13082,12383,699,164,70.00
+
+=== Starting Adaptive Rho Trial 156 ===
+Adaptive,156,17951,16975,976,225,70.00
+
+=== Starting Adaptive Rho Trial 157 ===
+Adaptive,157,11286,10671,615,141,70.00
+
+=== Starting Adaptive Rho Trial 158 ===
+Adaptive,158,10892,10295,597,136,70.00
+
+=== Starting Adaptive Rho Trial 159 ===
+Adaptive,159,11358,10740,617,142,70.00
+
+=== Starting Adaptive Rho Trial 160 ===
+Adaptive,160,13594,12850,743,170,70.00
+
+=== Starting Adaptive Rho Trial 161 ===
+Adaptive,161,10706,10133,573,134,70.00
+
+=== Starting Adaptive Rho Trial 162 ===
+Adaptive,162,17044,16133,911,214,70.00
+
+=== Starting Adaptive Rho Trial 163 ===
+Adaptive,163,17764,16813,951,223,70.00
+
+=== Starting Adaptive Rho Trial 164 ===
+Adaptive,164,9122,8632,489,114,70.00
+
+=== Starting Adaptive Rho Trial 165 ===
+Adaptive,165,13082,12383,699,164,70.00
+
+=== Starting Adaptive Rho Trial 166 ===
+Adaptive,166,6533,6170,363,81,70.00
+
+=== Starting Adaptive Rho Trial 167 ===
+Adaptive,167,17553,16600,953,220,70.00
+
+=== Starting Adaptive Rho Trial 168 ===
+Adaptive,168,8259,7812,447,103,70.00
+
+=== Starting Adaptive Rho Trial 169 ===
+Adaptive,169,14383,13600,783,180,70.00
+
+=== Starting Adaptive Rho Trial 170 ===
+Adaptive,170,12407,11725,682,155,70.00
+
+=== Starting Adaptive Rho Trial 171 ===
+Adaptive,171,9237,8725,512,115,70.00
+
+=== Starting Adaptive Rho Trial 172 ===
+Adaptive,172,11356,10741,615,142,70.00
+
+=== Starting Adaptive Rho Trial 173 ===
+Adaptive,173,10819,10225,594,135,70.00
+
+=== Starting Adaptive Rho Trial 174 ===
+Adaptive,174,18484,17491,993,232,70.00
+
+=== Starting Adaptive Rho Trial 175 ===
+Adaptive,175,19348,18313,1035,243,70.00
+
+=== Starting Adaptive Rho Trial 176 ===
+Adaptive,176,10424,9850,574,130,70.00
+
+=== Starting Adaptive Rho Trial 177 ===
+Adaptive,177,6604,6241,363,82,70.00
+
+=== Starting Adaptive Rho Trial 178 ===
+Adaptive,178,7538,7133,405,94,70.00
+
+=== Starting Adaptive Rho Trial 179 ===
+Adaptive,179,8047,7600,447,100,70.00
+
+=== Starting Adaptive Rho Trial 180 ===
+Adaptive,180,18093,17117,976,227,70.00
+
+=== Starting Adaptive Rho Trial 181 ===
+Adaptive,181,12547,11867,680,157,70.00
+
+=== Starting Adaptive Rho Trial 182 ===
+Adaptive,182,10818,10224,594,135,70.00
+
+=== Starting Adaptive Rho Trial 183 ===
+Adaptive,183,9376,8866,510,117,70.00
+
+=== Starting Adaptive Rho Trial 184 ===
+Adaptive,184,6534,6171,363,81,70.00
+
+=== Starting Adaptive Rho Trial 185 ===
+Adaptive,185,12687,12008,679,159,70.00
+
+=== Starting Adaptive Rho Trial 186 ===
+Adaptive,186,20324,19226,1098,255,70.00
+
+=== Starting Adaptive Rho Trial 187 ===
+Adaptive,187,6675,6312,363,83,70.00
+
+=== Starting Adaptive Rho Trial 188 ===
+Adaptive,188,12476,11795,681,156,70.00
+
+=== Starting Adaptive Rho Trial 189 ===
+Adaptive,189,14597,13812,785,183,70.00
+
+=== Starting Adaptive Rho Trial 190 ===
+Adaptive,190,14060,13295,765,176,70.00
+
+=== Starting Adaptive Rho Trial 191 ===
+Adaptive,191,11031,10437,594,138,70.00
+
+=== Starting Adaptive Rho Trial 192 ===
+Adaptive,192,15062,14258,804,189,70.00
+
+=== Starting Adaptive Rho Trial 193 ===
+Adaptive,193,9773,9241,532,122,70.00
+
+=== Starting Adaptive Rho Trial 194 ===
+Adaptive,194,16759,15850,909,210,70.00
+
+=== Starting Adaptive Rho Trial 195 ===
+Adaptive,195,6350,6008,342,79,70.00
+
+=== Starting Adaptive Rho Trial 196 ===
+Adaptive,196,6605,6241,364,82,70.00
+
+=== Starting Adaptive Rho Trial 197 ===
+Adaptive,197,18418,17421,997,231,70.00
+
+=== Starting Adaptive Rho Trial 198 ===
+Adaptive,198,10960,10366,594,137,70.00
+
+=== Starting Adaptive Rho Trial 199 ===
+Adaptive,199,20863,19742,1121,262,70.00
+
+=== Starting Adaptive Rho Trial 200 ===
+Adaptive,200,14059,13296,763,176,70.00
+
+=== Starting Adaptive Rho Trial 201 ===
+Adaptive,201,14058,13296,762,176,70.00
+
+=== Starting Adaptive Rho Trial 202 ===
+Adaptive,202,13012,12312,700,163,70.00
+
+=== Starting Adaptive Rho Trial 203 ===
+Adaptive,203,13804,13062,742,173,70.00
+
+=== Starting Adaptive Rho Trial 204 ===
+Adaptive,204,11356,10740,616,142,70.00
+
+=== Starting Adaptive Rho Trial 205 ===
+Adaptive,205,16179,15312,867,203,70.00
+
+=== Starting Adaptive Rho Trial 206 ===
+Adaptive,206,7721,7295,426,96,70.00
+
+=== Starting Adaptive Rho Trial 207 ===
+Adaptive,207,16901,15992,909,212,70.00
+
+=== Starting Adaptive Rho Trial 208 ===
+Adaptive,208,19927,18850,1077,250,70.00
+
+=== Starting Adaptive Rho Trial 209 ===
+Adaptive,209,15247,14421,826,191,70.00
+
+=== Starting Adaptive Rho Trial 210 ===
+Adaptive,210,11500,10883,617,144,70.00
+
+=== Starting Adaptive Rho Trial 211 ===
+Adaptive,211,11753,11116,637,147,70.00
+
+=== Starting Adaptive Rho Trial 212 ===
+Adaptive,212,21795,20634,1161,274,70.00
+
+=== Starting Adaptive Rho Trial 213 ===
+Adaptive,213,7396,6991,405,92,70.00
+
+=== Starting Adaptive Rho Trial 214 ===
+Adaptive,214,10424,9850,574,130,70.00
+
+=== Starting Adaptive Rho Trial 215 ===
+Adaptive,215,10637,10062,575,133,70.00
+
+=== Starting Adaptive Rho Trial 216 ===
+Adaptive,216,11893,11257,636,149,70.00
+
+=== Starting Adaptive Rho Trial 217 ===
+Adaptive,217,9053,8562,491,113,70.00
+
+=== Starting Adaptive Rho Trial 218 ===
+Adaptive,218,10099,9546,553,126,70.00
+
+=== Starting Adaptive Rho Trial 219 ===
+Adaptive,219,20537,19438,1099,258,70.00
+
+=== Starting Adaptive Rho Trial 220 ===
+Adaptive,220,11893,11257,636,149,70.00
+
+=== Starting Adaptive Rho Trial 221 ===
+Adaptive,221,15317,14492,825,192,70.00
+
+=== Starting Adaptive Rho Trial 222 ===
+Adaptive,222,7934,7508,426,99,70.00
+
+=== Starting Adaptive Rho Trial 223 ===
+Adaptive,223,15714,14867,847,197,70.00
+
+=== Starting Adaptive Rho Trial 224 ===
+Adaptive,224,11427,10812,615,143,70.00
+
+=== Starting Adaptive Rho Trial 225 ===
+Adaptive,225,16505,15617,888,207,70.00
+
+=== Starting Adaptive Rho Trial 226 ===
+Adaptive,226,21257,20117,1140,267,70.00
+
+=== Starting Adaptive Rho Trial 227 ===
+Adaptive,227,7538,7133,405,94,70.00
+
+=== Starting Adaptive Rho Trial 228 ===
+Adaptive,228,13407,12687,720,168,70.00
+
+=== Starting Adaptive Rho Trial 229 ===
+Adaptive,229,16038,15171,867,201,70.00
+
+=== Starting Adaptive Rho Trial 230 ===
+Adaptive,230,10310,9758,552,129,70.00
+
+=== Starting Adaptive Rho Trial 231 ===
+Adaptive,231,7722,7296,426,96,70.00
+
+=== Starting Adaptive Rho Trial 232 ===
+Adaptive,232,13011,12312,699,163,70.00
+
+=== Starting Adaptive Rho Trial 233 ===
+Adaptive,233,16363,15475,888,205,70.00
+
+=== Starting Adaptive Rho Trial 234 ===
+Adaptive,234,9772,9241,531,122,70.00
+
+=== Starting Adaptive Rho Trial 235 ===
+Adaptive,235,15967,15100,867,200,70.00
+
+=== Starting Adaptive Rho Trial 236 ===
+Adaptive,236,7722,7296,426,96,70.00
+
+=== Starting Adaptive Rho Trial 237 ===
+Adaptive,237,18811,17796,1015,236,70.00
+
+=== Starting Adaptive Rho Trial 238 ===
+Adaptive,238,16180,15313,867,203,70.00
+
+=== Starting Adaptive Rho Trial 239 ===
+Adaptive,239,20211,19133,1078,254,70.00
+
+=== Starting Adaptive Rho Trial 240 ===
+Adaptive,240,19744,18688,1056,248,70.00
+
+=== Starting Adaptive Rho Trial 241 ===
+Adaptive,241,10706,10133,573,134,70.00
+
+=== Starting Adaptive Rho Trial 242 ===
+Adaptive,242,11102,10508,594,139,70.00
+
+=== Starting Adaptive Rho Trial 243 ===
+Adaptive,243,14667,13883,784,184,70.00
+
+=== Starting Adaptive Rho Trial 244 ===
+Adaptive,244,10026,9474,552,125,70.00
+
+=== Starting Adaptive Rho Trial 245 ===
+Adaptive,245,13478,12758,720,169,70.00
+
+=== Starting Adaptive Rho Trial 246 ===
+Adaptive,246,11823,11187,636,148,70.00
+
+=== Starting Adaptive Rho Trial 247 ===
+Adaptive,247,10170,9616,554,127,70.00
+
+=== Starting Adaptive Rho Trial 248 ===
+Adaptive,248,10097,9545,552,126,70.00
+
+=== Starting Adaptive Rho Trial 249 ===
+Adaptive,249,10170,9616,554,127,70.00
+
+=== Starting Adaptive Rho Trial 250 ===
+Adaptive,250,11427,10812,615,143,70.00
+
+=== Starting Adaptive Rho Trial 251 ===
+Adaptive,251,12403,11725,678,155,70.00
+
+=== Starting Adaptive Rho Trial 252 ===
+Adaptive,252,19135,18100,1035,240,70.00
+
+=== Starting Adaptive Rho Trial 253 ===
+Adaptive,253,14383,13600,783,180,70.00
+
+=== Starting Adaptive Rho Trial 254 ===
+Adaptive,254,6929,6545,384,86,70.00
+
+=== Starting Adaptive Rho Trial 255 ===
+Adaptive,255,7397,6991,406,92,70.00
+
+=== Starting Adaptive Rho Trial 256 ===
+Adaptive,256,11684,11045,639,146,70.00
+
+=== Starting Adaptive Rho Trial 257 ===
+Adaptive,257,12220,11563,657,153,70.00
+
+=== Starting Adaptive Rho Trial 258 ===
+Adaptive,258,13266,12546,720,166,70.00
+
+=== Starting Adaptive Rho Trial 259 ===
+Adaptive,259,14128,13366,762,177,70.00
+
+=== Starting Adaptive Rho Trial 260 ===
+Adaptive,260,9772,9241,531,122,70.00
+
+=== Starting Adaptive Rho Trial 261 ===
+Adaptive,261,17835,16883,952,224,70.00
+
+=== Starting Adaptive Rho Trial 262 ===
+Adaptive,262,7000,6616,384,87,70.00
+
+=== Starting Adaptive Rho Trial 263 ===
+Adaptive,263,7863,7437,426,98,70.00
+
+=== Starting Adaptive Rho Trial 264 ===
+Adaptive,264,15062,14258,804,189,70.00
+
+=== Starting Adaptive Rho Trial 265 ===
+Adaptive,265,18881,17867,1014,237,70.00
+
+=== Starting Adaptive Rho Trial 266 ===
+Adaptive,266,19135,18100,1035,240,70.00
+
+=== Starting Adaptive Rho Trial 267 ===
+Adaptive,267,12870,12171,699,161,70.00
+
+=== Starting Adaptive Rho Trial 268 ===
+Adaptive,268,8655,8187,468,108,70.00
+
+=== Starting Adaptive Rho Trial 269 ===
+Adaptive,269,18952,17938,1014,238,70.00
+
+=== Starting Adaptive Rho Trial 270 ===
+Adaptive,270,7722,7295,427,96,70.00
+
+=== Starting Adaptive Rho Trial 271 ===
+Adaptive,271,8725,8257,468,109,70.00
+
+=== Starting Adaptive Rho Trial 272 ===
+Adaptive,272,13665,12921,744,171,70.00
+
+=== Starting Adaptive Rho Trial 273 ===
+Adaptive,273,18740,17725,1015,235,70.00
+
+=== Starting Adaptive Rho Trial 274 ===
+Adaptive,274,7538,7133,405,94,70.00
+
+=== Starting Adaptive Rho Trial 275 ===
+Adaptive,275,8584,8116,468,107,70.00
+
+=== Starting Adaptive Rho Trial 276 ===
+Adaptive,276,11031,10437,594,138,70.00
+
+=== Starting Adaptive Rho Trial 277 ===
+Adaptive,277,11285,10670,615,141,70.00
+
+=== Starting Adaptive Rho Trial 278 ===
+Adaptive,278,8726,8258,468,109,70.00
+
+=== Starting Adaptive Rho Trial 279 ===
+Adaptive,279,9051,8562,489,113,70.00
+
+=== Starting Adaptive Rho Trial 280 ===
+Adaptive,280,10569,9991,578,132,70.00
+
+=== Starting Adaptive Rho Trial 281 ===
+Adaptive,281,8329,7882,447,104,70.00
+
+=== Starting Adaptive Rho Trial 282 ===
+Adaptive,282,11216,10600,616,140,70.00
+
+=== Starting Adaptive Rho Trial 283 ===
+Adaptive,283,8046,7599,447,100,70.00
+
+=== Starting Adaptive Rho Trial 284 ===
+Adaptive,284,14924,14117,807,187,70.00
+
+=== Starting Adaptive Rho Trial 285 ===
+Adaptive,285,13662,12921,741,171,70.00
+
+=== Starting Adaptive Rho Trial 286 ===
+Adaptive,286,11356,10741,615,142,70.00
+
+=== Starting Adaptive Rho Trial 287 ===
+Adaptive,287,15062,14258,804,189,70.00
+
+=== Starting Adaptive Rho Trial 288 ===
+Adaptive,288,8117,7670,447,101,70.00
+
+=== Starting Adaptive Rho Trial 289 ===
+Adaptive,289,20933,19813,1120,263,70.00
+
+=== Starting Adaptive Rho Trial 290 ===
+Adaptive,290,13803,13062,741,173,70.00
+
+=== Starting Adaptive Rho Trial 291 ===
+Adaptive,291,15245,14420,825,191,70.00
+
+=== Starting Adaptive Rho Trial 292 ===
+Adaptive,292,20467,19367,1100,257,70.00
+
+=== Starting Adaptive Rho Trial 293 ===
+Adaptive,293,13987,13225,762,175,70.00
+
+=== Starting Adaptive Rho Trial 294 ===
+Adaptive,294,10564,9991,573,132,70.00
+
+=== Starting Adaptive Rho Trial 295 ===
+Adaptive,295,17694,16742,952,222,70.00
+
+=== Starting Adaptive Rho Trial 296 ===
+Adaptive,296,10636,10062,574,133,70.00
+
+=== Starting Adaptive Rho Trial 297 ===
+Adaptive,297,8117,7670,447,101,70.00
+
+=== Starting Adaptive Rho Trial 298 ===
+Adaptive,298,7863,7437,426,98,70.00
+
+=== Starting Adaptive Rho Trial 299 ===
+Adaptive,299,9235,8725,510,115,70.00
+
+=== Starting Adaptive Rho Trial 300 ===
+Adaptive,300,11105,10508,597,139,70.00
+
+=== Starting Adaptive Rho Trial 301 ===
+Adaptive,301,17693,16742,951,222,70.00
+
+=== Starting Adaptive Rho Trial 302 ===
+Adaptive,302,8910,8421,489,111,70.00
+
+=== Starting Adaptive Rho Trial 303 ===
+Adaptive,303,19137,18100,1037,240,70.00
+
+=== Starting Adaptive Rho Trial 304 ===
+Adaptive,304,10422,9849,573,130,70.00
+
+=== Starting Adaptive Rho Trial 305 ===
+Adaptive,305,13479,12758,721,169,70.00
+
+=== Starting Adaptive Rho Trial 306 ===
+Adaptive,306,9377,8866,511,117,70.00
+
+=== Starting Adaptive Rho Trial 307 ===
+Adaptive,307,13803,13062,741,173,70.00
+
+=== Starting Adaptive Rho Trial 308 ===
+Adaptive,308,12220,11562,658,153,70.00
+
+=== Starting Adaptive Rho Trial 309 ===
+Adaptive,309,10706,10133,573,134,70.00
+
+=== Starting Adaptive Rho Trial 310 ===
+Adaptive,310,10890,10295,595,136,70.00
+
+=== Starting Adaptive Rho Trial 311 ===
+Adaptive,311,9631,9100,531,120,70.00
+
+=== Starting Adaptive Rho Trial 312 ===
+Adaptive,312,9845,9312,533,123,70.00
+
+=== Starting Adaptive Rho Trial 313 ===
+Adaptive,313,7792,7366,426,97,70.00
+
+=== Starting Adaptive Rho Trial 314 ===
+Adaptive,314,10960,10366,594,137,70.00
+
+=== Starting Adaptive Rho Trial 315 ===
+Adaptive,315,9306,8795,511,116,70.00
+
+=== Starting Adaptive Rho Trial 316 ===
+Adaptive,316,13012,12313,699,163,70.00
+
+=== Starting Adaptive Rho Trial 317 ===
+Adaptive,317,9235,8725,510,115,70.00
+
+=== Starting Adaptive Rho Trial 318 ===
+Adaptive,318,27848,26351,1497,350,70.00
+
+=== Starting Adaptive Rho Trial 319 ===
+Adaptive,319,11428,10812,616,143,70.00
+
+=== Starting Adaptive Rho Trial 320 ===
+Adaptive,320,12078,11421,657,151,70.00
+
+=== Starting Adaptive Rho Trial 321 ===
+Adaptive,321,7396,6991,405,92,70.00
+
+=== Starting Adaptive Rho Trial 322 ===
+Adaptive,322,12544,11866,678,157,70.00
+
+=== Starting Adaptive Rho Trial 323 ===
+Adaptive,323,8330,7883,447,104,70.00
+
+=== Starting Adaptive Rho Trial 324 ===
+Adaptive,324,8259,7811,448,103,70.00
+
+=== Starting Adaptive Rho Trial 325 ===
+Adaptive,325,25218,23868,1350,317,70.00
+
+=== Starting Adaptive Rho Trial 326 ===
+Adaptive,326,8513,8045,468,106,70.00
+
+=== Starting Adaptive Rho Trial 327 ===
+Adaptive,327,12473,11795,678,156,70.00
+
+=== Starting Adaptive Rho Trial 328 ===
+Adaptive,328,19815,18758,1057,249,70.00
+
+=== Starting Adaptive Rho Trial 329 ===
+Adaptive,329,9775,9241,534,122,70.00
+
+=== Starting Adaptive Rho Trial 330 ===
+Adaptive,330,16831,15921,910,211,70.00
+
+=== Starting Adaptive Rho Trial 331 ===
+Adaptive,331,17622,16671,951,221,70.00
+
+=== Starting Adaptive Rho Trial 332 ===
+Adaptive,332,9634,9100,534,120,70.00
+
+=== Starting Adaptive Rho Trial 333 ===
+Adaptive,333,11685,11046,639,146,70.00
+
+=== Starting Adaptive Rho Trial 334 ===
+Adaptive,334,10495,9921,574,131,70.00
+
+=== Starting Adaptive Rho Trial 335 ===
+Adaptive,335,17042,16133,909,214,70.00
+
+=== Starting Adaptive Rho Trial 336 ===
+Adaptive,336,8445,7975,470,105,70.00
+
+=== Starting Adaptive Rho Trial 337 ===
+Adaptive,337,6138,5796,342,76,70.00
+
+=== Starting Adaptive Rho Trial 338 ===
+Adaptive,338,14273,13508,765,179,70.00
+
+=== Starting Adaptive Rho Trial 339 ===
+Adaptive,339,9051,8562,489,113,70.00
+
+=== Starting Adaptive Rho Trial 340 ===
+Adaptive,340,18557,17562,995,233,70.00
+
+=== Starting Adaptive Rho Trial 341 ===
+Adaptive,341,11826,11187,639,148,70.00
+
+=== Starting Adaptive Rho Trial 342 ===
+Adaptive,342,10565,9991,574,132,70.00
+
+=== Starting Adaptive Rho Trial 343 ===
+Adaptive,343,9447,8937,510,118,70.00
+
+=== Starting Adaptive Rho Trial 344 ===
+Adaptive,344,14852,14046,806,186,70.00
+
+=== Starting Adaptive Rho Trial 345 ===
+Adaptive,345,13591,12850,741,170,70.00
+
+=== Starting Adaptive Rho Trial 346 ===
+Adaptive,346,14527,13742,785,182,70.00
+
+=== Starting Adaptive Rho Trial 347 ===
+Adaptive,347,19136,18101,1035,240,70.00
+
+=== Starting Adaptive Rho Trial 348 ===
+Adaptive,348,9122,8633,489,114,70.00
+
+=== Starting Adaptive Rho Trial 349 ===
+Adaptive,349,18018,17046,972,226,70.00
+
+=== Starting Adaptive Rho Trial 350 ===
+Adaptive,350,9306,8796,510,116,70.00
+
+=== Starting Adaptive Rho Trial 351 ===
+Adaptive,351,8909,8420,489,111,70.00
+
+=== Starting Adaptive Rho Trial 352 ===
+Adaptive,352,15458,14633,825,194,70.00
+
+=== Starting Adaptive Rho Trial 353 ===
+Adaptive,353,14525,13742,783,182,70.00
+
+=== Starting Adaptive Rho Trial 354 ===
+Adaptive,354,8910,8420,490,111,70.00
+
+=== Starting Adaptive Rho Trial 355 ===
+Adaptive,355,11427,10812,615,143,70.00
+
+=== Starting Adaptive Rho Trial 356 ===
+Adaptive,356,16363,15475,888,205,70.00
+
+=== Starting Adaptive Rho Trial 357 ===
+Adaptive,357,18018,17046,972,226,70.00
+
+=== Starting Adaptive Rho Trial 358 ===
+Adaptive,358,15573,14725,847,195,70.00
+
+=== Starting Adaptive Rho Trial 359 ===
+Adaptive,359,9123,8633,490,114,70.00
+
+=== Starting Adaptive Rho Trial 360 ===
+Adaptive,360,10241,9687,554,128,70.00
+
+=== Starting Adaptive Rho Trial 361 ===
+Adaptive,361,8515,8045,469,106,70.00
+
+=== Starting Adaptive Rho Trial 362 ===
+Adaptive,362,17948,16975,973,225,70.00
+
+=== Starting Adaptive Rho Trial 363 ===
+Adaptive,363,18626,17633,993,234,70.00
+
+=== Starting Adaptive Rho Trial 364 ===
+Adaptive,364,10496,9921,575,131,70.00
+
+=== Starting Adaptive Rho Trial 365 ===
+Adaptive,365,12009,11350,659,150,70.00
+
+=== Starting Adaptive Rho Trial 366 ===
+Adaptive,366,6605,6241,364,82,70.00
+
+=== Starting Adaptive Rho Trial 367 ===
+Adaptive,367,22191,21009,1182,279,70.00
+
+=== Starting Adaptive Rho Trial 368 ===
+Adaptive,368,7144,6758,385,89,70.00
+
+=== Starting Adaptive Rho Trial 369 ===
+Adaptive,369,16366,15476,890,205,70.00
+
+=== Starting Adaptive Rho Trial 370 ===
+Adaptive,370,16251,15383,868,204,70.00
+
+=== Starting Adaptive Rho Trial 371 ===
+Adaptive,371,7396,6991,405,92,70.00
+
+=== Starting Adaptive Rho Trial 372 ===
+Adaptive,372,6462,6099,363,80,70.00
+
+=== Starting Adaptive Rho Trial 373 ===
+Adaptive,373,8259,7812,447,103,70.00
+
+=== Starting Adaptive Rho Trial 374 ===
+Adaptive,374,16180,15312,867,203,70.00
+
+=== Starting Adaptive Rho Trial 375 ===
+Adaptive,375,23379,22133,1246,294,70.00
+
+=== Starting Adaptive Rho Trial 376 ===
+Adaptive,376,11218,10600,618,140,70.00
+
+=== Starting Adaptive Rho Trial 377 ===
+Adaptive,377,20861,19742,1119,262,70.00
+
+=== Starting Adaptive Rho Trial 378 ===
+Adaptive,378,6605,6241,364,82,70.00
+
+=== Starting Adaptive Rho Trial 379 ===
+Adaptive,379,19532,18475,1057,245,70.00
+
+=== Starting Adaptive Rho Trial 380 ===
+Adaptive,380,24286,22976,1310,305,70.00
+
+=== Starting Adaptive Rho Trial 381 ===
+Adaptive,381,5883,5562,321,73,70.00
+
+=== Starting Adaptive Rho Trial 382 ===
+Adaptive,382,20211,19134,1077,254,70.00
+
+=== Starting Adaptive Rho Trial 383 ===
+Adaptive,383,14992,14188,804,188,70.00
+
+=== Starting Adaptive Rho Trial 384 ===
+Adaptive,384,20608,19509,1099,259,70.00
+
+=== Starting Adaptive Rho Trial 385 ===
+Adaptive,385,9630,9099,531,120,70.00
+
+=== Starting Adaptive Rho Trial 386 ===
+Adaptive,386,8333,7883,450,104,70.00
+
+=== Starting Adaptive Rho Trial 387 ===
+Adaptive,387,8725,8257,468,109,70.00
+
+=== Starting Adaptive Rho Trial 388 ===
+Adaptive,388,10564,9991,573,132,70.00
+
+=== Starting Adaptive Rho Trial 389 ===
+Adaptive,389,9631,9100,531,120,70.00
+
+=== Starting Adaptive Rho Trial 390 ===
+Adaptive,390,10564,9991,573,132,70.00
+
+=== Starting Adaptive Rho Trial 391 ===
+Adaptive,391,8909,8420,489,111,70.00
+
+=== Starting Adaptive Rho Trial 392 ===
+Adaptive,392,10960,10366,594,137,70.00
+
+=== Starting Adaptive Rho Trial 393 ===
+Adaptive,393,17552,16600,952,220,70.00
+
+=== Starting Adaptive Rho Trial 394 ===
+Adaptive,394,8259,7812,447,103,70.00
+
+=== Starting Adaptive Rho Trial 395 ===
+Adaptive,395,13083,12383,699,164,70.00
+
+=== Starting Adaptive Rho Trial 396 ===
+Adaptive,396,14129,13367,762,177,70.00
+
+=== Starting Adaptive Rho Trial 397 ===
+Adaptive,397,14850,14045,804,186,70.00
+
+=== Starting Adaptive Rho Trial 398 ===
+Adaptive,398,14271,13508,763,179,70.00
+
+=== Starting Adaptive Rho Trial 399 ===
+Adaptive,399,16109,15241,868,202,70.00
+
+=== Starting Adaptive Rho Trial 400 ===
+Adaptive,400,14923,14117,806,187,70.00
+
+=== Starting Adaptive Rho Trial 401 ===
+Adaptive,401,7145,6758,387,89,70.00
+
+=== Starting Adaptive Rho Trial 402 ===
+Adaptive,402,17226,16296,930,216,70.00
+
+=== Starting Adaptive Rho Trial 403 ===
+Adaptive,403,12873,12171,701,161,70.00
+
+=== Starting Adaptive Rho Trial 404 ===
+Adaptive,404,13807,13062,745,173,70.00
+
+=== Starting Adaptive Rho Trial 405 ===
+Adaptive,405,7539,7133,406,94,70.00
+
+=== Starting Adaptive Rho Trial 406 ===
+Adaptive,406,22306,21101,1205,280,70.00
+
+=== Starting Adaptive Rho Trial 407 ===
+Adaptive,407,11033,10437,596,138,70.00
+
+=== Starting Adaptive Rho Trial 408 ===
+Adaptive,408,13338,12616,722,167,70.00
+
+=== Starting Adaptive Rho Trial 409 ===
+Adaptive,409,9701,9170,531,121,70.00
+
+=== Starting Adaptive Rho Trial 410 ===
+Adaptive,410,18953,17938,1015,238,70.00
+
+=== Starting Adaptive Rho Trial 411 ===
+Adaptive,411,14454,13671,783,181,70.00
+
+=== Starting Adaptive Rho Trial 412 ===
+Adaptive,412,7255,6850,405,90,70.00
+
+=== Starting Adaptive Rho Trial 413 ===
+Adaptive,413,15712,14866,846,197,70.00
+
+=== Starting Adaptive Rho Trial 414 ===
+Adaptive,414,14595,13812,783,183,70.00
+
+=== Starting Adaptive Rho Trial 415 ===
+Adaptive,415,17439,16509,930,219,70.00
+
+=== Starting Adaptive Rho Trial 416 ===
+Adaptive,416,7327,6921,406,91,70.00
+
+=== Starting Adaptive Rho Trial 417 ===
+Adaptive,417,16038,15171,867,201,70.00
+
+=== Starting Adaptive Rho Trial 418 ===
+Adaptive,418,7863,7437,426,98,70.00
+
+=== Starting Adaptive Rho Trial 419 ===
+Adaptive,419,10564,9991,573,132,70.00
+
+=== Starting Adaptive Rho Trial 420 ===
+Adaptive,420,28131,26634,1497,354,70.00
+
+=== Starting Adaptive Rho Trial 421 ===
+Adaptive,421,11754,11116,638,147,70.00
+
+=== Starting Adaptive Rho Trial 422 ===
+Adaptive,422,9377,8866,510,117,70.00
+
+=== Starting Adaptive Rho Trial 423 ===
+Adaptive,423,19531,18475,1056,245,70.00
+
+=== Starting Adaptive Rho Trial 424 ===
+Adaptive,424,9237,8725,512,115,70.00
+
+=== Starting Adaptive Rho Trial 425 ===
+Adaptive,425,9843,9312,531,123,70.00
+
+=== Starting Adaptive Rho Trial 426 ===
+Adaptive,426,9235,8725,510,115,70.00
+
+=== Starting Adaptive Rho Trial 427 ===
+Adaptive,427,9916,9383,533,124,70.00
+
+=== Starting Adaptive Rho Trial 428 ===
+Adaptive,428,20861,19742,1119,262,70.00
+
+=== Starting Adaptive Rho Trial 429 ===
+Adaptive,429,9914,9383,531,124,70.00
+
+=== Starting Adaptive Rho Trial 430 ===
+Adaptive,430,9702,9171,531,121,70.00
+
+=== Starting Adaptive Rho Trial 431 ===
+Adaptive,431,11215,10600,615,140,70.00
+
+=== Starting Adaptive Rho Trial 432 ===
+Adaptive,432,11894,11258,636,149,70.00
+
+=== Starting Adaptive Rho Trial 433 ===
+Adaptive,433,12405,11725,679,155,70.00
+
+=== Starting Adaptive Rho Trial 434 ===
+Adaptive,434,14666,13883,783,184,70.00
+
+=== Starting Adaptive Rho Trial 435 ===
+Adaptive,435,24174,22884,1290,304,70.00
+
+=== Starting Adaptive Rho Trial 436 ===
+Adaptive,436,10101,9546,555,126,70.00
+
+=== Starting Adaptive Rho Trial 437 ===
+Adaptive,437,13662,12921,741,171,70.00
+
+=== Starting Adaptive Rho Trial 438 ===
+Adaptive,438,11289,10671,618,141,70.00
+
+=== Starting Adaptive Rho Trial 439 ===
+Adaptive,439,9307,8796,511,116,70.00
+
+=== Starting Adaptive Rho Trial 440 ===
+Adaptive,440,8726,8258,468,109,70.00
+
+=== Starting Adaptive Rho Trial 441 ===
+Adaptive,441,7792,7366,426,97,70.00
+
+=== Starting Adaptive Rho Trial 442 ===
+Adaptive,442,12291,11633,658,154,70.00
+
+=== Starting Adaptive Rho Trial 443 ===
+Adaptive,443,14666,13883,783,184,70.00
+
+=== Starting Adaptive Rho Trial 444 ===
+Adaptive,444,12941,12242,699,162,70.00
+
+=== Starting Adaptive Rho Trial 445 ===
+Adaptive,445,11215,10600,615,140,70.00
+
+=== Starting Adaptive Rho Trial 446 ===
+Adaptive,446,13479,12758,721,169,70.00
+
+=== Starting Adaptive Rho Trial 447 ===
+Adaptive,447,7467,7062,405,93,70.00
+
+=== Starting Adaptive Rho Trial 448 ===
+Adaptive,448,14920,14116,804,187,70.00
+
+=== Starting Adaptive Rho Trial 449 ===
+Adaptive,449,9701,9170,531,121,70.00
+
+=== Starting Adaptive Rho Trial 450 ===
+Adaptive,450,11357,10741,616,142,70.00
+
+=== Starting Adaptive Rho Trial 451 ===
+Adaptive,451,8329,7882,447,104,70.00
+
+=== Starting Adaptive Rho Trial 452 ===
+Adaptive,452,9915,9383,532,124,70.00
+
+=== Starting Adaptive Rho Trial 453 ===
+Adaptive,453,9914,9383,531,124,70.00
+
+=== Starting Adaptive Rho Trial 454 ===
+Adaptive,454,11611,10975,636,145,70.00
+
+=== Starting Adaptive Rho Trial 455 ===
+Adaptive,455,11823,11187,636,148,70.00
+
+=== Starting Adaptive Rho Trial 456 ===
+Adaptive,456,16505,15617,888,207,70.00
+
+=== Starting Adaptive Rho Trial 457 ===
+Adaptive,457,13195,12475,720,165,70.00
+
+=== Starting Adaptive Rho Trial 458 ===
+Adaptive,458,11427,10812,615,143,70.00
+
+=== Starting Adaptive Rho Trial 459 ===
+Adaptive,459,8188,7741,447,102,70.00
+
+=== Starting Adaptive Rho Trial 460 ===
+Adaptive,460,8726,8258,468,109,70.00
+
+=== Starting Adaptive Rho Trial 461 ===
+Adaptive,461,16253,15383,870,204,70.00
+
+=== Starting Adaptive Rho Trial 462 ===
+Adaptive,462,9305,8795,510,116,70.00
+
+=== Starting Adaptive Rho Trial 463 ===
+Adaptive,463,10819,10225,594,135,70.00
+
+=== Starting Adaptive Rho Trial 464 ===
+Adaptive,464,8841,8349,491,110,70.00
+
+=== Starting Adaptive Rho Trial 465 ===
+Adaptive,465,10890,10295,595,136,70.00
+
+=== Starting Adaptive Rho Trial 466 ===
+Adaptive,466,13875,13133,742,174,70.00
+
+=== Starting Adaptive Rho Trial 467 ===
+Adaptive,467,7794,7366,428,97,70.00
+
+=== Starting Adaptive Rho Trial 468 ===
+Adaptive,468,23959,22672,1287,301,70.00
+
+=== Starting Adaptive Rho Trial 469 ===
+Adaptive,469,10566,9991,575,132,70.00
+
+=== Starting Adaptive Rho Trial 470 ===
+Adaptive,470,23095,21850,1245,290,70.00
+
+=== Starting Adaptive Rho Trial 471 ===
+Adaptive,471,18558,17563,995,233,70.00
+
+=== Starting Adaptive Rho Trial 472 ===
+Adaptive,472,9701,9170,531,121,70.00
+
+=== Starting Adaptive Rho Trial 473 ===
+Adaptive,473,10960,10366,594,137,70.00
+
+=== Starting Adaptive Rho Trial 474 ===
+Adaptive,474,21584,20420,1164,271,70.00
+
+=== Starting Adaptive Rho Trial 475 ===
+Adaptive,475,8188,7741,447,102,70.00
+
+=== Starting Adaptive Rho Trial 476 ===
+Adaptive,476,13408,12687,721,168,70.00
+
+=== Starting Adaptive Rho Trial 477 ===
+Adaptive,477,10636,10062,573,133,70.00
+
+=== Starting Adaptive Rho Trial 478 ===
+Adaptive,478,10239,9687,552,128,70.00
+
+=== Starting Adaptive Rho Trial 479 ===
+Adaptive,479,12149,11491,658,152,70.00
+
+=== Starting Adaptive Rho Trial 480 ===
+Adaptive,480,10098,9545,553,126,70.00
+
+=== Starting Adaptive Rho Trial 481 ===
+Adaptive,481,5671,5350,321,70,70.00
+
+=== Starting Adaptive Rho Trial 482 ===
+Adaptive,482,8514,8046,468,106,70.00
+
+=== Starting Adaptive Rho Trial 483 ===
+Adaptive,483,13338,12616,722,167,70.00
+
+=== Starting Adaptive Rho Trial 484 ===
+Adaptive,484,12475,11796,679,156,70.00
+
+=== Starting Adaptive Rho Trial 485 ===
+Adaptive,485,8912,8421,491,111,70.00
+
+=== Starting Adaptive Rho Trial 486 ===
+Adaptive,486,11214,10599,615,140,70.00
+
+=== Starting Adaptive Rho Trial 487 ===
+Adaptive,487,16179,15312,867,203,70.00
+
+=== Starting Adaptive Rho Trial 488 ===
+Adaptive,488,14269,13507,762,179,70.00
+
+=== Starting Adaptive Rho Trial 489 ===
+Adaptive,489,14851,14046,805,186,70.00
+
+=== Starting Adaptive Rho Trial 490 ===
+Adaptive,490,11358,10742,615,142,70.00
+
+=== Starting Adaptive Rho Trial 491 ===
+Adaptive,491,10100,9545,555,126,70.00
+
+=== Starting Adaptive Rho Trial 492 ===
+Adaptive,492,13196,12475,720,165,70.00
+
+=== Starting Adaptive Rho Trial 493 ===
+Adaptive,493,16972,16063,909,213,70.00
+
+=== Starting Adaptive Rho Trial 494 ===
+Adaptive,494,13987,13225,762,175,70.00
+
+=== Starting Adaptive Rho Trial 495 ===
+Adaptive,495,10311,9758,553,129,70.00
+
+=== Starting Adaptive Rho Trial 496 ===
+Adaptive,496,8840,8350,490,110,70.00
+
+=== Starting Adaptive Rho Trial 497 ===
+Adaptive,497,10239,9687,552,128,70.00
+
+=== Starting Adaptive Rho Trial 498 ===
+Adaptive,498,13875,13133,742,174,70.00
+
+=== Starting Adaptive Rho Trial 499 ===
+Adaptive,499,10027,9475,552,125,70.00
+
+=== Starting Adaptive Rho Trial 500 ===
+Adaptive,500,16902,15992,909,212,70.00
+
+=== Starting Adaptive Rho Trial 501 ===
+Adaptive,501,7934,7508,426,99,70.00
+
+=== Starting Adaptive Rho Trial 502 ===
+Adaptive,502,21978,20796,1182,276,70.00
+
+=== Starting Adaptive Rho Trial 503 ===
+Adaptive,503,8260,7812,447,103,70.00
+
+=== Starting Adaptive Rho Trial 504 ===
+Adaptive,504,11682,11046,636,146,70.00
+
+=== Starting Adaptive Rho Trial 505 ===
+Adaptive,505,9915,9383,531,124,70.00
+
+=== Starting Adaptive Rho Trial 506 ===
+Adaptive,506,8262,7812,449,103,70.00
+
+=== Starting Adaptive Rho Trial 507 ===
+Adaptive,507,9235,8725,510,115,70.00
+
+=== Starting Adaptive Rho Trial 508 ===
+Adaptive,508,9377,8866,511,117,70.00
+
+=== Starting Adaptive Rho Trial 509 ===
+Adaptive,509,7326,6921,405,91,70.00
+
+=== Starting Adaptive Rho Trial 510 ===
+Adaptive,510,11358,10741,617,142,70.00
+
+=== Starting Adaptive Rho Trial 511 ===
+Adaptive,511,14383,13600,783,180,70.00
+
+=== Starting Adaptive Rho Trial 512 ===
+Adaptive,512,19531,18475,1056,245,70.00
+
+=== Starting Adaptive Rho Trial 513 ===
+Adaptive,513,9235,8725,510,115,70.00
+
+=== Starting Adaptive Rho Trial 514 ===
+Adaptive,514,14922,14117,804,187,70.00
+
+=== Starting Adaptive Rho Trial 515 ===
+Adaptive,515,9517,9007,510,119,70.00
+
+=== Starting Adaptive Rho Trial 516 ===
+Adaptive,516,19277,18242,1035,242,70.00
+
+=== Starting Adaptive Rho Trial 517 ===
+Adaptive,517,10028,9475,552,125,70.00
+
+=== Starting Adaptive Rho Trial 518 ===
+Adaptive,518,14270,13508,762,179,70.00
+
+=== Starting Adaptive Rho Trial 519 ===
+Adaptive,519,14992,14187,805,188,70.00
+
+=== Starting Adaptive Rho Trial 520 ===
+Adaptive,520,23242,21992,1250,292,70.00
+
+=== Starting Adaptive Rho Trial 521 ===
+Adaptive,521,9519,9008,511,119,70.00
+
+=== Starting Adaptive Rho Trial 522 ===
+Adaptive,522,7144,6758,386,89,70.00
+
+=== Starting Adaptive Rho Trial 523 ===
+Adaptive,523,6859,6475,384,85,70.00
+
+=== Starting Adaptive Rho Trial 524 ===
+Adaptive,524,9843,9312,531,123,70.00
+
+=== Starting Adaptive Rho Trial 525 ===
+Adaptive,525,12078,11421,657,151,70.00
+
+=== Starting Adaptive Rho Trial 526 ===
+Adaptive,526,6534,6170,364,81,70.00
+
+=== Starting Adaptive Rho Trial 527 ===
+Adaptive,527,11102,10508,594,139,70.00
+
+=== Starting Adaptive Rho Trial 528 ===
+Adaptive,528,11823,11187,636,148,70.00
+
+=== Starting Adaptive Rho Trial 529 ===
+Adaptive,529,21586,20422,1164,271,70.00
+
+=== Starting Adaptive Rho Trial 530 ===
+Adaptive,530,13407,12687,720,168,70.00
+
+=== Starting Adaptive Rho Trial 531 ===
+Adaptive,531,13266,12545,721,166,70.00
+
+=== Starting Adaptive Rho Trial 532 ===
+Adaptive,532,8911,8421,490,111,70.00
+
+=== Starting Adaptive Rho Trial 533 ===
+Adaptive,533,15967,15100,867,200,70.00
+
+=== Starting Adaptive Rho Trial 534 ===
+Adaptive,534,12405,11725,680,155,70.00
+
+=== Starting Adaptive Rho Trial 535 ===
+Adaptive,535,15784,14938,846,198,70.00
+
+=== Starting Adaptive Rho Trial 536 ===
+Adaptive,536,7142,6757,384,89,70.00
+
+=== Starting Adaptive Rho Trial 537 ===
+Adaptive,537,16647,15758,888,209,70.00
+
+=== Starting Adaptive Rho Trial 538 ===
+Adaptive,538,7396,6991,405,92,70.00
+
+=== Starting Adaptive Rho Trial 539 ===
+Adaptive,539,13477,12757,720,169,70.00
+
+=== Starting Adaptive Rho Trial 540 ===
+Adaptive,540,11357,10741,616,142,70.00
+
+=== Starting Adaptive Rho Trial 541 ===
+Adaptive,541,11032,10437,595,138,70.00
+
+=== Starting Adaptive Rho Trial 542 ===
+Adaptive,542,12222,11562,659,153,70.00
+
+=== Starting Adaptive Rho Trial 543 ===
+Adaptive,543,16759,15850,909,210,70.00
+
+=== Starting Adaptive Rho Trial 544 ===
+Adaptive,544,9843,9312,531,123,70.00
+
+=== Starting Adaptive Rho Trial 545 ===
+Adaptive,545,4949,4670,279,61,70.00
+
+=== Starting Adaptive Rho Trial 546 ===
+Adaptive,546,9631,9100,531,120,70.00
+
+=== Starting Adaptive Rho Trial 547 ===
+Adaptive,547,9518,9008,510,119,70.00
+
+=== Starting Adaptive Rho Trial 548 ===
+Adaptive,548,9916,9383,532,124,70.00
+
+=== Starting Adaptive Rho Trial 549 ===
+Adaptive,549,6930,6546,384,86,70.00
+
+=== Starting Adaptive Rho Trial 550 ===
+Adaptive,550,10495,9920,575,131,70.00
+
+=== Starting Adaptive Rho Trial 551 ===
+Adaptive,551,12686,12008,678,159,70.00
+
+=== Starting Adaptive Rho Trial 552 ===
+Adaptive,552,9376,8866,510,117,70.00
+
+=== Starting Adaptive Rho Trial 553 ===
+Adaptive,553,13873,13132,741,174,70.00
+
+=== Starting Adaptive Rho Trial 554 ===
+Adaptive,554,9518,9008,510,119,70.00
+
+=== Starting Adaptive Rho Trial 555 ===
+Adaptive,555,8259,7812,447,103,70.00
+
+=== Starting Adaptive Rho Trial 556 ===
+Adaptive,556,12290,11632,658,154,70.00
+
+=== Starting Adaptive Rho Trial 557 ===
+Adaptive,557,11754,11117,637,147,70.00
+
+=== Starting Adaptive Rho Trial 558 ===
+Adaptive,558,7074,6687,387,88,70.00
+
+=== Starting Adaptive Rho Trial 559 ===
+Adaptive,559,12077,11420,657,151,70.00
+
+=== Starting Adaptive Rho Trial 560 ===
+Adaptive,560,20606,19508,1098,259,70.00
+
+=== Starting Adaptive Rho Trial 561 ===
+Adaptive,561,8120,7670,449,101,70.00
+
+=== Starting Adaptive Rho Trial 562 ===
+Adaptive,562,8117,7670,447,101,70.00
+
+=== Starting Adaptive Rho Trial 563 ===
+Adaptive,563,11611,10975,636,145,70.00
+
+=== Starting Adaptive Rho Trial 564 ===
+Adaptive,564,9051,8562,489,113,70.00
+
+=== Starting Adaptive Rho Trial 565 ===
+Adaptive,565,10238,9686,552,128,70.00
+
+=== Starting Adaptive Rho Trial 566 ===
+Adaptive,566,15713,14866,847,197,70.00
+
+=== Starting Adaptive Rho Trial 567 ===
+Adaptive,567,7722,7296,426,96,70.00
+
+=== Starting Adaptive Rho Trial 568 ===
+Adaptive,568,9517,9007,510,119,70.00
+
+=== Starting Adaptive Rho Trial 569 ===
+Adaptive,569,7327,6920,406,91,70.00
+
+=== Starting Adaptive Rho Trial 570 ===
+Adaptive,570,6745,6382,363,84,70.00
+
+=== Starting Adaptive Rho Trial 571 ===
+Adaptive,571,8514,8045,469,106,70.00
+
+=== Starting Adaptive Rho Trial 572 ===
+Adaptive,572,12545,11867,678,157,70.00
+
+=== Starting Adaptive Rho Trial 573 ===
+Adaptive,573,9379,8866,513,117,70.00
+
+=== Starting Adaptive Rho Trial 574 ===
+Adaptive,574,9450,8937,512,118,70.00
+
+=== Starting Adaptive Rho Trial 575 ===
+Adaptive,575,13082,12383,699,164,70.00
+
+=== Starting Adaptive Rho Trial 576 ===
+Adaptive,576,9121,8632,489,114,70.00
+
+=== Starting Adaptive Rho Trial 577 ===
+Adaptive,577,11610,10974,636,145,70.00
+
+=== Starting Adaptive Rho Trial 578 ===
+Adaptive,578,18089,17117,972,227,70.00
+
+=== Starting Adaptive Rho Trial 579 ===
+Adaptive,579,17042,16133,909,214,70.00
+
+=== Starting Adaptive Rho Trial 580 ===
+Adaptive,580,16180,15313,867,203,70.00
+
+=== Starting Adaptive Rho Trial 581 ===
+Adaptive,581,16505,15617,888,207,70.00
+
+=== Starting Adaptive Rho Trial 582 ===
+Adaptive,582,16182,15312,870,203,70.00
+
+=== Starting Adaptive Rho Trial 583 ===
+Adaptive,583,11754,11116,638,147,70.00
+
+=== Starting Adaptive Rho Trial 584 ===
+Adaptive,584,12078,11421,657,151,70.00
+
+=== Starting Adaptive Rho Trial 585 ===
+Adaptive,585,10242,9687,555,128,70.00
+
+=== Starting Adaptive Rho Trial 586 ===
+Adaptive,586,15062,14258,804,189,70.00
+
+=== Starting Adaptive Rho Trial 587 ===
+Adaptive,587,11894,11258,636,149,70.00
+
+=== Starting Adaptive Rho Trial 588 ===
+Adaptive,588,10240,9687,553,128,70.00
+
+=== Starting Adaptive Rho Trial 589 ===
+Adaptive,589,14992,14187,805,188,70.00
+
+=== Starting Adaptive Rho Trial 590 ===
+Adaptive,590,17367,16437,930,218,70.00
+
+=== Starting Adaptive Rho Trial 591 ===
+Adaptive,591,11823,11187,636,148,70.00
+
+=== Starting Adaptive Rho Trial 592 ===
+Adaptive,592,9631,9100,531,120,70.00
+
+=== Starting Adaptive Rho Trial 593 ===
+Adaptive,593,6929,6545,384,86,70.00
+
+=== Starting Adaptive Rho Trial 594 ===
+Adaptive,594,8117,7670,447,101,70.00
+
+=== Starting Adaptive Rho Trial 595 ===
+Adaptive,595,9306,8796,510,116,70.00
+
+=== Starting Adaptive Rho Trial 596 ===
+Adaptive,596,20142,19062,1080,253,70.00
+
+=== Starting Adaptive Rho Trial 597 ===
+Adaptive,597,25147,23796,1351,316,70.00
+
+=== Starting Adaptive Rho Trial 598 ===
+Adaptive,598,11894,11258,636,149,70.00
+
+=== Starting Adaptive Rho Trial 599 ===
+Adaptive,599,12149,11492,657,152,70.00
+
+=== Starting Adaptive Rho Trial 600 ===
+Adaptive,600,11613,10975,638,145,70.00
+
+=== Starting Adaptive Rho Trial 601 ===
+Adaptive,601,11427,10812,615,143,70.00
+
+=== Starting Adaptive Rho Trial 602 ===
+Adaptive,602,10497,9921,576,131,70.00
+
+=== Starting Adaptive Rho Trial 603 ===
+Adaptive,603,8259,7812,447,103,70.00
+
+=== Starting Adaptive Rho Trial 604 ===
+Adaptive,604,8117,7670,447,101,70.00
+
+=== Starting Adaptive Rho Trial 605 ===
+Adaptive,605,7142,6758,384,89,70.00
+
+=== Starting Adaptive Rho Trial 606 ===
+Adaptive,606,12873,12171,702,161,70.00
+
+=== Starting Adaptive Rho Trial 607 ===
+Adaptive,607,14779,13975,804,185,70.00
+
+=== Starting Adaptive Rho Trial 608 ===
+Adaptive,608,10168,9616,552,127,70.00
+
+=== Starting Adaptive Rho Trial 609 ===
+Adaptive,609,18812,17796,1016,236,70.00
+
+=== Starting Adaptive Rho Trial 610 ===
+Adaptive,610,9306,8796,510,116,70.00
+
+=== Starting Adaptive Rho Trial 611 ===
+Adaptive,611,9377,8866,511,117,70.00
+
+=== Starting Adaptive Rho Trial 612 ===
+Adaptive,612,7935,7508,426,99,70.00
+
+=== Starting Adaptive Rho Trial 613 ===
+Adaptive,613,13266,12546,720,166,70.00
+
+=== Starting Adaptive Rho Trial 614 ===
+Adaptive,614,17623,16671,951,221,70.00
+
+=== Starting Adaptive Rho Trial 615 ===
+Adaptive,615,9702,9171,531,121,70.00
+
+=== Starting Adaptive Rho Trial 616 ===
+Adaptive,616,9306,8795,511,116,70.00
+
+=== Starting Adaptive Rho Trial 617 ===
+Adaptive,617,11896,11258,638,149,70.00
+
+=== Starting Adaptive Rho Trial 618 ===
+Adaptive,618,11358,10741,616,142,70.00
+
+=== Starting Adaptive Rho Trial 619 ===
+Adaptive,619,13987,13225,762,175,70.00
+
+=== Starting Adaptive Rho Trial 620 ===
+Adaptive,620,10310,9758,552,129,70.00
+
+=== Starting Adaptive Rho Trial 621 ===
+Adaptive,621,8046,7599,447,100,70.00
+
+=== Starting Adaptive Rho Trial 622 ===
+Adaptive,622,14779,13975,804,185,70.00
+
+=== Starting Adaptive Rho Trial 623 ===
+Adaptive,623,11501,10883,618,144,70.00
+
+=== Starting Adaptive Rho Trial 624 ===
+Adaptive,624,12687,12008,679,159,70.00
+
+=== Starting Adaptive Rho Trial 625 ===
+Adaptive,625,12403,11725,678,155,70.00
+
+=== Starting Adaptive Rho Trial 626 ===
+Adaptive,626,11215,10600,615,140,70.00
+
+=== Starting Adaptive Rho Trial 627 ===
+Adaptive,627,9379,8866,513,117,70.00
+
+=== Starting Adaptive Rho Trial 628 ===
+Adaptive,628,23097,21851,1246,290,70.00
+
+=== Starting Adaptive Rho Trial 629 ===
+Adaptive,629,16761,15850,911,210,70.00
+
+=== Starting Adaptive Rho Trial 630 ===
+Adaptive,630,6859,6475,384,85,70.00
+
+=== Starting Adaptive Rho Trial 631 ===
+Adaptive,631,9122,8633,489,114,70.00
+
+=== Starting Adaptive Rho Trial 632 ===
+Adaptive,632,7396,6991,405,92,70.00
+
+=== Starting Adaptive Rho Trial 633 ===
+Adaptive,633,16830,15921,909,211,70.00
+
+=== Starting Adaptive Rho Trial 634 ===
+Adaptive,634,13337,12617,720,167,70.00
+
+=== Starting Adaptive Rho Trial 635 ===
+Adaptive,635,8259,7812,447,103,70.00
+
+=== Starting Adaptive Rho Trial 636 ===
+Adaptive,636,8909,8420,489,111,70.00
+
+=== Starting Adaptive Rho Trial 637 ===
+Adaptive,637,9447,8937,510,118,70.00
+
+=== Starting Adaptive Rho Trial 638 ===
+Adaptive,638,7862,7436,426,98,70.00
+
+=== Starting Adaptive Rho Trial 639 ===
+Adaptive,639,18952,17938,1014,238,70.00
+
+=== Starting Adaptive Rho Trial 640 ===
+Adaptive,640,7722,7296,426,96,70.00
+
+=== Starting Adaptive Rho Trial 641 ===
+Adaptive,641,8443,7975,468,105,70.00
+
+=== Starting Adaptive Rho Trial 642 ===
+Adaptive,642,10240,9687,553,128,70.00
+
+=== Starting Adaptive Rho Trial 643 ===
+Adaptive,643,10100,9546,554,126,70.00
+
+=== Starting Adaptive Rho Trial 644 ===
+Adaptive,644,14666,13883,783,184,70.00
+
+=== Starting Adaptive Rho Trial 645 ===
+Adaptive,645,15571,14725,846,195,70.00
+
+=== Starting Adaptive Rho Trial 646 ===
+Adaptive,646,10635,10062,573,133,70.00
+
+=== Starting Adaptive Rho Trial 647 ===
+Adaptive,647,11427,10812,615,143,70.00
+
+=== Starting Adaptive Rho Trial 648 ===
+Adaptive,648,8726,8257,469,109,70.00
+
+=== Starting Adaptive Rho Trial 649 ===
+Adaptive,649,10423,9850,573,130,70.00
+
+=== Starting Adaptive Rho Trial 650 ===
+Adaptive,650,5883,5562,321,73,70.00
+
+=== Starting Adaptive Rho Trial 651 ===
+Adaptive,651,23492,22226,1266,295,70.00
+
+=== Starting Adaptive Rho Trial 652 ===
+Adaptive,652,8332,7883,449,104,70.00
+
+=== Starting Adaptive Rho Trial 653 ===
+Adaptive,653,12615,11937,678,158,70.00
+
+=== Starting Adaptive Rho Trial 654 ===
+Adaptive,654,10567,9992,575,132,70.00
+
+=== Starting Adaptive Rho Trial 655 ===
+Adaptive,655,10564,9991,573,132,70.00
+
+=== Starting Adaptive Rho Trial 656 ===
+Adaptive,656,10422,9849,573,130,70.00
+
+=== Starting Adaptive Rho Trial 657 ===
+Adaptive,657,10635,10062,573,133,70.00
+
+=== Starting Adaptive Rho Trial 658 ===
+Adaptive,658,16109,15242,867,202,70.00
+
+=== Starting Adaptive Rho Trial 659 ===
+Adaptive,659,10709,10133,576,134,70.00
+
+=== Starting Adaptive Rho Trial 660 ===
+Adaptive,660,13662,12921,741,171,70.00
+
+=== Starting Adaptive Rho Trial 661 ===
+Adaptive,661,20395,19296,1099,256,70.00
+
+=== Starting Adaptive Rho Trial 662 ===
+Adaptive,662,16761,15850,911,210,70.00
+
+=== Starting Adaptive Rho Trial 663 ===
+Adaptive,663,14666,13882,784,184,70.00
+
+=== Starting Adaptive Rho Trial 664 ===
+Adaptive,664,8514,8045,469,106,70.00
+
+=== Starting Adaptive Rho Trial 665 ===
+Adaptive,665,13407,12687,720,168,70.00
+
+=== Starting Adaptive Rho Trial 666 ===
+Adaptive,666,14270,13508,762,179,70.00
+
+=== Starting Adaptive Rho Trial 667 ===
+Adaptive,667,10639,10062,577,133,70.00
+
+=== Starting Adaptive Rho Trial 668 ===
+Adaptive,668,9518,9008,510,119,70.00
+
+=== Starting Adaptive Rho Trial 669 ===
+Adaptive,669,9519,9008,511,119,70.00
+
+=== Starting Adaptive Rho Trial 670 ===
+Adaptive,670,15715,14867,848,197,70.00
+
+=== Starting Adaptive Rho Trial 671 ===
+Adaptive,671,9703,9171,532,121,70.00
+
+=== Starting Adaptive Rho Trial 672 ===
+Adaptive,672,6138,5796,342,76,70.00
+
+=== Starting Adaptive Rho Trial 673 ===
+Adaptive,673,6746,6382,363,84,70.00
+
+=== Starting Adaptive Rho Trial 674 ===
+Adaptive,674,16759,15850,909,210,70.00
+
+=== Starting Adaptive Rho Trial 675 ===
+Adaptive,675,9913,9382,531,124,70.00
+
+=== Starting Adaptive Rho Trial 676 ===
+Adaptive,676,8047,7600,447,100,70.00
+
+=== Starting Adaptive Rho Trial 677 ===
+Adaptive,677,12007,11350,657,150,70.00
+
+=== Starting Adaptive Rho Trial 678 ===
+Adaptive,678,9235,8725,510,115,70.00
+
+=== Starting Adaptive Rho Trial 679 ===
+Adaptive,679,9125,8633,492,114,70.00
+
+=== Starting Adaptive Rho Trial 680 ===
+Adaptive,680,22374,21170,1203,281,70.00
+
+=== Starting Adaptive Rho Trial 681 ===
+Adaptive,681,14454,13671,783,181,70.00
+
+=== Starting Adaptive Rho Trial 682 ===
+Adaptive,682,9121,8632,489,114,70.00
+
+=== Starting Adaptive Rho Trial 683 ===
+Adaptive,683,11286,10671,615,141,70.00
+
+=== Starting Adaptive Rho Trial 684 ===
+Adaptive,684,14385,13600,785,180,70.00
+
+=== Starting Adaptive Rho Trial 685 ===
+Adaptive,685,9447,8937,510,118,70.00
+
+=== Starting Adaptive Rho Trial 686 ===
+Adaptive,686,9914,9383,531,124,70.00
+
+=== Starting Adaptive Rho Trial 687 ===
+Adaptive,687,11215,10600,615,140,70.00
+
+=== Starting Adaptive Rho Trial 688 ===
+Adaptive,688,11287,10670,617,141,70.00
+
+=== Starting Adaptive Rho Trial 689 ===
+Adaptive,689,9519,9008,511,119,70.00
+
+=== Starting Adaptive Rho Trial 690 ===
+Adaptive,690,10239,9687,552,128,70.00
+
+=== Starting Adaptive Rho Trial 691 ===
+Adaptive,691,17835,16884,951,224,70.00
+
+=== Starting Adaptive Rho Trial 692 ===
+Adaptive,692,8585,8116,469,107,70.00
+
+=== Starting Adaptive Rho Trial 693 ===
+Adaptive,693,12404,11725,678,155,70.00
+
+=== Starting Adaptive Rho Trial 694 ===
+Adaptive,694,16972,16063,909,213,70.00
+
+=== Starting Adaptive Rho Trial 695 ===
+Adaptive,695,12007,11350,657,150,70.00
+
+=== Starting Adaptive Rho Trial 696 ===
+Adaptive,696,10097,9545,552,126,70.00
+
+=== Starting Adaptive Rho Trial 697 ===
+Adaptive,697,7255,6850,405,90,70.00
+
+=== Starting Adaptive Rho Trial 698 ===
+Adaptive,698,7725,7296,429,96,70.00
+
+=== Starting Adaptive Rho Trial 699 ===
+Adaptive,699,9237,8725,512,115,70.00
+
+=== Starting Adaptive Rho Trial 700 ===
+Adaptive,700,16830,15921,909,211,70.00
+
+=== Starting Adaptive Rho Trial 701 ===
+Adaptive,701,11287,10670,617,141,70.00
+
+=== Starting Adaptive Rho Trial 702 ===
+Adaptive,702,11289,10671,618,141,70.00
+
+=== Starting Adaptive Rho Trial 703 ===
+Adaptive,703,8513,8045,468,106,70.00
+
+=== Starting Adaptive Rho Trial 704 ===
+Adaptive,704,9518,9008,510,119,70.00
+
+=== Starting Adaptive Rho Trial 705 ===
+Adaptive,705,13195,12475,720,165,70.00
+
+=== Starting Adaptive Rho Trial 706 ===
+Adaptive,706,10098,9546,552,126,70.00
+
+=== Starting Adaptive Rho Trial 707 ===
+Adaptive,707,7255,6850,405,90,70.00
+
+=== Starting Adaptive Rho Trial 708 ===
+Adaptive,708,8913,8421,492,111,70.00
+
+=== Starting Adaptive Rho Trial 709 ===
+Adaptive,709,23237,21992,1245,292,70.00
+
+=== Starting Adaptive Rho Trial 710 ===
+Adaptive,710,18343,17350,993,230,70.00
+
+=== Starting Adaptive Rho Trial 711 ===
+Adaptive,711,15642,14796,846,196,70.00
+
+=== Starting Adaptive Rho Trial 712 ===
+Adaptive,712,10240,9687,552,128,70.00
+
+=== Starting Adaptive Rho Trial 713 ===
+Adaptive,713,20395,19296,1099,256,70.00
+
+=== Starting Adaptive Rho Trial 714 ===
+Adaptive,714,11031,10437,594,138,70.00
+
+=== Starting Adaptive Rho Trial 715 ===
+Adaptive,715,10564,9991,573,132,70.00
+
+=== Starting Adaptive Rho Trial 716 ===
+Adaptive,716,13084,12383,701,164,70.00
+
+=== Starting Adaptive Rho Trial 717 ===
+Adaptive,717,6279,5937,342,78,70.00
+
+=== Starting Adaptive Rho Trial 718 ===
+Adaptive,718,9122,8633,489,114,70.00
+
+=== Starting Adaptive Rho Trial 719 ===
+Adaptive,719,13877,13133,744,174,70.00
+
+=== Starting Adaptive Rho Trial 720 ===
+Adaptive,720,8655,8187,468,108,70.00
+
+=== Starting Adaptive Rho Trial 721 ===
+Adaptive,721,10099,9545,554,126,70.00
+
+=== Starting Adaptive Rho Trial 722 ===
+Adaptive,722,12077,11420,657,151,70.00
+
+=== Starting Adaptive Rho Trial 723 ===
+Adaptive,723,12149,11491,658,152,70.00
+
+=== Starting Adaptive Rho Trial 724 ===
+Adaptive,724,11682,11046,636,146,70.00
+
+=== Starting Adaptive Rho Trial 725 ===
+Adaptive,725,8330,7883,447,104,70.00
+
+=== Starting Adaptive Rho Trial 726 ===
+Adaptive,726,19348,18313,1035,243,70.00
+
+=== Starting Adaptive Rho Trial 727 ===
+Adaptive,727,19815,18759,1056,249,70.00
+
+=== Starting Adaptive Rho Trial 728 ===
+Adaptive,728,8585,8116,469,107,70.00
+
+=== Starting Adaptive Rho Trial 729 ===
+Adaptive,729,9518,9007,510,119,70.00
+
+=== Starting Adaptive Rho Trial 730 ===
+Adaptive,730,6860,6474,386,85,70.00
+
+=== Starting Adaptive Rho Trial 731 ===
+Adaptive,731,10422,9849,573,130,70.00
+
+=== Starting Adaptive Rho Trial 732 ===
+Adaptive,732,8839,8350,489,110,70.00
+
+=== Starting Adaptive Rho Trial 733 ===
+Adaptive,733,11031,10437,594,138,70.00
+
+=== Starting Adaptive Rho Trial 734 ===
+Adaptive,734,13337,12617,720,167,70.00
+
+=== Starting Adaptive Rho Trial 735 ===
+Adaptive,735,8726,8258,468,109,70.00
+
+=== Starting Adaptive Rho Trial 736 ===
+Adaptive,736,11358,10741,617,142,70.00
+
+=== Starting Adaptive Rho Trial 737 ===
+Adaptive,737,14850,14046,804,186,70.00
+
+=== Starting Adaptive Rho Trial 738 ===
+Adaptive,738,9633,9100,533,120,70.00
+
+=== Starting Adaptive Rho Trial 739 ===
+Adaptive,739,9701,9170,531,121,70.00
+
+=== Starting Adaptive Rho Trial 740 ===
+Adaptive,740,6860,6475,384,85,70.00
+
+=== Starting Adaptive Rho Trial 741 ===
+Adaptive,741,13873,13132,741,174,70.00
+
+=== Starting Adaptive Rho Trial 742 ===
+Adaptive,742,6137,5795,342,76,70.00
+
+=== Starting Adaptive Rho Trial 743 ===
+Adaptive,743,10890,10296,594,136,70.00
+
+=== Starting Adaptive Rho Trial 744 ===
+Adaptive,744,5742,5421,321,71,70.00
+
+=== Starting Adaptive Rho Trial 745 ===
+Adaptive,745,6604,6241,363,82,70.00
+
+=== Starting Adaptive Rho Trial 746 ===
+Adaptive,746,13083,12383,700,164,70.00
+
+=== Starting Adaptive Rho Trial 747 ===
+Adaptive,747,7467,7062,405,93,70.00
+
+=== Starting Adaptive Rho Trial 748 ===
+Adaptive,748,19419,18384,1035,244,70.00
+
+=== Starting Adaptive Rho Trial 749 ===
+Adaptive,749,10239,9687,552,128,70.00
+
+=== Starting Adaptive Rho Trial 750 ===
+Adaptive,750,10563,9990,573,132,70.00
+
+=== Starting Adaptive Rho Trial 751 ===
+Adaptive,751,9774,9241,532,122,70.00
+
+=== Starting Adaptive Rho Trial 752 ===
+Adaptive,752,8913,8420,492,111,70.00
+
+=== Starting Adaptive Rho Trial 753 ===
+Adaptive,753,18414,17421,993,231,70.00
+
+=== Starting Adaptive Rho Trial 754 ===
+Adaptive,754,8655,8187,468,108,70.00
+
+=== Starting Adaptive Rho Trial 755 ===
+Adaptive,755,12474,11796,678,156,70.00
+
+=== Starting Adaptive Rho Trial 756 ===
+Adaptive,756,8980,8491,489,112,70.00
+
+=== Starting Adaptive Rho Trial 757 ===
+Adaptive,757,14781,13975,806,185,70.00
+
+=== Starting Adaptive Rho Trial 758 ===
+Adaptive,758,18557,17563,994,233,70.00
+
+=== Starting Adaptive Rho Trial 759 ===
+Adaptive,759,11215,10600,615,140,70.00
+
+=== Starting Adaptive Rho Trial 760 ===
+Adaptive,760,12687,12008,679,159,70.00
+
+=== Starting Adaptive Rho Trial 761 ===
+Adaptive,761,7071,6687,384,88,70.00
+
+=== Starting Adaptive Rho Trial 762 ===
+Adaptive,762,16649,15758,890,209,70.00
+
+=== Starting Adaptive Rho Trial 763 ===
+Adaptive,763,10426,9850,576,130,70.00
+
+=== Starting Adaptive Rho Trial 764 ===
+Adaptive,764,14992,14188,804,188,70.00
+
+=== Starting Adaptive Rho Trial 765 ===
+Adaptive,765,8118,7670,448,101,70.00
+
+=== Starting Adaptive Rho Trial 766 ===
+Adaptive,766,11611,10975,636,145,70.00
+
+=== Starting Adaptive Rho Trial 767 ===
+Adaptive,767,19422,18383,1039,244,70.00
+
+=== Starting Adaptive Rho Trial 768 ===
+Adaptive,768,11894,11258,636,149,70.00
+
+=== Starting Adaptive Rho Trial 769 ===
+Adaptive,769,10168,9616,552,127,70.00
+
+=== Starting Adaptive Rho Trial 770 ===
+Adaptive,770,14270,13508,762,179,70.00
+
+=== Starting Adaptive Rho Trial 771 ===
+Adaptive,771,12688,12008,680,159,70.00
+
+=== Starting Adaptive Rho Trial 772 ===
+Adaptive,772,14455,13671,784,181,70.00
+
+=== Starting Adaptive Rho Trial 773 ===
+Adaptive,773,8656,8187,469,108,70.00
+
+=== Starting Adaptive Rho Trial 774 ===
+Adaptive,774,7255,6849,406,90,70.00
+
+=== Starting Adaptive Rho Trial 775 ===
+Adaptive,775,9447,8937,510,118,70.00
+
+=== Starting Adaptive Rho Trial 776 ===
+Adaptive,776,15642,14796,846,196,70.00
+
+=== Starting Adaptive Rho Trial 777 ===
+Adaptive,777,9378,8866,512,117,70.00
+
+=== Starting Adaptive Rho Trial 778 ===
+Adaptive,778,12615,11937,678,158,70.00
+
+=== Starting Adaptive Rho Trial 779 ===
+Adaptive,779,14783,13975,807,185,70.00
+
+=== Starting Adaptive Rho Trial 780 ===
+Adaptive,780,13407,12687,720,168,70.00
+
+=== Starting Adaptive Rho Trial 781 ===
+Adaptive,781,10495,9921,574,131,70.00
+
+=== Starting Adaptive Rho Trial 782 ===
+Adaptive,782,22123,20938,1185,278,70.00
+
+=== Starting Adaptive Rho Trial 783 ===
+Adaptive,783,9775,9241,533,122,70.00
+
+=== Starting Adaptive Rho Trial 784 ===
+Adaptive,784,23167,21921,1246,291,70.00
+
+=== Starting Adaptive Rho Trial 785 ===
+Adaptive,785,16830,15921,909,211,70.00
+
+=== Starting Adaptive Rho Trial 786 ===
+Adaptive,786,8840,8350,490,110,70.00
+
+=== Starting Adaptive Rho Trial 787 ===
+Adaptive,787,13876,13133,743,174,70.00
+
+=== Starting Adaptive Rho Trial 788 ===
+Adaptive,788,10101,9546,555,126,70.00
+
+=== Starting Adaptive Rho Trial 789 ===
+Adaptive,789,14525,13741,784,182,70.00
+
+=== Starting Adaptive Rho Trial 790 ===
+Adaptive,790,8443,7975,468,105,70.00
+
+=== Starting Adaptive Rho Trial 791 ===
+Adaptive,791,9122,8633,489,114,70.00
+
+=== Starting Adaptive Rho Trial 792 ===
+Adaptive,792,12545,11867,678,157,70.00
+
+=== Starting Adaptive Rho Trial 793 ===
+Adaptive,793,6747,6383,363,84,70.00
+
+=== Starting Adaptive Rho Trial 794 ===
+Adaptive,794,8514,8045,468,106,70.00
+
+=== Starting Adaptive Rho Trial 795 ===
+Adaptive,795,16646,15758,888,209,70.00
+
+=== Starting Adaptive Rho Trial 796 ===
+Adaptive,796,25615,24242,1373,322,70.00
+
+=== Starting Adaptive Rho Trial 797 ===
+Adaptive,797,10706,10133,573,134,70.00
+
+=== Starting Adaptive Rho Trial 798 ===
+Adaptive,798,21328,20188,1140,268,70.00
+
+=== Starting Adaptive Rho Trial 799 ===
+Adaptive,799,8046,7599,447,100,70.00
+
+=== Starting Adaptive Rho Trial 800 ===
+Adaptive,800,11031,10437,594,138,70.00
+
+=== Starting Adaptive Rho Trial 801 ===
+Adaptive,801,10635,10062,573,133,70.00
+
+=== Starting Adaptive Rho Trial 802 ===
+Adaptive,802,10821,10225,596,135,70.00
+
+=== Starting Adaptive Rho Trial 803 ===
+Adaptive,803,14527,13742,785,182,70.00
+
+=== Starting Adaptive Rho Trial 804 ===
+Adaptive,804,14666,13883,783,184,70.00
+
+=== Starting Adaptive Rho Trial 805 ===
+Adaptive,805,9123,8633,490,114,70.00
+
+=== Starting Adaptive Rho Trial 806 ===
+Adaptive,806,12800,12100,699,160,70.00
+
+=== Starting Adaptive Rho Trial 807 ===
+Adaptive,807,11032,10437,595,138,70.00
+
+=== Starting Adaptive Rho Trial 808 ===
+Adaptive,808,7540,7133,407,94,70.00
+
+=== Starting Adaptive Rho Trial 809 ===
+Adaptive,809,11501,10883,618,144,70.00
+
+=== Starting Adaptive Rho Trial 810 ===
+Adaptive,810,24821,23492,1329,312,70.00
+
+=== Starting Adaptive Rho Trial 811 ===
+Adaptive,811,12943,12241,701,162,70.00
+
+=== Starting Adaptive Rho Trial 812 ===
+Adaptive,812,12402,11724,678,155,70.00
+
+=== Starting Adaptive Rho Trial 813 ===
+Adaptive,813,13407,12687,720,168,70.00
+
+=== Starting Adaptive Rho Trial 814 ===
+Adaptive,814,14060,13295,765,176,70.00
+
+=== Starting Adaptive Rho Trial 815 ===
+Adaptive,815,10565,9992,573,132,70.00
+
+=== Starting Adaptive Rho Trial 816 ===
+Adaptive,816,13481,12758,723,169,70.00
+
+=== Starting Adaptive Rho Trial 817 ===
+Adaptive,817,7791,7365,426,97,70.00
+
+=== Starting Adaptive Rho Trial 818 ===
+Adaptive,818,11681,11045,636,146,70.00
+
+=== Starting Adaptive Rho Trial 819 ===
+Adaptive,819,11753,11117,636,147,70.00
+
+=== Starting Adaptive Rho Trial 820 ===
+Adaptive,820,8330,7883,447,104,70.00
+
+=== Starting Adaptive Rho Trial 821 ===
+Adaptive,821,10310,9758,552,129,70.00
+
+=== Starting Adaptive Rho Trial 822 ===
+Adaptive,822,10564,9991,573,132,70.00
+
+=== Starting Adaptive Rho Trial 823 ===
+Adaptive,823,11499,10883,615,144,70.00
+
+=== Starting Adaptive Rho Trial 824 ===
+Adaptive,824,12290,11633,657,154,70.00
+
+=== Starting Adaptive Rho Trial 825 ===
+Adaptive,825,11825,11187,638,148,70.00
+
+=== Starting Adaptive Rho Trial 826 ===
+Adaptive,826,10709,10133,576,134,70.00
+
+=== Starting Adaptive Rho Trial 827 ===
+Adaptive,827,9632,9100,532,120,70.00
+
+=== Starting Adaptive Rho Trial 828 ===
+Adaptive,828,13663,12920,743,171,70.00
+
+=== Starting Adaptive Rho Trial 829 ===
+Adaptive,829,11684,11046,638,146,70.00
+
+=== Starting Adaptive Rho Trial 830 ===
+Adaptive,830,13265,12545,720,166,70.00
+
+=== Starting Adaptive Rho Trial 831 ===
+Adaptive,831,16830,15921,909,211,70.00
+
+=== Starting Adaptive Rho Trial 832 ===
+Adaptive,832,11357,10741,616,142,70.00
+
+=== Starting Adaptive Rho Trial 833 ===
+Adaptive,833,16038,15171,867,201,70.00
+
+=== Starting Adaptive Rho Trial 834 ===
+Adaptive,834,17297,16367,930,217,70.00
+
+=== Starting Adaptive Rho Trial 835 ===
+Adaptive,835,16508,15617,891,207,70.00
+
+=== Starting Adaptive Rho Trial 836 ===
+Adaptive,836,6467,6100,367,80,70.00
+
+=== Starting Adaptive Rho Trial 837 ===
+Adaptive,837,20323,19225,1098,255,70.00
+
+=== Starting Adaptive Rho Trial 838 ===
+Adaptive,838,15572,14725,847,195,70.00
+
+=== Starting Adaptive Rho Trial 839 ===
+Adaptive,839,12149,11492,657,152,70.00
+
+=== Starting Adaptive Rho Trial 840 ===
+Adaptive,840,10311,9758,553,129,70.00
+
+=== Starting Adaptive Rho Trial 841 ===
+Adaptive,841,13806,13062,744,173,70.00
+
+=== Starting Adaptive Rho Trial 842 ===
+Adaptive,842,12077,11420,657,151,70.00
+
+=== Starting Adaptive Rho Trial 843 ===
+Adaptive,843,11826,11187,639,148,70.00
+
+=== Starting Adaptive Rho Trial 844 ===
+Adaptive,844,9843,9312,531,123,70.00
+
+=== Starting Adaptive Rho Trial 845 ===
+Adaptive,845,13268,12546,721,166,70.00
+
+=== Starting Adaptive Rho Trial 846 ===
+Adaptive,846,8117,7670,447,101,70.00
+
+=== Starting Adaptive Rho Trial 847 ===
+Adaptive,847,9235,8725,510,115,70.00
+
+=== Starting Adaptive Rho Trial 848 ===
+Adaptive,848,7934,7508,426,99,70.00
+
+=== Starting Adaptive Rho Trial 849 ===
+Adaptive,849,8982,8491,491,112,70.00
+
+=== Starting Adaptive Rho Trial 850 ===
+Adaptive,850,18089,17117,972,227,70.00
+
+=== Starting Adaptive Rho Trial 851 ===
+Adaptive,851,9913,9382,531,124,70.00
+
+=== Starting Adaptive Rho Trial 852 ===
+Adaptive,852,14597,13812,785,183,70.00
+
+=== Starting Adaptive Rho Trial 853 ===
+Adaptive,853,10424,9850,574,130,70.00
+
+=== Starting Adaptive Rho Trial 854 ===
+Adaptive,854,8838,8349,489,110,70.00
+
+=== Starting Adaptive Rho Trial 855 ===
+Adaptive,855,8120,7670,450,101,70.00
+
+=== Starting Adaptive Rho Trial 856 ===
+Adaptive,856,7325,6920,405,91,70.00
+
+=== Starting Adaptive Rho Trial 857 ===
+Adaptive,857,13802,13061,741,173,70.00
+
+=== Starting Adaptive Rho Trial 858 ===
+Adaptive,858,8513,8045,468,106,70.00
+
+=== Starting Adaptive Rho Trial 859 ===
+Adaptive,859,14597,13812,785,183,70.00
+
+=== Starting Adaptive Rho Trial 860 ===
+Adaptive,860,13803,13062,741,173,70.00
+
+=== Starting Adaptive Rho Trial 861 ===
+Adaptive,861,9309,8796,513,116,70.00
+
+=== Starting Adaptive Rho Trial 862 ===
+Adaptive,862,10239,9687,552,128,70.00
+
+=== Starting Adaptive Rho Trial 863 ===
+Adaptive,863,8262,7812,450,103,70.00
+
+=== Starting Adaptive Rho Trial 864 ===
+Adaptive,864,13265,12545,720,166,70.00
+
+=== Starting Adaptive Rho Trial 865 ===
+Adaptive,865,11753,11116,637,147,70.00
+
+=== Starting Adaptive Rho Trial 866 ===
+Adaptive,866,7792,7366,426,97,70.00
+
+=== Starting Adaptive Rho Trial 867 ===
+Adaptive,867,20212,19133,1078,254,70.00
+
+=== Starting Adaptive Rho Trial 868 ===
+Adaptive,868,8513,8045,468,106,70.00
+
+=== Starting Adaptive Rho Trial 869 ===
+Adaptive,869,12403,11725,678,155,70.00
+
+=== Starting Adaptive Rho Trial 870 ===
+Adaptive,870,8047,7600,447,100,70.00
+
+=== Starting Adaptive Rho Trial 871 ===
+Adaptive,871,11682,11045,637,146,70.00
+
+=== Starting Adaptive Rho Trial 872 ===
+Adaptive,872,9305,8795,510,116,70.00
+
+=== Starting Adaptive Rho Trial 873 ===
+Adaptive,873,19675,18617,1057,247,70.00
+
+=== Starting Adaptive Rho Trial 874 ===
+Adaptive,874,12404,11725,679,155,70.00
+
+=== Starting Adaptive Rho Trial 875 ===
+Adaptive,875,18739,17725,1014,235,70.00
+
+=== Starting Adaptive Rho Trial 876 ===
+Adaptive,876,6932,6546,386,86,70.00
+
+=== Starting Adaptive Rho Trial 877 ===
+Adaptive,877,11031,10437,594,138,70.00
+
+=== Starting Adaptive Rho Trial 878 ===
+Adaptive,878,8586,8116,470,107,70.00
+
+=== Starting Adaptive Rho Trial 879 ===
+Adaptive,879,14526,13741,785,182,70.00
+
+=== Starting Adaptive Rho Trial 880 ===
+Adaptive,880,13267,12546,721,166,70.00
+
+=== Starting Adaptive Rho Trial 881 ===
+Adaptive,881,9379,8866,513,117,70.00
+
+=== Starting Adaptive Rho Trial 882 ===
+Adaptive,882,9773,9242,531,122,70.00
+
+=== Starting Adaptive Rho Trial 883 ===
+Adaptive,883,21582,20421,1161,271,70.00
+
+=== Starting Adaptive Rho Trial 884 ===
+Adaptive,884,11356,10741,615,142,70.00
+
+=== Starting Adaptive Rho Trial 885 ===
+Adaptive,885,7721,7295,426,96,70.00
+
+=== Starting Adaptive Rho Trial 886 ===
+Adaptive,886,15642,14796,846,196,70.00
+
+=== Starting Adaptive Rho Trial 887 ===
+Adaptive,887,10240,9687,553,128,70.00
+
+=== Starting Adaptive Rho Trial 888 ===
+Adaptive,888,9631,9100,531,120,70.00
+
+=== Starting Adaptive Rho Trial 889 ===
+Adaptive,889,14200,13438,762,178,70.00
+
+=== Starting Adaptive Rho Trial 890 ===
+Adaptive,890,15574,14725,849,195,70.00
+
+=== Starting Adaptive Rho Trial 891 ===
+Adaptive,891,10960,10366,594,137,70.00
+
+=== Starting Adaptive Rho Trial 892 ===
+Adaptive,892,8980,8491,489,112,70.00
+
+=== Starting Adaptive Rho Trial 893 ===
+Adaptive,893,12008,11350,657,150,70.00
+
+=== Starting Adaptive Rho Trial 894 ===
+Adaptive,894,20861,19742,1119,262,70.00
+
+=== Starting Adaptive Rho Trial 895 ===
+Adaptive,895,11752,11116,636,147,70.00
+
+=== Starting Adaptive Rho Trial 896 ===
+Adaptive,896,10564,9991,573,132,70.00
+
+=== Starting Adaptive Rho Trial 897 ===
+Adaptive,897,8514,8045,469,106,70.00
+
+=== Starting Adaptive Rho Trial 898 ===
+Adaptive,898,9447,8937,510,118,70.00
+
+=== Starting Adaptive Rho Trial 899 ===
+Adaptive,899,10169,9616,552,127,70.00
+
+=== Starting Adaptive Rho Trial 900 ===
+Adaptive,900,19534,18476,1058,245,70.00
+
+=== Starting Adaptive Rho Trial 901 ===
+Adaptive,901,15787,14937,850,198,70.00
+
+=== Starting Adaptive Rho Trial 902 ===
+Adaptive,902,8444,7975,469,105,70.00
+
+=== Starting Adaptive Rho Trial 903 ===
+Adaptive,903,10026,9474,552,125,70.00
+
+=== Starting Adaptive Rho Trial 904 ===
+Adaptive,904,10635,10062,573,133,70.00
+
+=== Starting Adaptive Rho Trial 905 ===
+Adaptive,905,10099,9546,553,126,70.00
+
+=== Starting Adaptive Rho Trial 906 ===
+Adaptive,906,11611,10975,636,145,70.00
+
+=== Starting Adaptive Rho Trial 907 ===
+Adaptive,907,13195,12475,720,165,70.00
+
+=== Starting Adaptive Rho Trial 908 ===
+Adaptive,908,10026,9474,552,125,70.00
+
+=== Starting Adaptive Rho Trial 909 ===
+Adaptive,909,9914,9383,531,124,70.00
+
+=== Starting Adaptive Rho Trial 910 ===
+Adaptive,910,8981,8492,489,112,70.00
+
+=== Starting Adaptive Rho Trial 911 ===
+Adaptive,911,9122,8632,489,114,70.00
+
+=== Starting Adaptive Rho Trial 912 ===
+Adaptive,912,8585,8116,469,107,70.00
+
+=== Starting Adaptive Rho Trial 913 ===
+Adaptive,913,7325,6920,405,91,70.00
+
+=== Starting Adaptive Rho Trial 914 ===
+Adaptive,914,9773,9241,532,122,70.00
+
+=== Starting Adaptive Rho Trial 915 ===
+Adaptive,915,14202,13437,765,178,70.00
+
+=== Starting Adaptive Rho Trial 916 ===
+Adaptive,916,9306,8796,510,116,70.00
+
+=== Starting Adaptive Rho Trial 917 ===
+Adaptive,917,17551,16600,951,220,70.00
+
+=== Starting Adaptive Rho Trial 918 ===
+Adaptive,918,8047,7600,447,100,70.00
+
+=== Starting Adaptive Rho Trial 919 ===
+Adaptive,919,12404,11725,679,155,70.00
+
+=== Starting Adaptive Rho Trial 920 ===
+Adaptive,920,13011,12312,699,163,70.00
+
+=== Starting Adaptive Rho Trial 921 ===
+Adaptive,921,10890,10295,595,136,70.00
+
+=== Starting Adaptive Rho Trial 922 ===
+Adaptive,922,14455,13671,783,181,70.00
+
+=== Starting Adaptive Rho Trial 923 ===
+Adaptive,923,15714,14867,847,197,70.00
+
+=== Starting Adaptive Rho Trial 924 ===
+Adaptive,924,19278,18242,1036,242,70.00
+
+=== Starting Adaptive Rho Trial 925 ===
+Adaptive,925,14922,14116,805,187,70.00
+
+=== Starting Adaptive Rho Trial 926 ===
+Adaptive,926,7326,6921,405,91,70.00
+
+=== Starting Adaptive Rho Trial 927 ===
+Adaptive,927,13662,12921,741,171,70.00
+
+=== Starting Adaptive Rho Trial 928 ===
+Adaptive,928,13877,13133,744,174,70.00
+
+=== Starting Adaptive Rho Trial 929 ===
+Adaptive,929,7071,6687,384,88,70.00
+
+=== Starting Adaptive Rho Trial 930 ===
+Adaptive,930,20719,19600,1119,260,70.00
+
+=== Starting Adaptive Rho Trial 931 ===
+Adaptive,931,12942,12242,700,162,70.00
+
+=== Starting Adaptive Rho Trial 932 ===
+Adaptive,932,8047,7600,447,100,70.00
+
+=== Starting Adaptive Rho Trial 933 ===
+Adaptive,933,9843,9312,531,123,70.00
+
+=== Starting Adaptive Rho Trial 934 ===
+Adaptive,934,6859,6475,384,85,70.00
+
+=== Starting Adaptive Rho Trial 935 ===
+Adaptive,935,16365,15475,890,205,70.00
+
+=== Starting Adaptive Rho Trial 936 ===
+Adaptive,936,10961,10366,595,137,70.00
+
+=== Starting Adaptive Rho Trial 937 ===
+Adaptive,937,19532,18475,1057,245,70.00
+
+=== Starting Adaptive Rho Trial 938 ===
+Adaptive,938,13085,12383,702,164,70.00
+
+=== Starting Adaptive Rho Trial 939 ===
+Adaptive,939,16574,15686,888,208,70.00
+
+=== Starting Adaptive Rho Trial 940 ===
+Adaptive,940,9844,9312,532,123,70.00
+
+=== Starting Adaptive Rho Trial 941 ===
+Adaptive,941,13269,12546,723,166,70.00
+
+=== Starting Adaptive Rho Trial 942 ===
+Adaptive,942,12800,12100,700,160,70.00
+
+=== Starting Adaptive Rho Trial 943 ===
+Adaptive,943,12291,11633,658,154,70.00
+
+=== Starting Adaptive Rho Trial 944 ===
+Adaptive,944,10241,9687,554,128,70.00
+
+=== Starting Adaptive Rho Trial 945 ===
+Adaptive,945,12686,12008,678,159,70.00
+
+=== Starting Adaptive Rho Trial 946 ===
+Adaptive,946,15389,14563,825,193,70.00
+
+=== Starting Adaptive Rho Trial 947 ===
+Adaptive,947,7000,6616,384,87,70.00
+
+=== Starting Adaptive Rho Trial 948 ===
+Adaptive,948,10425,9850,575,130,70.00
+
+=== Starting Adaptive Rho Trial 949 ===
+Adaptive,949,18233,17258,975,229,70.00
+
+=== Starting Adaptive Rho Trial 950 ===
+Adaptive,950,21582,20421,1161,271,70.00
+
+=== Starting Adaptive Rho Trial 951 ===
+Adaptive,951,5489,5187,302,68,70.00
+
+=== Starting Adaptive Rho Trial 952 ===
+Adaptive,952,10890,10296,594,136,70.00
+
+=== Starting Adaptive Rho Trial 953 ===
+Adaptive,953,7867,7437,429,98,70.00
+
+=== Starting Adaptive Rho Trial 954 ===
+Adaptive,954,24285,22976,1308,305,70.00
+
+=== Starting Adaptive Rho Trial 955 ===
+Adaptive,955,8840,8350,490,110,70.00
+
+=== Starting Adaptive Rho Trial 956 ===
+Adaptive,956,8117,7669,447,101,70.00
+
+=== Starting Adaptive Rho Trial 957 ===
+Adaptive,957,15968,15100,868,200,70.00
+
+=== Starting Adaptive Rho Trial 958 ===
+Adaptive,958,13407,12687,720,168,70.00
+
+=== Starting Adaptive Rho Trial 959 ===
+Adaptive,959,5346,5045,301,66,70.00
+
+=== Starting Adaptive Rho Trial 960 ===
+Adaptive,960,16436,15546,890,206,70.00
+
+=== Starting Adaptive Rho Trial 961 ===
+Adaptive,961,9378,8866,512,117,70.00
+
+=== Starting Adaptive Rho Trial 962 ===
+Adaptive,962,9122,8633,489,114,70.00
+
+=== Starting Adaptive Rho Trial 963 ===
+Adaptive,963,12404,11724,680,155,70.00
+
+=== Starting Adaptive Rho Trial 964 ===
+Adaptive,964,17765,16813,951,223,70.00
+
+=== Starting Adaptive Rho Trial 965 ===
+Adaptive,965,16508,15617,891,207,70.00
+
+=== Starting Adaptive Rho Trial 966 ===
+Adaptive,966,12544,11866,678,157,70.00
+
+=== Starting Adaptive Rho Trial 967 ===
+Adaptive,967,16363,15475,888,205,70.00
+
+=== Starting Adaptive Rho Trial 968 ===
+Adaptive,968,10313,9758,555,129,70.00
+
+=== Starting Adaptive Rho Trial 969 ===
+Adaptive,969,20211,19133,1078,254,70.00
+
+=== Starting Adaptive Rho Trial 970 ===
+Adaptive,970,13874,13133,741,174,70.00
+
+=== Starting Adaptive Rho Trial 971 ===
+Adaptive,971,10168,9615,552,127,70.00
+
+=== Starting Adaptive Rho Trial 972 ===
+Adaptive,972,10423,9850,573,130,70.00
+
+=== Starting Adaptive Rho Trial 973 ===
+Adaptive,973,8118,7671,447,101,70.00
+
+=== Starting Adaptive Rho Trial 974 ===
+Adaptive,974,13012,12312,700,163,70.00
+
+=== Starting Adaptive Rho Trial 975 ===
+Adaptive,975,13733,12992,741,172,70.00
+
+=== Starting Adaptive Rho Trial 976 ===
+Adaptive,976,9701,9170,531,121,70.00
+
+=== Starting Adaptive Rho Trial 977 ===
+Adaptive,977,12007,11350,657,150,70.00
+
+=== Starting Adaptive Rho Trial 978 ===
+Adaptive,978,9123,8633,489,114,70.00
+
+=== Starting Adaptive Rho Trial 979 ===
+Adaptive,979,11500,10883,617,144,70.00
+
+=== Starting Adaptive Rho Trial 980 ===
+Adaptive,980,13268,12546,722,166,70.00
+
+=== Starting Adaptive Rho Trial 981 ===
+Adaptive,981,16180,15313,867,203,70.00
+
+=== Starting Adaptive Rho Trial 982 ===
+Adaptive,982,9376,8866,510,117,70.00
+
+=== Starting Adaptive Rho Trial 983 ===
+Adaptive,983,15855,15008,847,199,70.00
+
+=== Starting Adaptive Rho Trial 984 ===
+Adaptive,984,11214,10599,615,140,70.00
+
+=== Starting Adaptive Rho Trial 985 ===
+Adaptive,985,17623,16671,952,221,70.00
+
+=== Starting Adaptive Rho Trial 986 ===
+Adaptive,986,16252,15383,869,204,70.00
+
+=== Starting Adaptive Rho Trial 987 ===
+Adaptive,987,10495,9921,574,131,70.00
+
+=== Starting Adaptive Rho Trial 988 ===
+Adaptive,988,8118,7670,448,101,70.00
+
+=== Starting Adaptive Rho Trial 989 ===
+Adaptive,989,16973,16062,910,213,70.00
+
+=== Starting Adaptive Rho Trial 990 ===
+Adaptive,990,14129,13367,762,177,70.00
+
+=== Starting Adaptive Rho Trial 991 ===
+Adaptive,991,14667,13883,784,184,70.00
+
+=== Starting Adaptive Rho Trial 992 ===
+Adaptive,992,9125,8633,492,114,70.00
+
+=== Starting Adaptive Rho Trial 993 ===
+Adaptive,993,12474,11796,678,156,70.00
+
+=== Starting Adaptive Rho Trial 994 ===
+Adaptive,994,13989,13225,764,175,70.00
+
+=== Starting Adaptive Rho Trial 995 ===
+Adaptive,995,8842,8350,492,110,70.00
+
+=== Starting Adaptive Rho Trial 996 ===
+Adaptive,996,11823,11187,636,148,70.00
+
+=== Starting Adaptive Rho Trial 997 ===
+Adaptive,997,8587,8116,471,107,70.00
+
+=== Starting Adaptive Rho Trial 998 ===
+Adaptive,998,18557,17563,994,233,70.00
+
+=== Starting Adaptive Rho Trial 999 ===
+Adaptive,999,11684,11046,637,146,70.00
+
+=== Fixed Rho Statistics ===
+Average solve time: 22749.67 µs
+Average ADMM time: 22749.38 µs
+Average rho time: 0.00 µs
+Average iterations: 322.04
+Std Dev solve time: 8214.45 µs
+Std Dev iterations: 116.85
+
+=== Adaptive Rho Statistics ===
+Average solve time: 12243.17 µs
+Average ADMM time: 11580.27 µs
+Average rho time: 662.82 µs
+Average iterations: 153.18
+Std Dev solve time: 4037.37 µs
+Std Dev iterations: 50.97
+Benchmark Complete!

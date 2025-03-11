@@ -9,12 +9,12 @@ ser = serial.Serial(
 )
 
 # Open CSV file
-with open('benchmark_results_12_8.csv', 'w') as f:
+with open('benchmark_results_12_15.csv', 'w') as f:
     while True:
         try:
             if ser.in_waiting:
                 line = ser.readline().decode('utf-8').strip()
-                print(line)  # Show in terminal
+                #print(line)  # Show in terminal
                 f.write(line + '\n')  # Write to file
                 f.flush()  # Make sure it's written
         except KeyboardInterrupt:

@@ -146,7 +146,7 @@ void solve_admm_adaptive(struct tiny_problem *problem, struct tiny_params *param
         float dua_res_state = params->rho * (problem->vnew - v_prev).lpNorm<Eigen::Infinity>();
 
         // Update rho every 10 iterations
-        if (iter % 10 == 0 && iter > 0) {
+        if (iter % 5 == 0) {
             uint32_t rho_update_start = micros();
             
             // Call benchmark_rho_adaptation with current state
