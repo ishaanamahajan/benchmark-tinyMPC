@@ -7,7 +7,7 @@
 #include "Arduino.h"
 #include "rho_benchmark.hpp"
 //#include "problem_data/rand_prob_tinympc_params.hpp"  // Contains all the matrix data
-#include "problem_data/problem_49.hpp"
+#include "problem_data/problem_50.hpp"
 using Eigen::Matrix;
 
 // Move typedefs outside extern "C"

@@ -6,7 +6,7 @@ import queue
 # Configuration
 PORT = '/dev/cu.usbmodem132804901'  # Your Teensy's port
 BAUD_RATE = 115200
-OUTPUT_FILE = 'benchmark_results_12_49.csv'
+OUTPUT_FILE = 'benchmark_results_12_50.csv'
 BUFFER_SIZE = 1000  # Number of lines to buffer before writing to file
 
 def serial_reader(ser, data_queue, stop_event):
