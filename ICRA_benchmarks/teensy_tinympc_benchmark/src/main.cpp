@@ -2,7 +2,7 @@
 #undef F
 #include "admm.hpp"
 //#include "problem_data/rand_prob_tinympc_params.hpp"
-#include "problem_data/problem_96.hpp"
+#include "problem_data/problem_100.hpp"
 #include "types.hpp"
 #include "rho_benchmark.hpp"
 
