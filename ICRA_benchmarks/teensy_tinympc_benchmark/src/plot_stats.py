@@ -1,32 +1,26 @@
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-import re
 import os
 from matplotlib.ticker import FuncFormatter
 
-# Let's create a simplified parsing function that's more robust
 def parse_admm_file(filepath):
-    """Parse the ADMM trial data from file or string"""
+    """Parse the ADMM trial data from file"""
     try:
-        # Try to read from file
         with open(filepath, 'r') as f:
             content = f.read()
-    except (FileNotFoundError, IsADirectoryError, TypeError):
-        # If file doesn't exist, assume filepath is the content string
-        content = filepath
+    except:
+        print(f"Error reading file: {filepath}")
+        return pd.DataFrame()
     
-    # Process each line individually to be more robust
     lines = content.split('\n')
     data = []
     
     for line in lines:
         line = line.strip()
-        # Skip empty lines and header lines
         if not line or line.startswith('==='):
             continue
             
-        # Check if line contains CSV data with the expected format
         parts = line.split(',')
         if len(parts) >= 7 and (parts[0] == 'Fixed' or parts[0] == 'Adaptive'):
             try:
@@ -39,176 +33,170 @@ def parse_admm_file(filepath):
                     'iterations': int(parts[5]),
                     'accuracy': float(parts[6])
                 })
-            except (ValueError, IndexError):
-                # Skip lines that don't parse correctly
+            except:
                 continue
     
     return pd.DataFrame(data)
 
-# Set the plotting style
-plt.rcParams.update({
-    'font.family': 'serif',
-    'font.size': 12,
-    'axes.labelsize': 14,
-    'grid.linestyle': ':',
-    'grid.alpha': 0.5,
-    'lines.linewidth': 2.5
-})
-
-def create_combined_plots(df):
-    """Create side-by-side plots using existing functions"""
-    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 5))
+def plot_solve_time_distribution(all_data):
+    plt.figure(figsize=(10, 6))
     
-    # For the CDF plot (left)
-    df['solved'] = df['iterations'] < 500
-    fixed_df = df[df['type'] == 'Fixed'].sort_values('total_time')
-    adaptive_df = df[df['type'] == 'Adaptive'].sort_values('total_time')
+    # Colors
+    fixed_color = '#ff7f0e'    # Orange
+    adapt_color = '#1f77b4'    # Blue
     
-    fixed_color = '#d62728'
-    adapt_color = '#1f77b4'
+    # Initialize metrics dictionary
+    metrics = {}
     
-    # Plot CDF with x-axis limit
-    def plot_cdf(df, color, label):
-        if len(df) == 0:
-            return
-        df_sorted = df.sort_values('total_time')
-        times = df_sorted['total_time'].values
-        cumulative_solved = np.cumsum(df_sorted['solved'].values)
-        percentages = 100 * cumulative_solved / len(df_sorted)
+    # Calculate metrics for both types
+    for solver_type in ['Fixed', 'Adaptive']:
+        df_type = all_data[all_data['type'] == solver_type]
+        solve_times = df_type['total_time'].values
+        rho_times = df_type['rho_time'].values
+        admm_times = df_type['admm_time'].values
         
-        if len(times) > 0 and times[0] > 0:
-            times = np.insert(times, 0, 0)
-            percentages = np.insert(percentages, 0, 0)
+        # Calculate metrics
+        metrics[solver_type] = {
+            'mean': np.mean(solve_times),
+            'median': np.median(solve_times),
+            'percentile_95': np.percentile(solve_times, 95),
+            'std': np.std(solve_times),
+            'mean_rho_time': np.mean(rho_times),
+            'mean_admm_time': np.mean(admm_times)
+        }
         
-        ax1.plot(times, percentages, '-', color=color, linewidth=2, label=label)
-        ax1.fill_between(times, 0, percentages, color=color, alpha=0.2)
-        return max(times)  # Return max time for setting limit
+        # Calculate and plot CDF
+        sorted_times = np.sort(solve_times)
+        percentages = 100 * np.arange(1, len(sorted_times) + 1) / len(sorted_times)
+        
+        color = fixed_color if solver_type == 'Fixed' else adapt_color
+        label = 'Fixed Rho' if solver_type == 'Fixed' else 'Adaptive Rho'
+        
+        # Plot main CDF line
+        plt.plot(sorted_times, percentages/100, '-', 
+                color=color, 
+                linewidth=2, 
+                label=label)
+        plt.fill_between(sorted_times, 0, percentages/100, color=color, alpha=0.1)
+        
+        # Add iteration limit lines
+        last_percentage = percentages[-1]/100
+        if solver_type == 'Fixed':
+            plt.vlines(x=28000, ymin=last_percentage, ymax=1.0, 
+                      color=color, linestyle='-', linewidth=2)
+        else:
+            plt.plot([27500, 28500], [last_percentage, 1.0], 
+                    color=color, linewidth=2)
+        
+        # Horizontal line at 100%
+        plt.hlines(y=1.0, xmin=28000, xmax=30000,
+                  color=color, linestyle='-', linewidth=2)
 
-    # Plot and get max times
-    fixed_max = plot_cdf(fixed_df, fixed_color, 'Fixed Rho')
-    _ = plot_cdf(adaptive_df, adapt_color, 'Adaptive Rho')
-    
-    # Set x-axis limit to fixed maximum
-    ax1.set_xlim(0, fixed_max)
-    
-    ax1.axhline(y=100, color='gray', linestyle='--', alpha=0.5)
-    ax1.set_xlabel('Time (µs)')
-    ax1.set_ylabel('Problems Solved (%)')
-    ax1.xaxis.set_major_formatter(FuncFormatter(lambda x, p: format(int(x), ',')))
-    ax1.grid(True, alpha=0.3)
-    ax1.legend(loc='upper left', fontsize=14)
-    ax1.set_ylim(0, 105)
-    
-    # For the stacked bar chart (right)
-    grouped = df.groupby('type').mean().reset_index()
-    x = np.arange(len(grouped['type']))
-    width = 0.5
-    
-    # Plot bars with separate labels for legend
-    p1_fixed = ax2.bar(x[0], grouped[grouped['type'] == 'Fixed']['admm_time'], 
-                       width, label='Fixed ADMM Time', color=fixed_color)
-    p1_adaptive = ax2.bar(x[1], grouped[grouped['type'] == 'Adaptive']['admm_time'], 
-                         width, label='Adaptive ADMM Time', color=adapt_color)
-    p2 = ax2.bar(x[1], grouped[grouped['type'] == 'Adaptive']['rho_time'], 
-                 width, bottom=grouped[grouped['type'] == 'Adaptive']['admm_time'],
-                 label='Rho Update Time', color=adapt_color, alpha=0.3)
-    
-    ax2.set_ylabel('Time (µs)')
-    ax2.set_xticks(x)
-    ax2.set_xticklabels(['Fixed', 'First-Order\nAdaptive'])
-    ax2.legend(fontsize=14)
-    
-    # Add value labels on bars
-    for i, p in enumerate([p1_fixed, p1_adaptive]):
-        height = p[0].get_height()
-        if height > 0:
-            ax2.text(p[0].get_x() + p[0].get_width()/2, height/2,
-                    f'{int(height):,}',
-                    ha='center', va='center', color='black',
-                    fontweight='bold', fontsize=11)
-    
-    if len(p2) > 0:
-        height = p2[0].get_height()
-        bottom = p2[0].get_y()
-        if height > 0:
-            ax2.text(p2[0].get_x() + p2[0].get_width()/2, bottom + height/2,
-                    f'{int(height):,}',
-                    ha='center', va='center', color='black',
-                    fontweight='bold', fontsize=11)
-    
-    # # Add speedup arrow
-    # fixed_total = grouped[grouped['type'] == 'Fixed']['total_time'].values[0]
-    # adaptive_total = grouped[grouped['type'] == 'Adaptive']['total_time'].values[0]
-    # speedup = (fixed_total - adaptive_total) / fixed_total * 100
-    
-    # # Position arrow at 20000 µs (adjust as needed)
-    # arrow_y = 20000
-    # ax2.annotate(
-    #     f'{speedup:.1f}% speedup',
-    #     xy=(0, arrow_y),  # start at Fixed
-    #     xytext=(1, arrow_y),  # end at Adaptive
-    #     arrowprops=dict(
-    #         arrowstyle='->',
-    #         connectionstyle='arc3,rad=-0.2',
-    #         color='black',
-    #         lw=2
-    #     ),
-    #     ha='center', va='bottom',
-    #     fontsize=11,
-    #     fontweight='bold'
-    # )
-    
-    ax2.yaxis.grid(True, linestyle='--', alpha=0.7)
-    ax2.yaxis.set_major_formatter(FuncFormatter(lambda x, p: format(int(x), ',')))
-    ax2.set_ylim(0, 25000)
+    # Calculate adaptation overhead
+    adapt_mean = metrics['Adaptive']['mean']
+    fixed_mean = metrics['Fixed']['mean']
+    adaptation_overhead = ((adapt_mean - fixed_mean) / fixed_mean) * 100
 
-    #print avg iterations for fixed and adaptive
-    print(f"Average iterations for Fixed: {fixed_df['iterations'].mean():.2f}")
-    print(f"Average iterations for Adaptive: {adaptive_df['iterations'].mean():.2f}")
-
+    plt.xlabel('Solve Time (µs)')
+    plt.ylabel('Percentage of Solves')
+    plt.grid(True, alpha=0.2)
+    plt.legend(loc='upper left')
+    plt.gca().yaxis.set_major_formatter(plt.FuncFormatter(lambda y, _: '{:.0%}'.format(y)))
+    plt.xlim(4000, 30000)
+    plt.ylim(0, 1.0)
+    
+    plt.annotate('Iteration\nLimit', 
+                xy=(28000, 0.95),
+                xytext=(26000, 0.85),
+                arrowprops=dict(facecolor='black', shrink=0.05, width=1, headwidth=8),
+                fontsize=10)
     
     plt.tight_layout()
-    plt.savefig('overhead.png', dpi=300)
+    plt.savefig('solve_time_distribution.png', dpi=300)
     plt.show()
-    
-    # Print statistics
-    print(f"Fixed total time: {fixed_total:.3f} µs")
-    print(f"Adaptive total time: {adaptive_total:.3f} µs")
-    print(f"Speedup: {speedup:.1f}%")
 
-# Main execution
+    # Calculate grouped statistics
+    grouped = all_data.groupby('type').mean().reset_index()
+    
+    # Calculate overhead based on rho time
+    fixed_admm = grouped[grouped['type'] == 'Fixed']['admm_time'].values[0]
+    adaptive_admm = grouped[grouped['type'] == 'Adaptive']['admm_time'].values[0]
+    rho_time = grouped[grouped['type'] == 'Adaptive']['rho_time'].values[0]
+    
+    # Calculate overhead percentage
+    overhead_percentage = (rho_time / adaptive_admm) * 100
+    
+    # Print metrics in milliseconds
+    print("\nMetrics:")
+    print(f"{'Metric':<25} {'Fixed':<15} {'Adaptive':<15}")
+    print("-" * 55)
+    print(f"{'Mean Solve Time (ms)':<25} {metrics['Fixed']['mean']/1000:<15.3f} {metrics['Adaptive']['mean']/1000:<15.3f}")
+    print(f"{'Median Solve Time (ms)':<25} {metrics['Fixed']['median']/1000:<15.3f} {metrics['Adaptive']['median']/1000:<15.3f}")
+    print(f"{'95th Percentile Time (ms)':<25} {metrics['Fixed']['percentile_95']/1000:<15.3f} {metrics['Adaptive']['percentile_95']/1000:<15.3f}")
+    print(f"{'Standard Deviation (ms)':<25} {metrics['Fixed']['std']/1000:<15.3f} {metrics['Adaptive']['std']/1000:<15.3f}")
+    print(f"{'Mean ADMM Time (ms)':<25} {metrics['Fixed']['mean_admm_time']/1000:<15.3f} {metrics['Adaptive']['mean_admm_time']/1000:<15.3f}")
+    print(f"{'Mean Rho Time (ms)':<25} {metrics['Fixed']['mean_rho_time']/1000:<15.3f} {metrics['Adaptive']['mean_rho_time']/1000:<15.3f}")
+    print(f"\nRho adaptation overhead: {overhead_percentage:.1f}%")
+
+    # Add print statement to show number of data points
+    print(f"\nTotal number of data points: {len(all_data)}")
+    print(f"Number of files processed: {len(all_data) // 200}")  # Divided by 200 because each file has both Fixed and Adaptive
+
+def calculate_comparative_stats(all_data):
+    """Calculate comparative statistics between Fixed and Adaptive approaches"""
+    
+    # Get solve times for both methods
+    fixed_times = all_data[all_data['type'] == 'Fixed']['total_time'].values
+    adaptive_times = all_data[all_data['type'] == 'Adaptive']['total_time'].values
+    
+    # Get iterations for both methods
+    fixed_iters = all_data[all_data['type'] == 'Fixed']['iterations'].values
+    adaptive_iters = all_data[all_data['type'] == 'Adaptive']['iterations'].values
+    
+    # Calculate percentage of adaptive solves slower than fixed
+    fixed_sorted = np.sort(fixed_times)
+    adaptive_sorted = np.sort(adaptive_times)
+    
+    # Find fastest and slowest times
+    fastest_fixed = np.min(fixed_times)
+    fastest_adaptive = np.min(adaptive_times)
+    slowest_fixed = np.max(fixed_times)
+    slowest_adaptive = np.max(adaptive_times)
+    
+    # Calculate percentage faster/slower
+    fastest_improvement = ((fastest_fixed - fastest_adaptive) / fastest_fixed) * 100
+    slowest_comparison = (slowest_adaptive / slowest_fixed) * 100
+    
+    # Calculate percentage of solves that are slower
+    slower_count = sum(adaptive_times > np.median(fixed_times))
+    slower_percentage = (slower_count / len(adaptive_times)) * 100
+    
+    # Calculate percentage under iteration limit (assuming 500 is the limit)
+    ITERATION_LIMIT = 500
+    fixed_under_limit = (sum(fixed_iters < ITERATION_LIMIT) / len(fixed_iters)) * 100
+    adaptive_under_limit = (sum(adaptive_iters < ITERATION_LIMIT) / len(adaptive_iters)) * 100
+    
+    print("\nComparative Statistics:")
+    print(f"{slower_percentage:.1f}% of adaptive solves were slower than the fixed approach")
+    print(f"Slowest adaptive solve was {slowest_comparison:.1f}% of the slowest fixed solve")
+    print(f"Fastest adaptive solve was {fastest_improvement:.1f}% faster than the fastest fixed solve")
+    print(f"Adaptive approach solves {adaptive_under_limit:.1f}% of problems under the iteration limit")
+    print(f"Fixed approach solves {fixed_under_limit:.1f}% of problems under the iteration limit")
+
 if __name__ == "__main__":
-   
+    # Base path and file pattern
+    base_path = "/Users/ishaanmahajan/replicate/benchmark-tinyMPC/ICRA_benchmarks/teensy_tinympc_benchmark/"
     
-    # Replace this with the path to your data file
-    file_path = "/Users/ishaanmahajan/replicate/benchmark-tinyMPC/ICRA_benchmarks/teensy_tinympc_benchmark/benchmark_results_10_rho85.csv"
+    # Collect data from all files
+    all_data = pd.DataFrame()
+    for i in range(1, 101):
+        filename = f"benchmark_results_12_{i}.csv"
+        filepath = os.path.join(base_path, filename)
+        df = parse_admm_file(filepath)
+        all_data = pd.concat([all_data, df], ignore_index=True)
     
-    try:
-        # Try to parse from file first
-        df = parse_admm_file(file_path)
-        if len(df) == 0:
-            print("Warning: No valid data found in file. Using sample data.")
-            df = parse_admm_file(sample_data)
-    except Exception as e:
-        print(f"Error reading file: {e}")
-        print("Using sample data instead.")
-        df = parse_admm_file(sample_data)
-    
-    # Create visualizations
-    create_combined_plots(df)
-    
-    # Optional: Print summary statistics
-    print("\nSummary Statistics:")
-    summary = df.groupby('type').agg({
-        'total_time': 'mean',
-        'admm_time': 'mean',
-        'rho_time': 'mean',
-        'iterations': 'mean'
-    })
-    print(summary)
-    
-    # Print percentage of solved problems (iterations < 500)
-    df['solved'] = df['iterations'] < 500
-    solved_pct = df.groupby('type')['solved'].mean() * 100
-    print("\nPercentage of problems solved (iterations < 500):")
-    print(solved_pct)
+    if len(all_data) > 0:
+        plot_solve_time_distribution(all_data)
+        calculate_comparative_stats(all_data)
+    else:
+        print("No data was loaded. Please check the file paths.")
