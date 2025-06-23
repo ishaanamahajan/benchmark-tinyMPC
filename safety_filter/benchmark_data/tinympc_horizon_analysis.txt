@@ -1,0 +1,10 @@
+# TINYMPC Safety Filter - Time Horizon Analysis
+# Format: horizon_length, state_dim, input_dim, avg_time_per_iteration_us, memory_usage_kb, convergence_iterations, notes
+# Data collected from microcontroller
+#
+# horizon_length, state_dim, input_dim, avg_time_per_iteration_us, memory_usage_kb, convergence_iterations, notes
+10, 4, 2, 14358.7, 4.80, 35.4, estimated
+15, 4, 2, 29790.7, 7.20, 43.3, estimated
+20, 4, 2, 50000.0, 9.60, 50.0, estimated
+25, 4, 2, 74715.0, 12.00, 55.9, estimated
+30, 4, 2, 103737.1, 14.40, 61.2, estimated

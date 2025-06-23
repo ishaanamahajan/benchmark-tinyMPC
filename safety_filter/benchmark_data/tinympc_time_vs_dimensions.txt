@@ -1,0 +1,5 @@
+# TINYMPC Safety Filter - Time per Iteration vs State Dimensions
+# Format: state_dim, input_dim, iteration_number, time_microseconds, avg_time_us, std_time_us, data_points
+# Data collected from Adafruit microcontroller
+#
+# state_dim, input_dim, iteration_number, time_microseconds, avg_time_us, std_time_us, data_points
