@@ -16,16 +16,7 @@ path_to_root = os.getcwd()
 print(path_to_root)
 
 # %%
-tinympc_python_dir = path_to_root + "/../tinympc-python"
-tinympc_dir = tinympc_python_dir + "/tinympc/TinyMPC"  # Path to the TinyMPC directory (C code)
-
-tinympc_generic = tinympc.TinyMPC()
-tinympc_generic.compile_lib(tinympc_dir)  # Compile the library (or use the binary provided)
-
-# Load the generic shared/dynamic library. **You may want to change the extension of the library based on your OS -- Linux: .so, Mac: .dylib, Windows: .dll**
-os_ext = ".so"  # CHANGE THIS BASED ON YOUR OS
-lib_dir = tinympc_dir + "/build/src/tinympc/libtinympcShared" + os_ext  # Path to the compiled library
-tinympc_generic.load_lib(lib_dir)  # Load the library
+# TinyMPC setup - new API is much simpler, no compilation needed
 
 # %% [markdown]
 # ## Double Integrator System
@@ -64,39 +55,40 @@ check_termination = 1   # whether to check termination and period
 # ### TinyMPC
 
 # %%
-# SET UP PROBLEM
-A1 = A.transpose().reshape((NSTATES * NSTATES)).tolist() # col-major order list
-B1 = B.transpose().reshape((NSTATES * NINPUTS)).tolist() # col-major order list
-Q1 = Q.diagonal().tolist()  # diagonal of state cost -- DON'T NEED FOR SAFETY FILTER
-R1 = R.diagonal().tolist()  # diagonal of input cost
-
-xmin1 = [xmin] * NSTATES * NHORIZON         # state constraints 
-xmax1 = [xmax] * NSTATES * NHORIZON         # state constraints
-umin1 = [umin] * NINPUTS * (NHORIZON - 1)   # input constraints
-umax1 = [umax] * NINPUTS * (NHORIZON - 1)   # input constraints
+# SET UP PROBLEM - new API uses numpy arrays directly
+xmin_bounds = np.array([xmin] * NSTATES)  # per-state bounds
+xmax_bounds = np.array([xmax] * NSTATES)  # per-state bounds  
+umin_bounds = np.array([umin] * NINPUTS)  # per-input bounds
+umax_bounds = np.array([umax] * NINPUTS)  # per-input bounds
 
 tinympc_prob = tinympc.TinyMPC()
-tinympc_prob.load_lib(lib_dir)  # Load the library
-tinympc_prob.setup(NSTATES, NINPUTS, NHORIZON, A1, B1, Q1, R1, xmin1, xmax1, umin1, umax1, rho, abs_pri_tol, abs_dual_tol, max_iter, check_termination)
+tinympc_prob.setup(
+    A, B, Q, R, NHORIZON,  # matrices and horizon
+    rho=rho,
+    x_min=xmin_bounds, x_max=xmax_bounds,
+    u_min=umin_bounds, u_max=umax_bounds,
+    abs_pri_tol=abs_pri_tol, abs_dua_tol=abs_dual_tol,
+    max_iter=max_iter, check_termination=check_termination
+)
 
 path_to_tinympc = path_to_root + "/tinympc_f" # Path to the tinympc subfolder under safety_filter/
 
 # GENERATE CODE
 output_dir = path_to_tinympc + "/tinympc_generated"  # Path to the generated code
-tinympc_prob.tiny_codegen(tinympc_dir, output_dir)  
+tinympc_prob.codegen(output_dir)  
 # You may want to check if Kinf in generated_code follows the same pattern as previous K in LQR, otherwise something is wrong
 
 # MOVING FILES FROM GENERATED CODE TO MCU FOLDER
 
-# Copy to teensy project
+# Copy to teensy project (updated file names for new API)
 mcu_dir = path_to_tinympc + '/tinympc_teensy'
-os.system('cp -R '+output_dir+'/src/tiny_data_workspace.cpp'+' '+mcu_dir+'/src/tiny_data_workspace.cpp')
-os.system('cp -R '+output_dir+'/tinympc/glob_opts.hpp'+' '+mcu_dir+'/lib/tinympc/glob_opts.hpp')
+os.system('cp -R '+output_dir+'/src/tiny_data.cpp'+' '+mcu_dir+'/src/tiny_data_workspace.cpp')
+os.system('cp -R '+output_dir+'/tinympc/tiny_data.hpp'+' '+mcu_dir+'/lib/tinympc/glob_opts.hpp')
 
-# Copy to stm32 project
+# Copy to stm32 project (updated file names for new API)
 mcu_dir = path_to_tinympc + '/tinympc_stm32_feather'
-os.system('cp -R '+output_dir+'/src/tiny_data_workspace.cpp'+' '+mcu_dir+'/src/tiny_data_workspace.cpp')
-os.system('cp -R '+output_dir+'/tinympc/glob_opts.hpp'+' '+mcu_dir+'/src/tinympc/glob_opts.hpp')
+os.system('cp -R '+output_dir+'/src/tiny_data.cpp'+' '+mcu_dir+'/src/tiny_data_workspace.cpp')
+os.system('cp -R '+output_dir+'/tinympc/tiny_data.hpp'+' '+mcu_dir+'/src/tinympc/glob_opts.hpp')
 
 # %% [markdown]
 # The necessary files (`src/tiny_data_workspace.cpp` and `tinympc/glob_opts.hpp`) were copied from `tinympc_generated` to `tinympc_*` for you. Now you can directly upload and run the program in `tinympc_*`, where * is the mcu you want to use.
