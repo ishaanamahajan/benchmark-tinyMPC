@@ -24,7 +24,7 @@ print(path_to_root)
 # %%
 NSTATES = 4  # may vary this
 NINPUTS = NSTATES//2
-NHORIZON = 20  # may vary this
+NHORIZON = 10  # may vary this
 NTOTAL = 201
 NPOS = NINPUTS
 
