@@ -6,7 +6,7 @@
 
 # %%
 import tinympc
-import osqp
+#import osqp
 
 import os
 import numpy as np
@@ -79,16 +79,25 @@ tinympc_prob.codegen(output_dir)
 # You may want to check if Kinf in generated_code follows the same pattern as previous K in LQR, otherwise something is wrong
 
 # MOVING FILES FROM GENERATED CODE TO MCU FOLDER
-
-# Copy to teensy project (updated file names for new API)
+# Copy to teensy project
 mcu_dir = path_to_tinympc + '/tinympc_teensy'
-os.system('cp -R '+output_dir+'/src/tiny_data.cpp'+' '+mcu_dir+'/src/tiny_data_workspace.cpp')
-os.system('cp -R '+output_dir+'/tinympc/tiny_data.hpp'+' '+mcu_dir+'/lib/tinympc/glob_opts.hpp')
+os.system('cp -R '+output_dir+'/src/tiny_data_workspace.cpp'+' '+mcu_dir+'/src/tiny_data_workspace.cpp')
+os.system('cp -R '+output_dir+'/tinympc/glob_opts.hpp'+' '+mcu_dir+'/lib/tinympc/glob_opts.hpp')
 
-# Copy to stm32 project (updated file names for new API)
+# Copy to stm32 project
 mcu_dir = path_to_tinympc + '/tinympc_stm32_feather'
-os.system('cp -R '+output_dir+'/src/tiny_data.cpp'+' '+mcu_dir+'/src/tiny_data_workspace.cpp')
-os.system('cp -R '+output_dir+'/tinympc/tiny_data.hpp'+' '+mcu_dir+'/src/tinympc/glob_opts.hpp')
+os.system('cp -R '+output_dir+'/src/tiny_data_workspace.cpp'+' '+mcu_dir+'/src/tiny_data_workspace.cpp')
+os.system('cp -R '+output_dir+'/tinympc/glob_opts.hpp'+' '+mcu_dir+'/src/tinympc/glob_opts.hpp')
+
+# # Copy to teensy project (updated file names for new API)
+# mcu_dir = path_to_tinympc + '/tinympc_teensy'
+# os.system('cp -R '+output_dir+'/src/tiny_data.cpp'+' '+mcu_dir+'/src/tiny_data_workspace.cpp')
+# os.system('cp -R '+output_dir+'/tinympc/tiny_data.hpp'+' '+mcu_dir+'/lib/tinympc/glob_opts.hpp')
+
+# # Copy to stm32 project (updated file names for new API)
+# mcu_dir = path_to_tinympc + '/tinympc_stm32_feather'
+# os.system('cp -R '+output_dir+'/src/tiny_data.cpp'+' '+mcu_dir+'/src/tiny_data_workspace.cpp')
+# os.system('cp -R '+output_dir+'/tinympc/tiny_data.hpp'+' '+mcu_dir+'/src/tinympc/glob_opts.hpp')
 
 # %% [markdown]
 # The necessary files (`src/tiny_data_workspace.cpp` and `tinympc/glob_opts.hpp`) were copied from `tinympc_generated` to `tinympc_*` for you. Now you can directly upload and run the program in `tinympc_*`, where * is the mcu you want to use.
