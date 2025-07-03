@@ -1,0 +1,8 @@
+{
+  "config": "nstates_4_ninputs_2_real",
+  "timestamp": "2025-07-03T19:16:13.847316",
+  "iterations": [],
+  "times_us": [],
+  "port": "/dev/ttyS0",
+  "baudrate": 9600
+}
