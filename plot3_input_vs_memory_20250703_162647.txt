@@ -1,0 +1,7 @@
+# Memory Usage vs Input Dimension
+# Input Dimension (m)	Memory Usage (KB)
+1.0	0.762
+2.0	1.656
+4.0	3.844
+8.0	9.812
+16.0	28.125

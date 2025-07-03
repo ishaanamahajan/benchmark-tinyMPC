@@ -1,0 +1,7 @@
+# Computation Time vs State Dimension
+# State Dimension (n)	Time per Iteration (μs)
+2.0	217.170
+4.0	317.795
+8.0	1169.035
+16.0	6411.100
+32.0	42736.865

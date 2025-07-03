@@ -1,0 +1,8 @@
+# Memory Usage vs Time Horizon
+# Time Horizon (N)	Memory Usage (KB)
+4.0	3.027
+8.0	4.434
+16.0	7.246
+32.0	12.871
+64.0	24.121
+100.0	36.777

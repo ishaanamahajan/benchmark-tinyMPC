@@ -1,0 +1,8 @@
+# Computation Time vs Time Horizon
+# Time Horizon (N)	Time per Iteration (μs)
+4.0	1745.240
+8.0	2001.870
+16.0	2377.790
+32.0	4308.790
+64.0	9352.045
+100.0	18552.270

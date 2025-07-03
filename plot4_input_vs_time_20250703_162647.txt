@@ -1,0 +1,7 @@
+# Computation Time vs Input Dimension
+# Input Dimension (m)	Time per Iteration (μs)
+1.0	217.170
+2.0	317.795
+4.0	1169.035
+8.0	6411.100
+16.0	42736.865

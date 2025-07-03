@@ -1,0 +1,7 @@
+# Memory Usage vs State Dimension
+# State Dimension (n)	Memory Usage (KB)
+2.0	0.762
+4.0	1.656
+8.0	3.844
+16.0	9.812
+32.0	28.125
