@@ -6,13 +6,13 @@
 
 #define NINPUTS 2
 
-#define NHORIZON 20
+#define NHORIZON 10
 
 #define NTOTAL 201
 
-#define SIZE_Q 118
+#define SIZE_Q 58
 
-#define SIZE_LU 198
+#define SIZE_LU 98
 
 const PROGMEM OSQPFloat mR[4*4] = {
   -100.0,	-0.0,	
