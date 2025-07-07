@@ -33,7 +33,7 @@ tinympc_generic.load_lib(lib_dir)  # Load the library
 # ## Double Integrator System
 
 # %%
-NSTATES = 16  # may vary this
+NSTATES = 32  # may vary this
 NINPUTS = NSTATES//2
 NHORIZON = 10  # may vary this
 NTOTAL = 201
@@ -192,12 +192,12 @@ osqp_prob.codegen(
 mcu_dir = path_to_osqp + '/osqp_teensy'
 os.system('cp -R '+output_dir+'/osqp_configure.h'+' '+mcu_dir+'/lib/osqp/inc/osqp_configure.h')
 os.system('cp -R '+output_dir+'/osqp_data_workspace.c'+' '+mcu_dir+'/src/osqp_data_workspace.c')
-osqp_export_data_to_c(mcu_dir+'/src',A, B, R, NSTATES, NINPUTS, NHORIZON, NTOTAL)
+osqp_export_data_to_c(f"{mcu_dir}/src/osqp/inc/public", A, B, R, NSTATES, NINPUTS, NHORIZON, NTOTAL)
 
 mcu_dir = path_to_osqp + '/osqp_stm32_feather'
 os.system('cp -R '+output_dir+'/osqp_configure.h'+' '+mcu_dir+'/src/osqp/inc/osqp_configure.h')
 os.system('cp -R '+output_dir+'/osqp_data_workspace.c'+' '+mcu_dir+'/osqp_data_workspace.c')
-osqp_export_data_to_c(mcu_dir+'/src/osqp/inc/public',A, B, R, NSTATES, NINPUTS, NHORIZON, NTOTAL)
+osqp_export_data_to_c(f"{mcu_dir}/src/osqp/inc/public", A, B, R, NSTATES, NINPUTS, NHORIZON, NTOTAL)
 
 file_path = mcu_dir+"/osqp_data_workspace.c"
 old_lines = [
@@ -213,8 +213,100 @@ new_lines = [
 
 replace_in_file(file_path, old_lines, new_lines)
 
+# ------------------------------------------------------------------
+# Replace the embedded OSQP sources/headers in the MCU projects with
+# the freshly generated solver that matches the data workspace above.
+# ------------------------------------------------------------------
+for mcu_dir in (path_to_osqp + '/osqp_teensy',
+                path_to_osqp + '/osqp_stm32_feather'):
+    # Remove the old copy (if it exists)
+    os.system(f'rm -rf {mcu_dir}/src/osqp')
+
+    # Re-create destination folder and copy the generated solver
+    os.system(f'mkdir -p {mcu_dir}/src')
+    os.system(f'cp -R {output_dir}/src  {mcu_dir}/src/osqp')
+    os.system(f'cp -R {output_dir}/inc  {mcu_dir}/src/osqp/inc')
+    # osqp_configure.h is generated at the root of output_dir; copy it into the
+    # public include folder so that `#include "osqp_configure.h"` resolves.
+    os.system(f'cp {output_dir}/osqp_configure.h {mcu_dir}/src/osqp/inc/public/osqp_configure.h')
+    os.system(f'cp {output_dir}/osqp_data_workspace.h {mcu_dir}/src/osqp/inc/public/osqp_data_workspace.h')
+
+    # Re-create the OSQP problem-specific header with dimensions and matrices
+    header_dir = f"{mcu_dir}/src/osqp/inc/public"
+    osqp_export_data_to_c(header_dir, A, B, R, NSTATES, NINPUTS, NHORIZON, NTOTAL)
+
+    # Ensure private headers can include public ones by copying them as well
+    os.system(f'cp {output_dir}/inc/public/* {mcu_dir}/src/osqp/inc/private/')
+    os.system(f'cp {output_dir}/osqp_configure.h {mcu_dir}/src/osqp/inc/private/osqp_configure.h')
+
+    # Place public headers also at the top level of src/osqp so that
+    #   #include "osqp_api_constants.h" etc. resolve without sub-paths.
+    os.system(f'cp {output_dir}/inc/public/* {mcu_dir}/src/osqp/')
+    os.system(f'cp {output_dir}/osqp_configure.h {mcu_dir}/src/osqp/osqp_configure.h')
+
+    # Fix include paths in generated OSQP source files
+    # Define the common include path corrections needed
+    old_includes = [
+        '#include "glob_opts.h"',
+        '#include "osqp.h"',
+        '#include "auxil.h"',
+        '#include "osqp_api_constants.h"',
+        '#include "osqp_api_functions.h"',
+        '#include "osqp_api_types.h"',
+        '#include "util.h"',
+        '#include "scaling.h"',
+        '#include "error.h"',
+        '#include "version.h"',
+        '#include "lin_alg.h"',
+        '#include "printing.h"',
+        '#include "timing.h"',
+        '#include "profilers.h"',
+        '#include "qdldl_interface.h"',
+        '#include "algebra_impl.h"',
+        '#include "csc_math.h"',
+        '#include "csc_utils.h"',
+        '#include "algebra_vector.h"',
+        '#include "algebra_matrix.h"',
+        '#include "kkt.h"',
+        '#include "qdldl.h"',
+        '#include "qdldl_types.h"',
+        '#include "qdldl_version.h"'
+    ]
+    
+    new_includes = [
+        '#include "inc/private/glob_opts.h"',
+        '#include "inc/private/osqp.h"',
+        '#include "inc/private/auxil.h"',
+        '#include "inc/public/osqp_api_constants.h"',
+        '#include "inc/public/osqp_api_functions.h"',
+        '#include "inc/public/osqp_api_types.h"',
+        '#include "inc/private/util.h"',
+        '#include "inc/private/scaling.h"',
+        '#include "inc/private/error.h"',
+        '#include "inc/private/version.h"',
+        '#include "inc/private/lin_alg.h"',
+        '#include "inc/private/printing.h"',
+        '#include "inc/private/timing.h"',
+        '#include "inc/private/profilers.h"',
+        '#include "inc/private/qdldl_interface.h"',
+        '#include "inc/private/algebra_impl.h"',
+        '#include "inc/private/csc_math.h"',
+        '#include "inc/private/csc_utils.h"',
+        '#include "inc/private/algebra_vector.h"',
+        '#include "inc/private/algebra_matrix.h"',
+        '#include "inc/private/kkt.h"',
+        '#include "inc/private/qdldl.h"',
+        '#include "inc/private/qdldl_types.h"',
+        '#include "inc/private/qdldl_version.h"'
+    ]
+
+    # Get list of all .c files in the src/osqp directory
+    import glob
+    c_files = glob.glob(f'{mcu_dir}/src/osqp/*.c')
+    
+    # Fix include paths in each .c file
+    for c_file in c_files:
+        replace_in_file(c_file, old_includes, new_includes)
 
 # %% [markdown]
-# The necessary files were copied from `osqp_generated` to `osqp_teensy` for you. Now you can directly upload and run the generated program in `osqp_teensy`.
-
-
+# The necessary files were copied from `osqp_generated` to `osqp_teensy`
