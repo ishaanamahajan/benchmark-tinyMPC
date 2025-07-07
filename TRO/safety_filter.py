@@ -12,7 +12,9 @@ import os
 import numpy as np
 import subprocess
 
-path_to_root = os.getcwd()
+# Determine the directory where this script resides so that all relative paths
+# are built correctly no matter from where the script is launched.
+path_to_root = os.path.dirname(os.path.abspath(__file__))
 print(path_to_root)
 
 # %%
@@ -31,7 +33,7 @@ tinympc_generic.load_lib(lib_dir)  # Load the library
 # ## Double Integrator System
 
 # %%
-NSTATES = 4  # may vary this
+NSTATES = 16  # may vary this
 NINPUTS = NSTATES//2
 NHORIZON = 10  # may vary this
 NTOTAL = 201
