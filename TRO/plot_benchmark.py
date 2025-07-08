@@ -34,6 +34,32 @@ def extract_states_from_filename(filename):
         return int(match.group(1))
     return None
 
+def parse_memory_data():
+    """Parse memory usage data from the provided text."""
+    # STM32 RAM limit in bytes (from the Arduino output: Maximum is 131072 bytes)
+    RAM_LIMIT = 131072  # 128KB
+    
+    # OSQP memory data (in bytes)
+    osqp_memory = {
+        2: 14508,
+        4: 23644,
+        8: 38572,
+        16: 71212,
+        # Overflow case - estimated total memory usage
+        32: RAM_LIMIT + 6960,   # overflowed by 6960 bytes
+    }
+    
+    # TinyMPC memory data (in bytes)
+    tinympc_memory = {
+        2: 6388,
+        4: 7652,
+        8: 10612,
+        16: 18228,
+        32: 39988,
+    }
+    
+    return tinympc_memory, osqp_memory, RAM_LIMIT
+
 def collect_benchmark_data(data_dir):
     """Collect and organize benchmark data from all files."""
     tinympc_data = {}
@@ -64,7 +90,10 @@ def collect_benchmark_data(data_dir):
     return tinympc_data, osqp_data
 
 def plot_comparison(tinympc_data, osqp_data):
-    """Create comparison plot of TinyMPC vs OSQP performance."""
+    """Create comparison plot of TinyMPC vs OSQP performance and memory usage."""
+    # Get memory data
+    tinympc_memory, osqp_memory, RAM_LIMIT = parse_memory_data()
+    
     # Get all state sizes from both datasets
     all_tinympc_states = sorted(tinympc_data.keys())
     all_osqp_states = sorted(osqp_data.keys())
@@ -78,28 +107,61 @@ def plot_comparison(tinympc_data, osqp_data):
     tinympc_times = [tinympc_data[n] for n in all_tinympc_states]
     osqp_times = [osqp_data[n] for n in all_osqp_states]
     
-    # Create the plot
-    plt.figure(figsize=(10, 6))
+    # Create subplots
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(15, 6))
     
-    # Plot both datasets
+    # Plot 1: Time comparison
     if tinympc_data:
-        plt.plot(all_tinympc_states, tinympc_times, 'o-', label='TinyMPC', linewidth=2, markersize=8)
+        ax1.plot(all_tinympc_states, tinympc_times, 'o-', label='TinyMPC', linewidth=2, markersize=8)
     if osqp_data:
-        plt.plot(all_osqp_states, osqp_times, 's-', label='OSQP', linewidth=2, markersize=8)
+        ax1.plot(all_osqp_states, osqp_times, 's-', label='OSQP', linewidth=2, markersize=8)
     
-    # Customize the plot
-    plt.xlabel('Number of States', fontsize=12)
-    plt.ylabel('Average Iteration Time (μs)', fontsize=12)
-    plt.title('TinyMPC vs OSQP Performance Comparison', fontsize=14)
-    plt.legend(fontsize=12)
-    plt.grid(True, alpha=0.3)
+    ax1.set_xlabel('Number of States', fontsize=12)
+    ax1.set_ylabel('Average Iteration Time (μs)', fontsize=12)
+    ax1.set_title('Performance Comparison by Number of States', fontsize=14)
+    ax1.legend(fontsize=12)
+    ax1.grid(True, alpha=0.3)
+    ax1.set_yscale('log')
     
     # Set x-axis to show all state values
     all_states = sorted(set(all_tinympc_states + all_osqp_states))
-    plt.xticks(all_states)
+    ax1.set_xticks(all_states)
     
-    # Use log scale for y-axis
-    plt.yscale('log')
+    # Plot 2: Memory comparison
+    tinympc_mem_states = sorted(tinympc_memory.keys())
+    osqp_mem_states = sorted(osqp_memory.keys())
+    
+    # Separate OSQP data into successful compilations and overflows
+    osqp_successful_states = [s for s in osqp_mem_states if osqp_memory[s] <= RAM_LIMIT]
+    osqp_overflow_states = [s for s in osqp_mem_states if osqp_memory[s] > RAM_LIMIT]
+    
+    tinympc_mem_values = [tinympc_memory[s] / 1024 for s in tinympc_mem_states]  # Convert to KB
+    osqp_successful_values = [osqp_memory[s] / 1024 for s in osqp_successful_states]
+    osqp_overflow_values = [osqp_memory[s] / 1024 for s in osqp_overflow_states]
+    
+    # Plot TinyMPC
+    ax2.plot(tinympc_mem_states, tinympc_mem_values, 'o-', label='TinyMPC', linewidth=2, markersize=8, color='blue')
+    
+    # Plot OSQP successful compilations
+    if osqp_successful_states:
+        ax2.plot(osqp_successful_states, osqp_successful_values, 's-', label='OSQP (Compiled)', linewidth=2, markersize=8, color='green')
+    
+    # Plot OSQP overflow cases
+    if osqp_overflow_states:
+        ax2.plot(osqp_overflow_states, osqp_overflow_values, 'X-', label='OSQP (Overflow)', linewidth=2, markersize=10, color='red')
+    
+    # Add horizontal line for RAM limit
+    ax2.axhline(y=RAM_LIMIT / 1024, color='red', linestyle='--', linewidth=2, alpha=0.7, label='STM32 RAM Limit (128KB)')
+    
+    ax2.set_xlabel('Number of States', fontsize=12)
+    ax2.set_ylabel('Global Variable Memory (KB)', fontsize=12)
+    ax2.set_title('Memory Usage Comparison by Number of States', fontsize=14)
+    ax2.legend(fontsize=10)
+    ax2.grid(True, alpha=0.3)
+    
+    # Set x-axis to show all state values for memory plot
+    all_mem_states = sorted(set(tinympc_mem_states + osqp_mem_states))
+    ax2.set_xticks(all_mem_states)
     
     plt.tight_layout()
     
@@ -107,15 +169,41 @@ def plot_comparison(tinympc_data, osqp_data):
     plt.savefig('/home/ishaan/benchmark-tinyMPC/TRO/benchmark_comparison.png', dpi=300, bbox_inches='tight')
     plt.show()
     
-    # Print performance summary
-    print("\n" + "="*50)
-    print("PERFORMANCE SUMMARY")
-    print("="*50)
-    print(f"{'States':<8} {'TinyMPC (μs)':<12} {'OSQP (μs)':<12} {'Speedup':<10}")
-    print("-"*50)
+    # Print performance summary for compiled configurations
+    print("\n" + "="*80)
+    print("PERFORMANCE SUMMARY (Successfully Compiled Configurations)")
+    print("="*80)
+    print(f"{'States':<8} {'TinyMPC (μs)':<12} {'OSQP (μs)':<12} {'Speedup':<10} {'TinyMPC (KB)':<12} {'OSQP (KB)':<12}")
+    print("-"*80)
     for n in common_states:
-        speedup = osqp_times[common_states.index(n)] / tinympc_times[common_states.index(n)]
-        print(f"{n:<8} {tinympc_data[n]:<12.1f} {osqp_data[n]:<12.1f} {speedup:<10.2f}x")
+        if n in osqp_successful_states:  # Only show successfully compiled OSQP configs
+            speedup = osqp_data[n] / tinympc_data[n]
+            tinympc_mem_kb = tinympc_memory.get(n, 0) / 1024
+            osqp_mem_kb = osqp_memory.get(n, 0) / 1024
+            print(f"{n:<8} {tinympc_data[n]:<12.1f} {osqp_data[n]:<12.1f} {speedup:<10.2f}x {tinympc_mem_kb:<12.1f} {osqp_mem_kb:<12.1f}")
+    
+    # Print memory summary for all TinyMPC configurations
+    print("\nTinyMPC Memory Usage (All Configurations):")
+    print(f"{'States':<8} {'Memory (KB)':<12} {'Status':<15}")
+    print("-"*35)
+    for s in sorted(tinympc_memory.keys()):
+        mem_kb = tinympc_memory[s] / 1024
+        status = "✓ Compiled" if mem_kb <= RAM_LIMIT / 1024 else "✗ Would Overflow"
+        print(f"{s:<8} {mem_kb:<12.1f} {status:<15}")
+    
+    # Print OSQP overflow summary
+    print("\nOSQP Memory Overflow Summary:")
+    print(f"{'States':<8} {'Est. Memory (KB)':<15} {'Overflow (KB)':<12} {'Status':<15}")
+    print("-"*50)
+    for s in sorted(osqp_memory.keys()):
+        mem_kb = osqp_memory[s] / 1024
+        if s in osqp_overflow_states:
+            overflow_kb = mem_kb - (RAM_LIMIT / 1024)
+            status = "✗ Overflow"
+            print(f"{s:<8} {mem_kb:<15.1f} {overflow_kb:<12.1f} {status:<15}")
+        else:
+            status = "✓ Compiled"
+            print(f"{s:<8} {mem_kb:<15.1f} {'0.0':<12} {status:<15}")
 
 def main():
     """Main function to run the benchmark analysis."""
