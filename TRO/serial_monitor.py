@@ -7,14 +7,14 @@ import os
 # Configuration
 SERIAL_PORT = '/dev/ttyACM0'
 BAUD_RATE = 9600
-OUTPUT_FILE = 'data/benchmark_N16_I8_H10.txt'
+OUTPUT_FILE = 'data/horizon/benchmark_H4.txt'
 
 os.makedirs(os.path.dirname(OUTPUT_FILE), exist_ok=True)
 
 
 # Configuration header
 header = f"""# Safety Filter Benchmark Results
-# Configuration: NSTATES=16, NINPUTS=8, NHORIZON=10
+# Configuration: NSTATES=10, NHORIZON=8
 # Generated: {time.strftime('%Y-%m-%d %H:%M:%S')}
 # Hardware: Adafruit Feather STM32
 # 
