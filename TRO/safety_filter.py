@@ -33,7 +33,7 @@ tinympc_generic.load_lib(lib_dir)  # Load the library
 # ## Double Integrator System
 
 # %%
-NSTATES = 10  # may vary this
+NSTATES = 10 # may vary this
 NINPUTS = NSTATES//2
 NHORIZON = 4  # may vary this
 NTOTAL = 201
