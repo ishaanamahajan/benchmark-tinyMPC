@@ -165,7 +165,7 @@ def plot_comparison(tinympc_data, osqp_data):
     plt.tight_layout()
     
     # Save the plot
-    plt.savefig('/home/ishaan/benchmark-tinyMPC/TRO/benchmark_comparison_optimized.png', dpi=300, bbox_inches='tight')
+    #plt.savefig('/home/ishaan/benchmark-tinyMPC/TRO/benchmark_comparison_optimized.png', dpi=300, bbox_inches='tight')
     plt.show()
     
     # Print performance summary for compiled configurations
@@ -204,9 +204,27 @@ def plot_comparison(tinympc_data, osqp_data):
             status = "✓ Compiled"
             print(f"{s:<8} {mem_kb:<15.1f} {'0.0':<12} {status:<15}")
 
+    # Calculate and display key aggregate metrics
+    # ------------------------------------------------------------------
+    # Maximum iteration speed-up (OSQP time / TinyMPC time) where OSQP compiled successfully
+    speedup_values = [(n, osqp_data[n] / tinympc_data[n])
+                      for n in common_states if n in osqp_successful_states]
+    if speedup_values:
+        max_speed_state, max_speedup = max(speedup_values, key=lambda x: x[1])
+        print(f"\nMaximum iteration speed-up: TinyMPC is {max_speedup:.2f}× faster than OSQP (N={max_speed_state} states).")
+
+    # Maximum memory usage ratio (OSQP RAM / TinyMPC RAM)
+    memory_ratios = [(n, osqp_memory[n] / tinympc_memory[n])
+                     for n in tinympc_memory if n in osqp_memory]
+    if memory_ratios:
+        max_mem_state, max_mem_ratio = max(memory_ratios, key=lambda x: x[1])
+        print(f"Maximum RAM usage ratio: OSQP uses {max_mem_ratio:.2f}× more global RAM than TinyMPC (N={max_mem_state} states).")
+    print("-"*80)
+
 def main():
     """Main function to run the benchmark analysis."""
-    data_dir = '/home/ishaan/benchmark-tinyMPC/TRO/data_optimized/states'
+    #data_dir = '/home/ishaan/benchmark-tinyMPC/TRO/data_optimized/states'
+    data_dir = 'data_optimized/states'
     
     print("Collecting optimized benchmark data...")
     tinympc_data, osqp_data = collect_benchmark_data(data_dir)
