@@ -114,6 +114,7 @@ def collect_states_benchmark_data(data_dir):
                     'mean': avg_time,
                     'min': min_time,
                     'max': max_time,
+                    'std': np.std(times_array),
                     'samples': len(times)
                 }
                 print(f"States TinyMPC N={states}: {len(times)} samples, avg={avg_time:.1f}μs")
@@ -132,6 +133,7 @@ def collect_states_benchmark_data(data_dir):
                     'mean': avg_time,
                     'min': min_time,
                     'max': max_time,
+                    'std': np.std(times_array),
                     'samples': len(times)
                 }
                 print(f"States OSQP N={states}: {len(times)} samples, avg={avg_time:.1f}μs")
@@ -159,6 +161,7 @@ def collect_horizon_benchmark_data(data_dir):
                     'mean': avg_time,
                     'min': min_time,
                     'max': max_time,
+                    'std': np.std(times_array),
                     'samples': len(times)
                 }
                 print(f"Horizon TinyMPC H={horizon}: {len(times)} samples, avg={avg_time:.1f}μs")
@@ -177,6 +180,7 @@ def collect_horizon_benchmark_data(data_dir):
                     'mean': avg_time,
                     'min': min_time,
                     'max': max_time,
+                    'std': np.std(times_array),
                     'samples': len(times)
                 }
                 print(f"Horizon OSQP H={horizon}: {len(times)} samples, avg={avg_time:.1f}μs")
@@ -220,14 +224,22 @@ def plot_benchmark_comparison_lines(states_data, horizon_data):
     # Top left: States Time (mean values only)
     states_timing_x = sorted(states_tinympc_timing.keys())
     states_tinympc_timing_y = [states_tinympc_timing[s]['mean'] for s in states_timing_x]
-    
+    states_tinympc_timing_std = [states_tinympc_timing[s]['std'] for s in states_timing_x]
+
     states_osqp_timing_x = sorted(states_osqp_timing.keys())
     states_osqp_timing_y = [states_osqp_timing[s]['mean'] for s in states_osqp_timing_x]
+    states_osqp_timing_std = [states_osqp_timing[s]['std'] for s in states_osqp_timing_x]
     
-    ax1.scatter(states_timing_x, states_tinympc_timing_y, marker='D', 
-               color=TINYMPC_COLOR, s=100, label='TinyMPC', edgecolors='black', linewidth=0.5)
-    ax1.scatter(states_osqp_timing_x, states_osqp_timing_y, marker='o',
-               color=OSQP_COLOR, s=100, label='OSQP', edgecolors='black', linewidth=0.5)
+    ax1.errorbar(
+        states_timing_x, states_tinympc_timing_y, yerr=states_tinympc_timing_std,
+        fmt='D', color=TINYMPC_COLOR, markersize=10, label='TinyMPC',
+        capsize=5, elinewidth=2, linewidth=0, markeredgecolor='black'
+    )
+    ax1.errorbar(
+        states_osqp_timing_x, states_osqp_timing_y, yerr=states_osqp_timing_std,
+        fmt='o', color=OSQP_COLOR, markersize=10, label='OSQP',
+        capsize=5, elinewidth=2, linewidth=0, markeredgecolor='black'
+    )
     
     ax1.set_xlabel('State dimension (n)')
     ax1.set_ylabel('Time per Iteration (μs)')
@@ -238,14 +250,22 @@ def plot_benchmark_comparison_lines(states_data, horizon_data):
     # Top right: Horizon Time (mean values only)
     horizon_timing_x = sorted(horizon_tinympc_timing.keys())
     horizon_tinympc_timing_y = [horizon_tinympc_timing[h]['mean'] for h in horizon_timing_x]
-    
+    horizon_tinympc_timing_std = [horizon_tinympc_timing[h]['std'] for h in horizon_timing_x]
+
     horizon_osqp_timing_x = sorted(horizon_osqp_timing.keys())
     horizon_osqp_timing_y = [horizon_osqp_timing[h]['mean'] for h in horizon_osqp_timing_x]
+    horizon_osqp_timing_std = [horizon_osqp_timing[h]['std'] for h in horizon_osqp_timing_x]
     
-    ax2.scatter(horizon_timing_x, horizon_tinympc_timing_y, marker='D',
-               color=TINYMPC_COLOR, s=100, label='TinyMPC', edgecolors='black', linewidth=0.5)
-    ax2.scatter(horizon_osqp_timing_x, horizon_osqp_timing_y, marker='o',
-               color=OSQP_COLOR, s=100, label='OSQP', edgecolors='black', linewidth=0.5)
+    ax2.errorbar(
+        horizon_timing_x, horizon_tinympc_timing_y, yerr=horizon_tinympc_timing_std,
+        fmt='D', color=TINYMPC_COLOR, markersize=10, label='TinyMPC',
+        capsize=5, elinewidth=2, linewidth=0, markeredgecolor='black'
+    )
+    ax2.errorbar(
+        horizon_osqp_timing_x, horizon_osqp_timing_y, yerr=horizon_osqp_timing_std,
+        fmt='o', color=OSQP_COLOR, markersize=10, label='OSQP',
+        capsize=5, elinewidth=2, linewidth=0, markeredgecolor='black'
+    )
     
     ax2.set_xlabel('Time horizon (N)')
     ax2.set_ylabel('Time per Iteration (μs)')
@@ -354,14 +374,22 @@ def plot_benchmark_comparison_bars(states_data, horizon_data):
     # Top left: States Time (mean values only)
     states_timing_x = sorted(states_tinympc_timing.keys())
     states_tinympc_timing_y = [states_tinympc_timing[s]['mean'] for s in states_timing_x]
-    
+    states_tinympc_timing_std = [states_tinympc_timing[s]['std'] for s in states_timing_x]
+
     states_osqp_timing_x = sorted(states_osqp_timing.keys())
     states_osqp_timing_y = [states_osqp_timing[s]['mean'] for s in states_osqp_timing_x]
+    states_osqp_timing_std = [states_osqp_timing[s]['std'] for s in states_osqp_timing_x]
     
-    ax1.scatter(states_timing_x, states_tinympc_timing_y, marker='D', 
-               color=TINYMPC_COLOR, s=100, label='TinyMPC', edgecolors='black', linewidth=0.5)
-    ax1.scatter(states_osqp_timing_x, states_osqp_timing_y, marker='o',
-               color=OSQP_COLOR, s=100, label='OSQP', edgecolors='black', linewidth=0.5)
+    ax1.errorbar(
+        states_timing_x, states_tinympc_timing_y, yerr=states_tinympc_timing_std,
+        fmt='D', color=TINYMPC_COLOR, markersize=10, label='TinyMPC',
+        capsize=5, elinewidth=2, linewidth=0, markeredgecolor='black'
+    )
+    ax1.errorbar(
+        states_osqp_timing_x, states_osqp_timing_y, yerr=states_osqp_timing_std,
+        fmt='o', color=OSQP_COLOR, markersize=10, label='OSQP',
+        capsize=5, elinewidth=2, linewidth=0, markeredgecolor='black'
+    )
     
     ax1.set_xlabel('State dimension (n)')
     ax1.set_ylabel('Time per Iteration (μs)')
@@ -372,14 +400,22 @@ def plot_benchmark_comparison_bars(states_data, horizon_data):
     # Top right: Horizon Time (mean values only)
     horizon_timing_x = sorted(horizon_tinympc_timing.keys())
     horizon_tinympc_timing_y = [horizon_tinympc_timing[h]['mean'] for h in horizon_timing_x]
-    
+    horizon_tinympc_timing_std = [horizon_tinympc_timing[h]['std'] for h in horizon_timing_x]
+
     horizon_osqp_timing_x = sorted(horizon_osqp_timing.keys())
     horizon_osqp_timing_y = [horizon_osqp_timing[h]['mean'] for h in horizon_osqp_timing_x]
+    horizon_osqp_timing_std = [horizon_osqp_timing[h]['std'] for h in horizon_osqp_timing_x]
     
-    ax2.scatter(horizon_timing_x, horizon_tinympc_timing_y, marker='D',
-               color=TINYMPC_COLOR, s=100, label='TinyMPC', edgecolors='black', linewidth=0.5)
-    ax2.scatter(horizon_osqp_timing_x, horizon_osqp_timing_y, marker='o',
-               color=OSQP_COLOR, s=100, label='OSQP', edgecolors='black', linewidth=0.5)
+    ax2.errorbar(
+        horizon_timing_x, horizon_tinympc_timing_y, yerr=horizon_tinympc_timing_std,
+        fmt='D', color=TINYMPC_COLOR, markersize=10, label='TinyMPC',
+        capsize=5, elinewidth=2, linewidth=0, markeredgecolor='black'
+    )
+    ax2.errorbar(
+        horizon_osqp_timing_x, horizon_osqp_timing_y, yerr=horizon_osqp_timing_std,
+        fmt='o', color=OSQP_COLOR, markersize=10, label='OSQP',
+        capsize=5, elinewidth=2, linewidth=0, markeredgecolor='black'
+    )
     
     ax2.set_xlabel('Time horizon (N)')
     ax2.set_ylabel('Time per Iteration (μs)')
