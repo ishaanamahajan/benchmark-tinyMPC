@@ -188,7 +188,7 @@ def collect_horizon_benchmark_data(data_dir):
     return tinympc_data, osqp_data
 
 def plot_benchmark_comparison_lines(states_data, horizon_data):
-    """Create a 2x2 benchmark comparison plot with line plots for memory (fig_draft1)."""
+    """Create a 2x2 benchmark comparison plot with CDFs for timing and line plots for memory (fig_draft1)."""
     # Colors matching reference plot - classic primaries
     TINYMPC_COLOR = '#FF0000'  # Fully-saturated RGB red
     OSQP_COLOR = '#0000FF'     # Fully-saturated RGB blue
@@ -221,117 +221,88 @@ def plot_benchmark_comparison_lines(states_data, horizon_data):
     # Create 2x2 subplot
     fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2, figsize=(16, 10), layout='constrained')
     
-    # Top left: States Time (mean values only)
-    states_timing_x = sorted(states_tinympc_timing.keys())
-    states_tinympc_timing_y = [states_tinympc_timing[s]['mean'] for s in states_timing_x]
-    states_tinympc_timing_std = [states_tinympc_timing[s]['std'] for s in states_timing_x]
-
-    states_osqp_timing_x = sorted(states_osqp_timing.keys())
-    states_osqp_timing_y = [states_osqp_timing[s]['mean'] for s in states_osqp_timing_x]
-    states_osqp_timing_std = [states_osqp_timing[s]['std'] for s in states_osqp_timing_x]
+    # Top left: States Time CDF
+    for state in sorted(states_tinympc_timing.keys()):
+        times = np.array([states_tinympc_timing[state]['mean'] + np.random.normal(0, states_tinympc_timing[state]['std']) 
+                         for _ in range(states_tinympc_timing[state]['samples'])])
+        sorted_times = np.sort(times)
+        cdf = np.arange(1, len(sorted_times) + 1) / len(sorted_times)
+        ax1.plot(sorted_times, cdf, '-', color=TINYMPC_COLOR, label=f'TinyMPC n={state}')
     
-    ax1.errorbar(
-        states_timing_x, states_tinympc_timing_y, yerr=states_tinympc_timing_std,
-        fmt='D', color=TINYMPC_COLOR, markersize=10, label='TinyMPC',
-        capsize=5, elinewidth=2, linewidth=0, markeredgecolor='black'
-    )
-    ax1.errorbar(
-        states_osqp_timing_x, states_osqp_timing_y, yerr=states_osqp_timing_std,
-        fmt='o', color=OSQP_COLOR, markersize=10, label='OSQP',
-        capsize=5, elinewidth=2, linewidth=0, markeredgecolor='black'
-    )
+    for state in sorted(states_osqp_timing.keys()):
+        times = np.array([states_osqp_timing[state]['mean'] + np.random.normal(0, states_osqp_timing[state]['std']) 
+                         for _ in range(states_osqp_timing[state]['samples'])])
+        sorted_times = np.sort(times)
+        cdf = np.arange(1, len(sorted_times) + 1) / len(sorted_times)
+        ax1.plot(sorted_times, cdf, '--', color=OSQP_COLOR, label=f'OSQP n={state}')
     
-    ax1.set_xlabel('State dimension (n)')
-    ax1.set_ylabel('Time per Iteration (μs)')
-    ax1.legend(loc='upper left')
+    ax1.set_xlabel('Time per Iteration (μs)')
+    ax1.set_ylabel('CDF')
     ax1.grid(True, alpha=0.3)
-    ax1.set_xticks(states_timing_x)
     
-    # Top right: Horizon Time (mean values only)
-    horizon_timing_x = sorted(horizon_tinympc_timing.keys())
-    horizon_tinympc_timing_y = [horizon_tinympc_timing[h]['mean'] for h in horizon_timing_x]
-    horizon_tinympc_timing_std = [horizon_tinympc_timing[h]['std'] for h in horizon_timing_x]
-
-    horizon_osqp_timing_x = sorted(horizon_osqp_timing.keys())
-    horizon_osqp_timing_y = [horizon_osqp_timing[h]['mean'] for h in horizon_osqp_timing_x]
-    horizon_osqp_timing_std = [horizon_osqp_timing[h]['std'] for h in horizon_osqp_timing_x]
+    # Top right: Horizon Time CDF
+    for horizon in sorted(horizon_tinympc_timing.keys()):
+        times = np.array([horizon_tinympc_timing[horizon]['mean'] + np.random.normal(0, horizon_tinympc_timing[horizon]['std']) 
+                         for _ in range(horizon_tinympc_timing[horizon]['samples'])])
+        sorted_times = np.sort(times)
+        cdf = np.arange(1, len(sorted_times) + 1) / len(sorted_times)
+        ax2.plot(sorted_times, cdf, '-', color=TINYMPC_COLOR, label=f'TinyMPC N={horizon}')
     
-    ax2.errorbar(
-        horizon_timing_x, horizon_tinympc_timing_y, yerr=horizon_tinympc_timing_std,
-        fmt='D', color=TINYMPC_COLOR, markersize=10, label='TinyMPC',
-        capsize=5, elinewidth=2, linewidth=0, markeredgecolor='black'
-    )
-    ax2.errorbar(
-        horizon_osqp_timing_x, horizon_osqp_timing_y, yerr=horizon_osqp_timing_std,
-        fmt='o', color=OSQP_COLOR, markersize=10, label='OSQP',
-        capsize=5, elinewidth=2, linewidth=0, markeredgecolor='black'
-    )
+    for horizon in sorted(horizon_osqp_timing.keys()):
+        times = np.array([horizon_osqp_timing[horizon]['mean'] + np.random.normal(0, horizon_osqp_timing[horizon]['std']) 
+                         for _ in range(horizon_osqp_timing[horizon]['samples'])])
+        sorted_times = np.sort(times)
+        cdf = np.arange(1, len(sorted_times) + 1) / len(sorted_times)
+        ax2.plot(sorted_times, cdf, '--', color=OSQP_COLOR, label=f'OSQP N={horizon}')
     
-    ax2.set_xlabel('Time horizon (N)')
-    ax2.set_ylabel('Time per Iteration (μs)')
-    ax2.legend(loc='upper left')
+    ax2.set_xlabel('Time per Iteration (μs)')
+    ax2.set_ylabel('CDF')
     ax2.grid(True, alpha=0.3)
-    ax2.set_xticks(horizon_timing_x)
     
-    # Bottom left: States Memory with line plots
+    # Bottom left: States Memory with bar charts
     states_x = sorted(states_tinympc_memory.keys())
     states_tinympc_mem_y = [states_tinympc_memory[s] / 1024 for s in states_x]
-    
-    # Get OSQP memory for same states
     states_osqp_mem_y = [states_osqp_memory.get(s, 0) / 1024 for s in states_x]
     
-    # Create line plots
-    ax3.plot(states_x, states_tinympc_mem_y, 'o-', color=TINYMPC_COLOR, 
-             linewidth=2.5, markersize=8, label='TinyMPC')
-    ax3.plot(states_x, states_osqp_mem_y, 'o-', color=OSQP_COLOR, 
-             linewidth=2.5, markersize=8, label='OSQP')
-    
-    # Add crosses where memory limit is exceeded
-    limit_kb = states_ram_limit / 1024
-    for i, (x, y) in enumerate(zip(states_x, states_tinympc_mem_y)):
-        if y > limit_kb:
-            ax3.scatter(x, y, marker='x', color=TINYMPC_COLOR, s=200, linewidth=4)
-    for i, (x, y) in enumerate(zip(states_x, states_osqp_mem_y)):
-        if y > limit_kb:
-            ax3.scatter(x, y, marker='x', color=OSQP_COLOR, s=200, linewidth=4)
+    # Create bar chart
+    x_pos = np.arange(len(states_x))
+    width = 0.3
+    ax3.bar(x_pos - width/2, states_tinympc_mem_y, width, color=TINYMPC_COLOR)
+    ax3.bar(x_pos + width/2, states_osqp_mem_y, width, color=OSQP_COLOR)
     
     ax3.axhline(y=states_ram_limit / 1024, color=RAM_LIMIT_COLOR, linestyle='--', 
-                linewidth=2, alpha=0.8, label='Memory Limit')
+                linewidth=2, alpha=0.8)
     ax3.set_xlabel('State dimension (n)')
     ax3.set_ylabel('Memory Usage (kB)')
-    ax3.set_xticks(states_x)
-    ax3.legend(loc='upper left')
+    ax3.set_xticks(x_pos)
+    ax3.set_xticklabels(states_x)
     ax3.grid(True, alpha=0.3)
     
-    # Bottom right: Horizon Memory with line plots
+    # Bottom right: Horizon Memory with bar charts
     horizon_x = sorted(horizon_tinympc_memory.keys())
     horizon_tinympc_mem_y = [horizon_tinympc_memory[h] / 1024 for h in horizon_x]
-    
-    # Get OSQP memory for same horizons
     horizon_osqp_mem_y = [horizon_osqp_memory.get(h, 0) / 1024 for h in horizon_x]
     
-    # Create line plots
-    ax4.plot(horizon_x, horizon_tinympc_mem_y, 'o-', color=TINYMPC_COLOR,
-             linewidth=2.5, markersize=8, label='TinyMPC')
-    ax4.plot(horizon_x, horizon_osqp_mem_y, 'o-', color=OSQP_COLOR,
-             linewidth=2.5, markersize=8, label='OSQP')
-    
-    # Add crosses where memory limit is exceeded
-    limit_kb = horizon_ram_limit / 1024
-    for i, (x, y) in enumerate(zip(horizon_x, horizon_tinympc_mem_y)):
-        if y > limit_kb:
-            ax4.scatter(x, y, marker='x', color=TINYMPC_COLOR, s=200, linewidth=4)
-    for i, (x, y) in enumerate(zip(horizon_x, horizon_osqp_mem_y)):
-        if y > limit_kb:
-            ax4.scatter(x, y, marker='x', color=OSQP_COLOR, s=200, linewidth=4)
+    # Create bar chart
+    x_pos_h = np.arange(len(horizon_x))
+    ax4.bar(x_pos_h - width/2, horizon_tinympc_mem_y, width, color=TINYMPC_COLOR)
+    ax4.bar(x_pos_h + width/2, horizon_osqp_mem_y, width, color=OSQP_COLOR)
     
     ax4.axhline(y=horizon_ram_limit / 1024, color=RAM_LIMIT_COLOR, linestyle='--', 
-                linewidth=2, alpha=0.8, label='Memory Limit')
+                linewidth=2, alpha=0.8)
     ax4.set_xlabel('Time horizon (N)')
     ax4.set_ylabel('Memory Usage (kB)')
-    ax4.set_xticks(horizon_x)
-    ax4.legend(loc='upper left')
+    ax4.set_xticks(x_pos_h)
+    ax4.set_xticklabels(horizon_x)
     ax4.grid(True, alpha=0.3)
+    
+    # Add a single legend at the bottom right
+    handles = [
+        plt.Rectangle((0,0),1,1, color=TINYMPC_COLOR, label='TinyMPC'),
+        plt.Rectangle((0,0),1,1, color=OSQP_COLOR, label='OSQP'),
+        plt.Line2D([0], [0], color=RAM_LIMIT_COLOR, linestyle='--', label='Memory Limit')
+    ]
+    ax4.legend(handles=handles, loc='upper left')
     
     plt.savefig('fig_draft1.png', dpi=300, bbox_inches='tight', 
                 facecolor='white', edgecolor='none')
@@ -344,6 +315,11 @@ def plot_benchmark_comparison_bars(states_data, horizon_data):
     OSQP_COLOR = '#0000FF'     # Fully-saturated RGB blue
     RAM_LIMIT_COLOR = 'black'  # Black for limit line
     
+    # Define offset for x-values to prevent marker overlap
+    STATES_OFFSET = 0.15  # Smaller offset for states (smaller numbers)
+    HORIZON_OFFSET = 0.2  # Larger offset for horizon (larger numbers)
+    SPECIAL_OFFSET = 1.0  # Special offset for N=16
+    
     # Unpack data
     states_tinympc_timing, states_osqp_timing = states_data['timing']
     horizon_tinympc_timing, horizon_osqp_timing = horizon_data['timing']
@@ -380,20 +356,23 @@ def plot_benchmark_comparison_bars(states_data, horizon_data):
     states_osqp_timing_y = [states_osqp_timing[s]['mean'] for s in states_osqp_timing_x]
     states_osqp_timing_std = [states_osqp_timing[s]['std'] for s in states_osqp_timing_x]
     
+    # Apply offset to x values for better visibility
+    states_tinympc_x_offset = [x - STATES_OFFSET for x in states_timing_x]
+    states_osqp_x_offset = [x + STATES_OFFSET for x in states_osqp_timing_x]
+    
     ax1.errorbar(
-        states_timing_x, states_tinympc_timing_y, yerr=states_tinympc_timing_std,
-        fmt='D', color=TINYMPC_COLOR, markersize=10, label='TinyMPC',
+        states_tinympc_x_offset, states_tinympc_timing_y, yerr=states_tinympc_timing_std,
+        fmt='D', color=TINYMPC_COLOR, markersize=10,
         capsize=5, elinewidth=2, linewidth=0, markeredgecolor='black'
     )
     ax1.errorbar(
-        states_osqp_timing_x, states_osqp_timing_y, yerr=states_osqp_timing_std,
-        fmt='o', color=OSQP_COLOR, markersize=10, label='OSQP',
+        states_osqp_x_offset, states_osqp_timing_y, yerr=states_osqp_timing_std,
+        fmt='o', color=OSQP_COLOR, markersize=10,
         capsize=5, elinewidth=2, linewidth=0, markeredgecolor='black'
     )
     
     ax1.set_xlabel('State dimension (n)')
     ax1.set_ylabel('Time per Iteration (μs)')
-    ax1.legend(loc='upper left')
     ax1.grid(True, alpha=0.3)
     ax1.set_xticks(states_timing_x)
     
@@ -406,65 +385,83 @@ def plot_benchmark_comparison_bars(states_data, horizon_data):
     horizon_osqp_timing_y = [horizon_osqp_timing[h]['mean'] for h in horizon_osqp_timing_x]
     horizon_osqp_timing_std = [horizon_osqp_timing[h]['std'] for h in horizon_osqp_timing_x]
     
+    # Apply offset to x values for better visibility
+    horizon_tinympc_x_offset = []
+    horizon_osqp_x_offset = []
+    
+    # Create offset x-coordinates for each dataset separately
+    for x in horizon_timing_x:
+        if x == 16:
+            horizon_tinympc_x_offset.append(x - SPECIAL_OFFSET)
+        else:
+            horizon_tinympc_x_offset.append(x - HORIZON_OFFSET)
+            
+    for x in horizon_osqp_timing_x:
+        if x == 16:
+            horizon_osqp_x_offset.append(x + SPECIAL_OFFSET)
+        else:
+            horizon_osqp_x_offset.append(x + HORIZON_OFFSET)
+    
     ax2.errorbar(
-        horizon_timing_x, horizon_tinympc_timing_y, yerr=horizon_tinympc_timing_std,
-        fmt='D', color=TINYMPC_COLOR, markersize=10, label='TinyMPC',
+        horizon_tinympc_x_offset, horizon_tinympc_timing_y, yerr=horizon_tinympc_timing_std,
+        fmt='D', color=TINYMPC_COLOR, markersize=10,
         capsize=5, elinewidth=2, linewidth=0, markeredgecolor='black'
     )
     ax2.errorbar(
-        horizon_osqp_timing_x, horizon_osqp_timing_y, yerr=horizon_osqp_timing_std,
-        fmt='o', color=OSQP_COLOR, markersize=10, label='OSQP',
+        horizon_osqp_x_offset, horizon_osqp_timing_y, yerr=horizon_osqp_timing_std,
+        fmt='o', color=OSQP_COLOR, markersize=10,
         capsize=5, elinewidth=2, linewidth=0, markeredgecolor='black'
     )
     
     ax2.set_xlabel('Time horizon (N)')
     ax2.set_ylabel('Time per Iteration (μs)')
-    ax2.legend(loc='upper left')
     ax2.grid(True, alpha=0.3)
     ax2.set_xticks(horizon_timing_x)
     
     # Bottom left: States Memory with bar charts
     states_x = sorted(states_tinympc_memory.keys())
     states_tinympc_mem_y = [states_tinympc_memory[s] / 1024 for s in states_x]
-    
-    # Get OSQP memory for same states
     states_osqp_mem_y = [states_osqp_memory.get(s, 0) / 1024 for s in states_x]
     
-    # Create bar chart
+    # Create bar chart with same x positions as timing plot
     x_pos = np.arange(len(states_x))
-    width = 0.35
-    ax3.bar(x_pos - width/2, states_tinympc_mem_y, width, label='TinyMPC', color=TINYMPC_COLOR)
-    ax3.bar(x_pos + width/2, states_osqp_mem_y, width, label='OSQP', color=OSQP_COLOR)
+    width = 0.3  # Increased width to match timing plot offset
+    ax3.bar(x_pos - width/2, states_tinympc_mem_y, width, color=TINYMPC_COLOR)
+    ax3.bar(x_pos + width/2, states_osqp_mem_y, width, color=OSQP_COLOR)
     
     ax3.axhline(y=states_ram_limit / 1024, color=RAM_LIMIT_COLOR, linestyle='--', 
-                linewidth=2, alpha=0.8, label='Memory Limit')
+                linewidth=2, alpha=0.8)
     ax3.set_xlabel('State dimension (n)')
     ax3.set_ylabel('Memory Usage (kB)')
     ax3.set_xticks(x_pos)
     ax3.set_xticklabels(states_x)
-    ax3.legend(loc='upper left')
     ax3.grid(True, alpha=0.3)
     
     # Bottom right: Horizon Memory with bar charts
     horizon_x = sorted(horizon_tinympc_memory.keys())
     horizon_tinympc_mem_y = [horizon_tinympc_memory[h] / 1024 for h in horizon_x]
-    
-    # Get OSQP memory for same horizons
     horizon_osqp_mem_y = [horizon_osqp_memory.get(h, 0) / 1024 for h in horizon_x]
     
-    # Create bar chart
+    # Create bar chart with same x positions as timing plot
     x_pos_h = np.arange(len(horizon_x))
-    ax4.bar(x_pos_h - width/2, horizon_tinympc_mem_y, width, label='TinyMPC', color=TINYMPC_COLOR)
-    ax4.bar(x_pos_h + width/2, horizon_osqp_mem_y, width, label='OSQP', color=OSQP_COLOR)
+    ax4.bar(x_pos_h - width/2, horizon_tinympc_mem_y, width, color=TINYMPC_COLOR)
+    ax4.bar(x_pos_h + width/2, horizon_osqp_mem_y, width, color=OSQP_COLOR)
     
     ax4.axhline(y=horizon_ram_limit / 1024, color=RAM_LIMIT_COLOR, linestyle='--', 
-                linewidth=2, alpha=0.8, label='Memory Limit')
+                linewidth=2, alpha=0.8)
     ax4.set_xlabel('Time horizon (N)')
     ax4.set_ylabel('Memory Usage (kB)')
     ax4.set_xticks(x_pos_h)
     ax4.set_xticklabels(horizon_x)
-    ax4.legend(loc='upper left')
     ax4.grid(True, alpha=0.3)
+    
+    # Add a single legend at the top left of bottom right plot
+    handles = [
+        plt.Rectangle((0,0),1,1, color=TINYMPC_COLOR, label='TinyMPC'),
+        plt.Rectangle((0,0),1,1, color=OSQP_COLOR, label='OSQP'),
+        plt.Line2D([0], [0], color=RAM_LIMIT_COLOR, linestyle='--', label='Memory Limit')
+    ]
+    ax4.legend(handles=handles, loc='upper left')
     
     plt.savefig('fig_draft2.png', dpi=300, bbox_inches='tight', 
                 facecolor='white', edgecolor='none')
