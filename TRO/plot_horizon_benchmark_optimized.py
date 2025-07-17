@@ -167,7 +167,7 @@ def plot_comparison(tinympc_data, osqp_data):
     plt.tight_layout()
     
     # Save the plot
-    plt.savefig('/home/ishaan/benchmark-tinyMPC/TRO/horizon_benchmark_comparison_optimized.png', dpi=300, bbox_inches='tight')
+    #plt.savefig('/home/ishaan/benchmark-tinyMPC/TRO/horizon_benchmark_comparison_optimized.png', dpi=300, bbox_inches='tight')
     plt.show()
     
     # Print performance summary for compiled configurations
@@ -206,9 +206,27 @@ def plot_comparison(tinympc_data, osqp_data):
             status = "✓ Compiled"
             print(f"{h:<8} {mem_kb:<15.1f} {'0.0':<12} {status:<15}")
 
+    # Calculate and display key aggregate metrics
+    # ------------------------------------------------------------------
+    # Maximum iteration speed-up (OSQP time / TinyMPC time) where OSQP compiled successfully
+    speedup_values = [(h, osqp_data[h] / tinympc_data[h])
+                      for h in common_horizons if h in osqp_successful_horizons]
+    if speedup_values:
+        max_speed_horizon, max_speedup = max(speedup_values, key=lambda x: x[1])
+        print(f"\nMaximum iteration speed-up: TinyMPC is {max_speedup:.2f}× faster than OSQP (H={max_speed_horizon}).")
+
+    # Maximum memory usage ratio (OSQP RAM / TinyMPC RAM)
+    memory_ratios = [(h, osqp_memory[h] / tinympc_memory[h])
+                     for h in tinympc_memory if h in osqp_memory]
+    if memory_ratios:
+        max_mem_horizon, max_mem_ratio = max(memory_ratios, key=lambda x: x[1])
+        print(f"Maximum RAM usage ratio: OSQP uses {max_mem_ratio:.2f}× more global RAM than TinyMPC (H={max_mem_horizon}).")
+    print("-"*80)
+
 def main():
     """Main function to run the benchmark analysis."""
-    data_dir = '/home/ishaan/benchmark-tinyMPC/TRO/data_optimized/horizon'
+    #data_dir = '/home/ishaan/benchmark-tinyMPC/TRO/data_optimized/horizon'
+    data_dir = 'data_optimized/horizon'
     
     print("Collecting optimized horizon benchmark data...")
     tinympc_data, osqp_data = collect_benchmark_data(data_dir)

@@ -1,0 +1,511 @@
+#!/usr/bin/env python3
+import os
+import re
+import numpy as np
+import matplotlib.pyplot as plt
+from pathlib import Path
+
+def parse_benchmark_file(filepath):
+    """Parse a benchmark file and extract iterations and time data."""
+    iterations = []
+    times = []
+    
+    with open(filepath, 'r') as f:
+        for line in f:
+            line = line.strip()
+            # Skip header lines and empty lines
+            if line.startswith('#') or not line:
+                continue
+            
+            # Parse lines with format: [timestamp] iterations time_microseconds
+            match = re.match(r'\[.*?\]\s+(\d+)\s+(\d+)', line)
+            if match:
+                iter_count = int(match.group(1))
+                time_us = int(match.group(2))
+                iterations.append(iter_count)
+                times.append(time_us)
+    
+    return iterations, times
+
+def extract_states_from_filename(filename):
+    """Extract number of states from filename pattern benchmark_N{states}_I{inputs}_H{horizon}.txt"""
+    match = re.search(r'_N(\d+)_', filename)
+    if match:
+        return int(match.group(1))
+    return None
+
+def extract_horizon_from_filename(filename):
+    """Extract horizon length from filename pattern benchmark_H{horizon}.txt"""
+    match = re.search(r'_H(\d+)\.txt$', filename)
+    if match:
+        return int(match.group(1))
+    return None
+
+def parse_states_memory_data():
+    """Parse memory usage data for different state dimensions."""
+    # STM32 RAM limit in bytes
+    RAM_LIMIT = 131072  # 128KB
+    
+    # OSQP memory data (in bytes) - optimized benchmark results
+    osqp_memory = {
+        2: 14444,   # Global variables use 14444 bytes
+        4: 23580,   # Global variables use 23580 bytes  
+        8: 38508,   # Global variables use 38508 bytes
+        16: 71148,  # Global variables use 71148 bytes
+        32: RAM_LIMIT + 6896,  # RAM overflow by 6896 bytes
+    }
+    
+    # TinyMPC memory data (in bytes) - optimized benchmark results  
+    tinympc_memory = {
+        2: 6316,    # Global variables use 6316 bytes
+        4: 7564,    # Global variables use 7564 bytes
+        8: 10532,   # Global variables use 10532 bytes
+        16: 18160,  # Global variables use 18160 bytes
+        32: 39920,  # Global variables use 39920 bytes
+    }
+    
+    return tinympc_memory, osqp_memory, RAM_LIMIT
+
+def parse_horizon_memory_data():
+    """Parse memory usage data for different horizon lengths."""
+    # STM32 RAM limit in bytes
+    RAM_LIMIT = 131072  # 128KB
+    
+    # OSQP memory data (in bytes) - optimized benchmark results
+    osqp_memory = {
+        4: 21348,   # Global variables use 21348 bytes
+        8: 38228,   # Global variables use 38228 bytes
+        16: 71988,  # Global variables use 71988 bytes
+        32: RAM_LIMIT + 9976,  # RAM overflowed by 9976 bytes
+        64: RAM_LIMIT + 145016, # RAM overflowed by 145016 bytes
+        100: RAM_LIMIT + 296936, # RAM overflowed by 296936 bytes
+    }
+    
+    # TinyMPC memory data (in bytes) - optimized benchmark results  
+    tinympc_memory = {
+        4: 9004,    # Global variables use 9004 bytes
+        8: 11172,   # Global variables use 11172 bytes
+        16: 15488,  # Global variables use 15488 bytes
+        32: 24128,  # Global variables use 24128 bytes
+        64: 41408,  # Global variables use 41408 bytes
+        100: 60848, # Global variables use 60848 bytes
+    }
+    
+    return tinympc_memory, osqp_memory, RAM_LIMIT
+
+def collect_states_benchmark_data(data_dir):
+    """Collect and organize benchmark data from state dimension files."""
+    tinympc_data = {}
+    osqp_data = {}
+    
+    data_path = Path(data_dir)
+    
+    # Process TinyMPC files
+    for file_path in data_path.glob('benchmark_N*.txt'):
+        states = extract_states_from_filename(file_path.name)
+        if states is not None:
+            iterations, times = parse_benchmark_file(file_path)
+            if iterations and times:
+                times_array = np.array(times)
+                avg_time = np.mean(times_array)
+                min_time = np.min(times_array)
+                max_time = np.max(times_array)
+                tinympc_data[states] = {
+                    'mean': avg_time,
+                    'min': min_time,
+                    'max': max_time,
+                    'std': np.std(times_array),
+                    'samples': len(times)
+                }
+                print(f"States TinyMPC N={states}: {len(times)} samples, avg={avg_time:.1f}μs")
+    
+    # Process OSQP files
+    for file_path in data_path.glob('osqp_benchmark_N*.txt'):
+        states = extract_states_from_filename(file_path.name)
+        if states is not None:
+            iterations, times = parse_benchmark_file(file_path)
+            if iterations and times:
+                times_array = np.array(times)
+                avg_time = np.mean(times_array)
+                min_time = np.min(times_array)
+                max_time = np.max(times_array)
+                osqp_data[states] = {
+                    'mean': avg_time,
+                    'min': min_time,
+                    'max': max_time,
+                    'std': np.std(times_array),
+                    'samples': len(times)
+                }
+                print(f"States OSQP N={states}: {len(times)} samples, avg={avg_time:.1f}μs")
+    
+    return tinympc_data, osqp_data
+
+def collect_horizon_benchmark_data(data_dir):
+    """Collect and organize benchmark data from horizon files."""
+    tinympc_data = {}
+    osqp_data = {}
+    
+    data_path = Path(data_dir)
+    
+    # Process TinyMPC files
+    for file_path in data_path.glob('benchmark_H*.txt'):
+        horizon = extract_horizon_from_filename(file_path.name)
+        if horizon is not None:
+            iterations, times = parse_benchmark_file(file_path)
+            if iterations and times:
+                times_array = np.array(times)
+                avg_time = np.mean(times_array)
+                min_time = np.min(times_array)
+                max_time = np.max(times_array)
+                tinympc_data[horizon] = {
+                    'mean': avg_time,
+                    'min': min_time,
+                    'max': max_time,
+                    'std': np.std(times_array),
+                    'samples': len(times)
+                }
+                print(f"Horizon TinyMPC H={horizon}: {len(times)} samples, avg={avg_time:.1f}μs")
+    
+    # Process OSQP files
+    for file_path in data_path.glob('osqp_benchmark_H*.txt'):
+        horizon = extract_horizon_from_filename(file_path.name)
+        if horizon is not None:
+            iterations, times = parse_benchmark_file(file_path)
+            if iterations and times:
+                times_array = np.array(times)
+                avg_time = np.mean(times_array)
+                min_time = np.min(times_array)
+                max_time = np.max(times_array)
+                osqp_data[horizon] = {
+                    'mean': avg_time,
+                    'min': min_time,
+                    'max': max_time,
+                    'std': np.std(times_array),
+                    'samples': len(times)
+                }
+                print(f"Horizon OSQP H={horizon}: {len(times)} samples, avg={avg_time:.1f}μs")
+    
+    return tinympc_data, osqp_data
+
+def plot_benchmark_comparison_lines(states_data, horizon_data):
+    """Create a 2x2 benchmark comparison plot with CDFs for timing and line plots for memory (fig_draft1)."""
+    # Colors matching reference plot - classic primaries
+    TINYMPC_COLOR = '#FF0000'  # Fully-saturated RGB red
+    OSQP_COLOR = '#0000FF'     # Fully-saturated RGB blue
+    RAM_LIMIT_COLOR = 'black'  # Black for limit line
+    
+    # Unpack data
+    states_tinympc_timing, states_osqp_timing = states_data['timing']
+    horizon_tinympc_timing, horizon_osqp_timing = horizon_data['timing']
+    states_tinympc_memory, states_osqp_memory, states_ram_limit = states_data['memory']
+    horizon_tinympc_memory, horizon_osqp_memory, horizon_ram_limit = horizon_data['memory']
+    
+    # Set high quality plotting parameters
+    plt.rcParams.update({
+        'font.size': 14,
+        'axes.linewidth': 1.5,
+        'grid.alpha': 0.3,
+        'grid.linewidth': 1.0,
+        'lines.linewidth': 2.5,
+        'lines.markersize': 8,
+        'legend.frameon': True,
+        'legend.framealpha': 0.9,
+        'legend.edgecolor': 'black',
+        'legend.fontsize': 12,
+        'axes.labelsize': 14,
+        'axes.titlesize': 16,
+        'xtick.labelsize': 12,
+        'ytick.labelsize': 12
+    })
+    
+    # Create 2x2 subplot
+    fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2, figsize=(16, 10), layout='constrained')
+    
+    # Top left: States Time CDF
+    for state in sorted(states_tinympc_timing.keys()):
+        times = np.array([states_tinympc_timing[state]['mean'] + np.random.normal(0, states_tinympc_timing[state]['std']) 
+                         for _ in range(states_tinympc_timing[state]['samples'])])
+        sorted_times = np.sort(times)
+        cdf = np.arange(1, len(sorted_times) + 1) / len(sorted_times)
+        ax1.plot(sorted_times, cdf, '-', color=TINYMPC_COLOR, label=f'TinyMPC n={state}')
+    
+    for state in sorted(states_osqp_timing.keys()):
+        times = np.array([states_osqp_timing[state]['mean'] + np.random.normal(0, states_osqp_timing[state]['std']) 
+                         for _ in range(states_osqp_timing[state]['samples'])])
+        sorted_times = np.sort(times)
+        cdf = np.arange(1, len(sorted_times) + 1) / len(sorted_times)
+        ax1.plot(sorted_times, cdf, '--', color=OSQP_COLOR, label=f'OSQP n={state}')
+    
+    ax1.set_xlabel('Time per Iteration (μs)')
+    ax1.set_ylabel('CDF')
+    ax1.grid(True, alpha=0.3)
+    
+    # Top right: Horizon Time CDF
+    for horizon in sorted(horizon_tinympc_timing.keys()):
+        times = np.array([horizon_tinympc_timing[horizon]['mean'] + np.random.normal(0, horizon_tinympc_timing[horizon]['std']) 
+                         for _ in range(horizon_tinympc_timing[horizon]['samples'])])
+        sorted_times = np.sort(times)
+        cdf = np.arange(1, len(sorted_times) + 1) / len(sorted_times)
+        ax2.plot(sorted_times, cdf, '-', color=TINYMPC_COLOR, label=f'TinyMPC N={horizon}')
+    
+    for horizon in sorted(horizon_osqp_timing.keys()):
+        times = np.array([horizon_osqp_timing[horizon]['mean'] + np.random.normal(0, horizon_osqp_timing[horizon]['std']) 
+                         for _ in range(horizon_osqp_timing[horizon]['samples'])])
+        sorted_times = np.sort(times)
+        cdf = np.arange(1, len(sorted_times) + 1) / len(sorted_times)
+        ax2.plot(sorted_times, cdf, '--', color=OSQP_COLOR, label=f'OSQP N={horizon}')
+    
+    ax2.set_xlabel('Time per Iteration (μs)')
+    ax2.set_ylabel('CDF')
+    ax2.grid(True, alpha=0.3)
+    
+    # Bottom left: States Memory with bar charts
+    states_x = sorted(states_tinympc_memory.keys())
+    states_tinympc_mem_y = [states_tinympc_memory[s] / 1024 for s in states_x]
+    states_osqp_mem_y = [states_osqp_memory.get(s, 0) / 1024 for s in states_x]
+    
+    # Create bar chart
+    x_pos = np.arange(len(states_x))
+    width = 0.3
+    ax3.bar(x_pos - width/2, states_tinympc_mem_y, width, color=TINYMPC_COLOR)
+    ax3.bar(x_pos + width/2, states_osqp_mem_y, width, color=OSQP_COLOR)
+    
+    ax3.axhline(y=states_ram_limit / 1024, color=RAM_LIMIT_COLOR, linestyle='--', 
+                linewidth=2, alpha=0.8)
+    ax3.set_xlabel('State dimension (n)')
+    ax3.set_ylabel('Memory Usage (kB)')
+    ax3.set_xticks(x_pos)
+    ax3.set_xticklabels(states_x)
+    ax3.grid(True, alpha=0.3)
+    
+    # Bottom right: Horizon Memory with bar charts
+    horizon_x = sorted(horizon_tinympc_memory.keys())
+    horizon_tinympc_mem_y = [horizon_tinympc_memory[h] / 1024 for h in horizon_x]
+    horizon_osqp_mem_y = [horizon_osqp_memory.get(h, 0) / 1024 for h in horizon_x]
+    
+    # Create bar chart
+    x_pos_h = np.arange(len(horizon_x))
+    ax4.bar(x_pos_h - width/2, horizon_tinympc_mem_y, width, color=TINYMPC_COLOR)
+    ax4.bar(x_pos_h + width/2, horizon_osqp_mem_y, width, color=OSQP_COLOR)
+    
+    ax4.axhline(y=horizon_ram_limit / 1024, color=RAM_LIMIT_COLOR, linestyle='--', 
+                linewidth=2, alpha=0.8)
+    ax4.set_xlabel('Time horizon (N)')
+    ax4.set_ylabel('Memory Usage (kB)')
+    ax4.set_xticks(x_pos_h)
+    ax4.set_xticklabels(horizon_x)
+    ax4.grid(True, alpha=0.3)
+    
+    # Add a single legend at the bottom right
+    handles = [
+        plt.Rectangle((0,0),1,1, color=TINYMPC_COLOR, label='TinyMPC'),
+        plt.Rectangle((0,0),1,1, color=OSQP_COLOR, label='OSQP'),
+        plt.Line2D([0], [0], color=RAM_LIMIT_COLOR, linestyle='--', label='Memory Limit')
+    ]
+    ax4.legend(handles=handles, loc='upper left')
+    
+    plt.savefig('fig_draft1.png', dpi=300, bbox_inches='tight', 
+                facecolor='white', edgecolor='none')
+    plt.show()
+
+def plot_benchmark_comparison_bars(states_data, horizon_data):
+    """Create a 2x2 benchmark comparison plot with bar charts for memory (fig_draft2)."""
+    # Colors matching reference plot - classic primaries
+    TINYMPC_COLOR = '#FF0000'  # Fully-saturated RGB red
+    OSQP_COLOR = '#0000FF'     # Fully-saturated RGB blue
+    RAM_LIMIT_COLOR = 'black'  # Black for limit line
+    
+    # Define offset for x-values to prevent marker overlap
+    STATES_OFFSET = 0.15  # Smaller offset for states (smaller numbers)
+    HORIZON_OFFSET = 0.2  # Larger offset for horizon (larger numbers)
+    SPECIAL_OFFSET = 1.0  # Special offset for N=16
+    
+    # Unpack data
+    states_tinympc_timing, states_osqp_timing = states_data['timing']
+    horizon_tinympc_timing, horizon_osqp_timing = horizon_data['timing']
+    states_tinympc_memory, states_osqp_memory, states_ram_limit = states_data['memory']
+    horizon_tinympc_memory, horizon_osqp_memory, horizon_ram_limit = horizon_data['memory']
+    
+    # Set high quality plotting parameters
+    plt.rcParams.update({
+        'font.size': 14,
+        'axes.linewidth': 1.5,
+        'grid.alpha': 0.3,
+        'grid.linewidth': 1.0,
+        'lines.linewidth': 2.5,
+        'lines.markersize': 8,
+        'legend.frameon': True,
+        'legend.framealpha': 0.9,
+        'legend.edgecolor': 'black',
+        'legend.fontsize': 12,
+        'axes.labelsize': 14,
+        'axes.titlesize': 16,
+        'xtick.labelsize': 12,
+        'ytick.labelsize': 12
+    })
+    
+    # Create 2x2 subplot
+    fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2, figsize=(16, 10), layout='constrained')
+    
+    # Top left: States Time (mean values only)
+    states_timing_x = sorted(states_tinympc_timing.keys())
+    states_tinympc_timing_y = [states_tinympc_timing[s]['mean'] for s in states_timing_x]
+    states_tinympc_timing_std = [states_tinympc_timing[s]['std'] for s in states_timing_x]
+
+    states_osqp_timing_x = sorted(states_osqp_timing.keys())
+    states_osqp_timing_y = [states_osqp_timing[s]['mean'] for s in states_osqp_timing_x]
+    states_osqp_timing_std = [states_osqp_timing[s]['std'] for s in states_osqp_timing_x]
+    
+    # Apply offset to x values for better visibility
+    states_tinympc_x_offset = [x - STATES_OFFSET for x in states_timing_x]
+    states_osqp_x_offset = [x + STATES_OFFSET for x in states_osqp_timing_x]
+    
+    ax1.errorbar(
+        states_tinympc_x_offset, states_tinympc_timing_y, yerr=states_tinympc_timing_std,
+        fmt='D', color=TINYMPC_COLOR, markersize=10,
+        capsize=5, elinewidth=2, linewidth=0, markeredgecolor='black'
+    )
+    ax1.errorbar(
+        states_osqp_x_offset, states_osqp_timing_y, yerr=states_osqp_timing_std,
+        fmt='o', color=OSQP_COLOR, markersize=10,
+        capsize=5, elinewidth=2, linewidth=0, markeredgecolor='black'
+    )
+    
+    ax1.set_xlabel('State dimension (n)')
+    ax1.set_ylabel('Time per Iteration (μs)')
+    ax1.grid(True, alpha=0.3)
+    ax1.set_xticks(states_timing_x)
+    
+    # Top right: Horizon Time (mean values only)
+    horizon_timing_x = sorted(horizon_tinympc_timing.keys())
+    horizon_tinympc_timing_y = [horizon_tinympc_timing[h]['mean'] for h in horizon_timing_x]
+    horizon_tinympc_timing_std = [horizon_tinympc_timing[h]['std'] for h in horizon_timing_x]
+
+    horizon_osqp_timing_x = sorted(horizon_osqp_timing.keys())
+    horizon_osqp_timing_y = [horizon_osqp_timing[h]['mean'] for h in horizon_osqp_timing_x]
+    horizon_osqp_timing_std = [horizon_osqp_timing[h]['std'] for h in horizon_osqp_timing_x]
+    
+    # Apply offset to x values for better visibility
+    horizon_tinympc_x_offset = []
+    horizon_osqp_x_offset = []
+    
+    # Create offset x-coordinates for each dataset separately
+    for x in horizon_timing_x:
+        if x == 16:
+            horizon_tinympc_x_offset.append(x - SPECIAL_OFFSET)
+        else:
+            horizon_tinympc_x_offset.append(x - HORIZON_OFFSET)
+            
+    for x in horizon_osqp_timing_x:
+        if x == 16:
+            horizon_osqp_x_offset.append(x + SPECIAL_OFFSET)
+        else:
+            horizon_osqp_x_offset.append(x + HORIZON_OFFSET)
+    
+    ax2.errorbar(
+        horizon_tinympc_x_offset, horizon_tinympc_timing_y, yerr=horizon_tinympc_timing_std,
+        fmt='D', color=TINYMPC_COLOR, markersize=10,
+        capsize=5, elinewidth=2, linewidth=0, markeredgecolor='black'
+    )
+    ax2.errorbar(
+        horizon_osqp_x_offset, horizon_osqp_timing_y, yerr=horizon_osqp_timing_std,
+        fmt='o', color=OSQP_COLOR, markersize=10,
+        capsize=5, elinewidth=2, linewidth=0, markeredgecolor='black'
+    )
+    
+    ax2.set_xlabel('Time horizon (N)')
+    ax2.set_ylabel('Time per Iteration (μs)')
+    ax2.grid(True, alpha=0.3)
+    ax2.set_xticks(horizon_timing_x)
+    
+    # Bottom left: States Memory with bar charts
+    states_x = sorted(states_tinympc_memory.keys())
+    states_tinympc_mem_y = [states_tinympc_memory[s] / 1024 for s in states_x]
+    states_osqp_mem_y = [states_osqp_memory.get(s, 0) / 1024 for s in states_x]
+    
+    # Create bar chart with same x positions as timing plot
+    x_pos = np.arange(len(states_x))
+    width = 0.3  # Increased width to match timing plot offset
+    ax3.bar(x_pos - width/2, states_tinympc_mem_y, width, color=TINYMPC_COLOR)
+    ax3.bar(x_pos + width/2, states_osqp_mem_y, width, color=OSQP_COLOR)
+    
+    ax3.axhline(y=states_ram_limit / 1024, color=RAM_LIMIT_COLOR, linestyle='--', 
+                linewidth=2, alpha=0.8)
+    ax3.set_xlabel('State dimension (n)')
+    ax3.set_ylabel('Memory Usage (kB)')
+    ax3.set_xticks(x_pos)
+    ax3.set_xticklabels(states_x)
+    ax3.grid(True, alpha=0.3)
+    
+    # Bottom right: Horizon Memory with bar charts
+    horizon_x = sorted(horizon_tinympc_memory.keys())
+    horizon_tinympc_mem_y = [horizon_tinympc_memory[h] / 1024 for h in horizon_x]
+    horizon_osqp_mem_y = [horizon_osqp_memory.get(h, 0) / 1024 for h in horizon_x]
+    
+    # Create bar chart with same x positions as timing plot
+    x_pos_h = np.arange(len(horizon_x))
+    ax4.bar(x_pos_h - width/2, horizon_tinympc_mem_y, width, color=TINYMPC_COLOR)
+    ax4.bar(x_pos_h + width/2, horizon_osqp_mem_y, width, color=OSQP_COLOR)
+    
+    ax4.axhline(y=horizon_ram_limit / 1024, color=RAM_LIMIT_COLOR, linestyle='--', 
+                linewidth=2, alpha=0.8)
+    ax4.set_xlabel('Time horizon (N)')
+    ax4.set_ylabel('Memory Usage (kB)')
+    ax4.set_xticks(x_pos_h)
+    ax4.set_xticklabels(horizon_x)
+    ax4.grid(True, alpha=0.3)
+    
+    # Add a single legend at the top left of bottom right plot
+    handles = [
+        plt.Rectangle((0,0),1,1, color=TINYMPC_COLOR, label='TinyMPC'),
+        plt.Rectangle((0,0),1,1, color=OSQP_COLOR, label='OSQP'),
+        plt.Line2D([0], [0], color=RAM_LIMIT_COLOR, linestyle='--', label='Memory Limit')
+    ]
+    ax4.legend(handles=handles, loc='upper left')
+    
+    plt.savefig('fig_draft2.png', dpi=300, bbox_inches='tight', 
+                facecolor='white', edgecolor='none')
+    plt.show()
+
+def main():
+    """Main function to run the benchmark analysis."""
+    states_data_dir = 'data_optimized/states'
+    horizon_data_dir = 'data_optimized/horizon'
+    
+    print("Collecting optimized states benchmark data...")
+    states_tinympc_timing, states_osqp_timing = collect_states_benchmark_data(states_data_dir)
+    
+    print("Collecting optimized horizon benchmark data...")
+    horizon_tinympc_timing, horizon_osqp_timing = collect_horizon_benchmark_data(horizon_data_dir)
+    
+    if not states_tinympc_timing or not horizon_tinympc_timing:
+        print("Missing TinyMPC data!")
+        return
+    
+    if not states_osqp_timing or not horizon_osqp_timing:
+        print("Missing OSQP data!")
+        return
+    
+    # Get memory data
+    states_tinympc_memory, states_osqp_memory, states_ram_limit = parse_states_memory_data()
+    horizon_tinympc_memory, horizon_osqp_memory, horizon_ram_limit = parse_horizon_memory_data()
+    
+    # Package data for plotting function
+    states_data = {
+        'timing': (states_tinympc_timing, states_osqp_timing),
+        'memory': (states_tinympc_memory, states_osqp_memory, states_ram_limit)
+    }
+    
+    horizon_data = {
+        'timing': (horizon_tinympc_timing, horizon_osqp_timing),
+        'memory': (horizon_tinympc_memory, horizon_osqp_memory, horizon_ram_limit)
+    }
+    
+    print("\nCreating final benchmark comparison plot...")
+    plot_benchmark_comparison_lines(states_data, horizon_data)
+    plot_benchmark_comparison_bars(states_data, horizon_data)
+    
+    print("\nBenchmark analysis complete! Saved as 'fig_draft1.png' and 'fig_draft2.png'")
+
+if __name__ == "__main__":
+    main() 
