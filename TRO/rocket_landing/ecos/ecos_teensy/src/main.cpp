@@ -7,10 +7,13 @@ Content: Example program for updating parameters, solving, and inspecting the re
 // #include "cpp_compat.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include "math.h"
+
+extern "C" {
 #include "cpg_workspace.h"
 #include "cpg_solve.h"
 #include "cpg_problem.h"
-#include "math.h"
+}
 
 static int i;
 
@@ -100,6 +103,10 @@ float temp = 0;
 int main(int argc, char *argv[]){
   // delay for 4 seconds
   delay(500);
+  Serial.begin(115200);  // Initialize serial communication
+  while (!Serial) {      // Wait for serial port to connect
+    delay(10);
+  }
   printf("Start ECOS Rocket Landing\n");
   printf("========================\n");
 
