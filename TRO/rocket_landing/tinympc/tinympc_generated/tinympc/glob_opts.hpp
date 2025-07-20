@@ -8,9 +8,4 @@ typedef float tinytype;
 
 #define NSTATES 6
 #define NINPUTS 3
-
-#define NUM_INPUT_CONES 1
-#define NUM_STATE_CONES 1
-
 #define NHORIZON 4
-#define NTOTAL 301

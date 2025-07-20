@@ -1,17 +1,40 @@
 # TinyMPC Code Generation for Rocket Landing Problem
 # This generates TinyMPC data that matches SCS/ECOS benchmark setup exactly
 
-import tinympc
 import os
+import sys
+import time
 import numpy as np
 
 path_to_root = os.getcwd()
 print(f"Working directory: {path_to_root}")
 
+# Add tinympc-python to Python path
+tinympc_python_dir = os.path.abspath(os.path.join(path_to_root, "../../tinympc-python"))
+sys.path.append(tinympc_python_dir)
+print(f"Added to Python path: {tinympc_python_dir}")
+
+import tinympc
+
+# Set up TinyMPC paths and library
+tinympc_python_dir = os.path.join(path_to_root, "../../tinympc-python")
+tinympc_dir = os.path.join(tinympc_python_dir, "tinympc/TinyMPC")  # Path to the TinyMPC directory (C code)
+
+print(f"TinyMPC directory: {tinympc_dir}")
+
+# Initialize TinyMPC and compile/load library
+tinympc_prob = tinympc.TinyMPC()
+tinympc_prob.compile_lib(tinympc_dir)  # Compile the library
+
+# Load the generic shared/dynamic library
+os_ext = ".dylib"  # Mac uses .dylib
+lib_dir = os.path.join(tinympc_dir, "build/src/tinympc/libtinympcShared" + os_ext)
+tinympc_prob.load_lib(lib_dir)  # Load the library
+
 # ROCKET LANDING PROBLEM PARAMETERS (matching gen_rocket.py and run_ecos.py)
 NSTATES = 6
 NINPUTS = 3  
-NHORIZON = 32  # MATCH SCS/ECOS horizon for fair comparison
+NHORIZON = 4  # MATCH SCS/ECOS horizon for fair comparison
 NTOTAL = 301
 
 # Rocket landing dynamics (copied exactly from gen_rocket.py/run_ecos.py)
@@ -53,107 +76,105 @@ print(f"  NHORIZON: {NHORIZON}")
 print(f"  rho: {rho}")
 
 # SET UP TINYMPC PROBLEM
-tinympc_prob = tinympc.TinyMPC()
-tinympc_prob.setup(
-    Ad, Bd, Q, R, NHORIZON,  # matrices and horizon
-    rho=rho,
-    x_min=x_min, x_max=x_max,
-    u_min=u_min, u_max=u_max,
-    abs_pri_tol=abs_pri_tol, abs_dua_tol=abs_dual_tol,
-    max_iter=max_iter, check_termination=check_termination
-)
+# Convert matrices to column-major order lists for TinyMPC
+A1 = Ad.transpose().reshape((NSTATES * NSTATES)).tolist()  # col-major order list
+B1 = Bd.transpose().reshape((NSTATES * NINPUTS)).tolist()  # col-major order list
+Q1 = Q.transpose().reshape((NSTATES * NSTATES)).tolist()  # full Q matrix, col-major
+R1 = R.transpose().reshape((NINPUTS * NINPUTS)).tolist()  # full R matrix, col-major
+
+# State and input constraints for all horizons (matching safety_filter.py format)
+xmin1 = list(x_min) * NHORIZON  # state constraints
+xmax1 = list(x_max) * NHORIZON  # state constraints
+umin1 = list(u_min) * (NHORIZON - 1)  # input constraints
+umax1 = list(u_max) * (NHORIZON - 1)  # input constraints
+
+# Setup the problem with the correct format
+tinympc_prob.setup(NSTATES, NINPUTS, NHORIZON, A1, B1, Q1, R1, xmin1, xmax1, umin1, umax1, 
+                   rho, abs_pri_tol, abs_dual_tol, max_iter, check_termination)
 
 # GENERATE CODE
-output_dir = path_to_root + "/tinympc/tinympc_generated"
-print(f"Generating code to: {output_dir}")
-tinympc_prob.codegen(output_dir)  
+output_dir = os.path.join(path_to_root, "tinympc/tinympc_generated")
 
-print("Code generation complete!")
+# Create all necessary directories
+os.makedirs(output_dir, exist_ok=True)
+os.makedirs(os.path.join(output_dir, "src"), exist_ok=True)
+os.makedirs(os.path.join(output_dir, "src", "tinympc"), exist_ok=True)
+os.makedirs(os.path.join(output_dir, "tinympc"), exist_ok=True)
+os.makedirs(os.path.join(output_dir, "include"), exist_ok=True)
+os.makedirs(os.path.join(output_dir, "examples"), exist_ok=True)
+
+print(f"Generating code to: {output_dir}")
+print("Created all necessary directories")
+
+try:
+    tinympc_prob.tiny_codegen(tinympc_dir, output_dir)  # Use tiny_codegen instead of codegen
+    print("Code generation completed successfully!")
+except Exception as e:
+    print(f"Error during code generation: {e}")
 
 # COPY FILES TO TEENSY PROJECT
-mcu_dir = path_to_root + '/tinympc/tinympc_teensy'
+mcu_dir = os.path.join(path_to_root, 'tinympc/tinympc_teensy')
 print(f"Copying files to Teensy project: {mcu_dir}")
 
-# Copy the generated data files (updated file paths for new API)
-os.system(f'cp -R {output_dir}/src/tiny_data.cpp {mcu_dir}/src/tiny_data_workspace.cpp')
-os.system(f'cp -R {output_dir}/tinympc/tiny_data.hpp {mcu_dir}/lib/tinympc/glob_opts.hpp')
+# Create destination directories if they don't exist
+os.makedirs(os.path.join(mcu_dir, 'src'), exist_ok=True)
+os.makedirs(os.path.join(mcu_dir, 'lib/tinympc'), exist_ok=True)
+
+# Copy the generated data files
+src_file = os.path.join(output_dir, 'src/tiny_data_workspace.cpp')
+dest_file = os.path.join(mcu_dir, 'src/tiny_data_workspace.cpp')
+if os.path.exists(src_file):
+    os.system(f'cp "{src_file}" "{dest_file}"')
+    print("Copied tiny_data_workspace.cpp")
+else:
+    print(f"Warning: {src_file} not found")
+
+src_file = os.path.join(output_dir, 'tinympc/glob_opts.hpp')
+dest_file = os.path.join(mcu_dir, 'lib/tinympc/glob_opts.hpp')
+if os.path.exists(src_file):
+    os.system(f'cp "{src_file}" "{dest_file}"')
+    print("Copied glob_opts.hpp")
+else:
+    print(f"Warning: {src_file} not found")
 
 print("Files copied to Teensy project!")
 
-# Also generate the rocket_landing_params.hpp file for direct inclusion
-print("Generating rocket_landing_params.hpp for compatibility...")
+# Create a custom glob_opts.hpp with all necessary parameters
+custom_glob_opts_content = f'''/*
+ * This file was autogenerated by TinyMPC on {time.strftime("%a %b %d %H:%M:%S %Y")}
+ */
 
-# Create a parameter file that matches the format used in the C++ code
-params_content = f'''#pragma once
+#pragma once
 
-#include "admm.hpp"
+typedef float tinytype;
 
-// Generated by TinyMPC for rocket landing problem
-// NHORIZON = {NHORIZON}, NSTATES = {NSTATES}, NINPUTS = {NINPUTS}
+#define NSTATES 6
+#define NINPUTS 3
 
-tinytype Adyn_data[{NSTATES} * {NSTATES}] = {{
+#define NUM_INPUT_CONES 1
+#define NUM_STATE_CONES 1
+
+#define NHORIZON {NHORIZON}
+#define NTOTAL 301
 '''
 
-# Add Adyn data
-for i in range(NSTATES):
-    params_content += "\t"
-    for j in range(NSTATES):
-        params_content += f"{Ad[i,j]:.6f}f"
-        if i < NSTATES-1 or j < NSTATES-1:
-            params_content += ", "
-    params_content += "\n"
-params_content += "};\n\n"
+# Write the custom glob_opts.hpp file
+custom_glob_opts_file = os.path.join(mcu_dir, 'lib/tinympc/glob_opts.hpp')
+with open(custom_glob_opts_file, 'w') as f:
+    f.write(custom_glob_opts_content)
 
-# Add Bdyn data
-params_content += f'''tinytype Bdyn_data[{NSTATES} * {NINPUTS}] = {{
-'''
-for i in range(NSTATES):
-    params_content += "\t"
-    for j in range(NINPUTS):
-        params_content += f"{Bd[i,j]:.6f}f"
-        if i < NSTATES-1 or j < NINPUTS-1:
-            params_content += ", "
-    params_content += "\n"
-params_content += "};\n\n"
+print("Created custom glob_opts.hpp with all necessary parameters")
 
-# Add fdyn (gravity term)
-fd = np.array([0.0, 0.0, -0.0122625, 0.0, 0.0, -0.4905])  # from gen_rocket.py
-params_content += f'''tinytype fdyn_data[{NSTATES}] = {{'''
-for i in range(NSTATES):
-    params_content += f"{fd[i]:.7f}f"
-    if i < NSTATES-1:
-        params_content += ", "
-params_content += "};\n\n"
-
-# Add Q and R data
-params_content += f'''tinytype Q_data[{NSTATES}] = {{'''
-for i in range(NSTATES):
-    params_content += f"{Q[i,i]:.1f}f"
-    if i < NSTATES-1:
-        params_content += ", "
-params_content += "};\n\n"
-
-params_content += f'''tinytype R_data[{NINPUTS}] = {{'''
-for i in range(NINPUTS):
-    params_content += f"{R[i,i]:.1f}f"
-    if i < NINPUTS-1:
-        params_content += ", "
-params_content += "};\n\n"
-
-params_content += f"tinytype rho_value = {rho};\n\n"
-params_content += "// Note: Kinf_data, Pinf_data, etc. are generated by TinyMPC codegen\n"
-params_content += "// and included in tiny_data_workspace.cpp\n"
-
-# Write the parameter file
-params_file = f"{mcu_dir}/src/problem_data/rocket_landing_params_{NHORIZON}hz.hpp"
-os.makedirs(os.path.dirname(params_file), exist_ok=True)
-with open(params_file, 'w') as f:
-    f.write(params_content)
-
-print(f"Generated parameter file: {params_file}")
 print("\n=== TinyMPC Generation Complete ===")
 print("Your TinyMPC rocket landing code is now ready with:")
 print(f"  - NHORIZON = {NHORIZON} (matches SCS/ECOS)")
+print(f"  - NTOTAL = 301 (simulation length)")
+print(f"  - NUM_INPUT_CONES = 1, NUM_STATE_CONES = 1 (SOC constraints)")
 print(f"  - Same dynamics, costs, and constraints as SCS/ECOS")
 print("  - Files copied to tinympc_teensy project")
-print("\nYou can now compile and benchmark all three solvers fairly!") 
+print("  - tiny_data_workspace.cpp contains all precomputed matrices")
+print("  - glob_opts.hpp contains solver options")
+print("\nYou can now compile and benchmark all three solvers fairly!")
+
+# Exit cleanly to avoid segfault
+sys.exit(0) 

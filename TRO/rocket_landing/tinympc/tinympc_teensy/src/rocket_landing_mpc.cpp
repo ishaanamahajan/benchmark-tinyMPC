@@ -15,7 +15,7 @@
 #include <iostream>
 
 #include "admm.hpp"
-#include "problem_data/rocket_landing_params_32hz.hpp"
+#include "problem_data/rocket_landing_params_20hz.hpp"
 // #include "trajectory_data/rocket_landing_ref_traj_20hz.hpp"
 
 #include "Arduino.h"
