@@ -319,16 +319,21 @@ if(BUILD_TESTING)
 
 endif()
 
-set(solver_head
+file(
+  GLOB
+  SOLVER_HEAD
   ${${PROJECT_NAME}_HDR}
   ${DIRSRC}/private.h
   ${${PROJECT_NAME}_LDL_EXTERNAL_HDR}
-  ${${PROJECT_NAME}_AMD_EXTERNAL_HDR}
-  PARENT_SCOPE)
+  ${${PROJECT_NAME}_AMD_EXTERNAL_HDR})
 
-set(solver_src
+set(solver_head ${SOLVER_HEAD} PARENT_SCOPE)
+
+file(
+  GLOB
+  SOLVER_SRC
   ${${PROJECT_NAME}_SRC}
   ${DIRSRC}/private.c
   ${EXTERNAL}/qdldl/qdldl.c
-  ${${PROJECT_NAME}_AMD_EXTERNAL_SRC}
-  PARENT_SCOPE)
+  ${${PROJECT_NAME}_AMD_EXTERNAL_SRC})
+set(solver_src ${SOLVER_SRC} PARENT_SCOPE)

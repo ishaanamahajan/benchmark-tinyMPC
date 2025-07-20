@@ -15,7 +15,7 @@
 #include <iostream>
 
 #include "admm.hpp"
-#include "problem_data/rocket_landing_params_20hz.hpp"
+#include "problem_data/rocket_landing_params_32hz.hpp"
 // #include "trajectory_data/rocket_landing_ref_traj_20hz.hpp"
 
 #include "Arduino.h"
@@ -31,6 +31,10 @@ extern "C"
     int main()
     {
         delay(500);
+        Serial.begin(115200);  // Initialize serial communication
+        while (!Serial) {      // Wait for serial port to connect
+            delay(10);
+        }
         Serial.println("Start TinyMPC Rocket Landing");
         Serial.println("============================");
         TinyBounds bounds;

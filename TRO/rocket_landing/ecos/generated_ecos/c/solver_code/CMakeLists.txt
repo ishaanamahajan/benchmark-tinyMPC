@@ -135,10 +135,15 @@ install(FILES ${CMAKE_CURRENT_BINARY_DIR}/ecos-config.cmake
         DESTINATION ${ConfigPackageLocation}
 )
 
-set(solver_head
-  ${ecos_headers}
-  PARENT_SCOPE)
+file(
+  GLOB
+  SOLVER_HEAD
+  ${ecos_headers})
 
-set(solver_src
-  ${ecos_sources}
-  PARENT_SCOPE)
+set(solver_head ${SOLVER_HEAD} PARENT_SCOPE)
+
+file(
+  GLOB
+  SOLVER_SRC
+  ${ecos_sources})
+set(solver_src ${SOLVER_SRC} PARENT_SCOPE)

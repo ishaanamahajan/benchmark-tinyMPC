@@ -4,7 +4,7 @@
 
 #define NINPUTS 3
 
-#define NHORIZON 32
+#define NHORIZON 4
 
 #define NTOTAL 301
 
