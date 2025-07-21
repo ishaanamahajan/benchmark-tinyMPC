@@ -8,7 +8,7 @@ typedef float tinytype;
 
 #define NSTATES 6
 #define NINPUTS 3
-#define NHORIZON 16
+#define NHORIZON 256
 #define NTOTAL 301
 
 // Constraint definitions for rocket landing problem

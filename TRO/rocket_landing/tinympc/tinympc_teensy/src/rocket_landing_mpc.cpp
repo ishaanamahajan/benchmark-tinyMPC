@@ -38,7 +38,7 @@ extern "C"
         Serial.begin(9600);
         delay(500);
         // Serial.println("Start TinyMPC Rocket Landing");
-        // Serial.println("============================");
+        Serial.println("Horizon: " + String(NHORIZON));
         work.bounds = &bounds;
         work.socs = &socs;
 
@@ -189,9 +189,9 @@ extern "C"
             Serial.print(work.iter); Serial.print(" "); Serial.println((int)(end - start));
         }
 
-        // unsigned long end = micros();
-
-        // Serial.print("total solve time: "); Serial.print((end - start)/1000000); Serial.println(" seconds");
+        // Print memory usage summary at the end
+        Serial.println("# Benchmark completed");
+        
         return 0;
     }
 
