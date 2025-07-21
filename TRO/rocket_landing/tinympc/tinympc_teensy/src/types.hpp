@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Eigen.h>
+#include "Eigen.h"
 #include "glob_opts.hpp"
 
 using Eigen::Matrix;
@@ -110,14 +110,6 @@ extern "C"
         tiny_MatrixNxNh p;
         tiny_MatrixNuNhm1 d;
 
-        // Flattened constraint variables (from bounds structure)
-        tiny_MatrixNxNh v; // state slack variables
-        tiny_MatrixNxNh vnew;
-        tiny_MatrixNuNhm1 z; // input slack variables
-        tiny_MatrixNuNhm1 znew;
-        tiny_MatrixNxNh g; // state dual variables
-        tiny_MatrixNuNhm1 y; // input dual variables
-
         // Termination conditions
         tinytype primal_residual_state;
         tinytype primal_residual_input;
@@ -134,12 +126,6 @@ extern "C"
         tiny_MatrixNxNu Bdyn; // control matrix
         tiny_VectorNx fdyn; // affine vector
 
-        // Constraint bounds (flattened from bounds structure)
-        tiny_MatrixNuNhm1 u_min;
-        tiny_MatrixNuNhm1 u_max;
-        tiny_MatrixNxNh x_min;
-        tiny_MatrixNxNh x_max;
-
         // Reference trajectory for one horizon
         tiny_MatrixNxNh Xref;   // Nx x Nh
         tiny_MatrixNuNhm1 Uref; // Nu x Nh-1
@@ -147,7 +133,7 @@ extern "C"
         // Intermediate calculations
         tiny_VectorNu Qu;
 
-        // Constraints (kept for compatibility)
+        // Constraints
         TinyBounds *bounds;
         TinySocs *socs;
     } TinyWorkspace;

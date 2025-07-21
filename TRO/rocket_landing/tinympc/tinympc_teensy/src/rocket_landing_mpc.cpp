@@ -31,10 +31,6 @@ extern "C"
     int main()
     {
         delay(500);
-        Serial.begin(115200);  // Initialize serial communication
-        while (!Serial) {      // Wait for serial port to connect
-            delay(10);
-        }
         Serial.println("Start TinyMPC Rocket Landing");
         Serial.println("============================");
         TinyBounds bounds;
@@ -77,16 +73,16 @@ extern "C"
 
         //////// Second order cone constraints
         work.socs->cu[0] = 0.25; // coefficients for input cones (mu)
-        // work.socs->cx[0] = 0.6;  // coefficients for state cones (mu) - disabled since NUM_STATE_CONES = 0
+        work.socs->cx[0] = 0.6;  // coefficients for state cones (mu)
         // Number of contiguous input variables to constrain with each cone
         // For example if all inputs are [thrust_x, thrust_y, thrust_z, thrust_2x, thrust_2y, thrust_2z]
         // and we want to put a thrust cone on [thrust_y, thrust_z] we need to set socs->Acu to 1 and socs->qcu to 2
         // which corresponds to a subvector of all input variables starting at index 1 with length 2.
         // Support for arbitrary input constraints will be added in the future.
         work.socs->Acu[0] = 0; // start indices for input cones
-        // work.socs->Acx[0] = 0; // start indices for state cones - disabled since NUM_STATE_CONES = 0
+        work.socs->Acx[0] = 0; // start indices for state cones
         work.socs->qcu[0] = 3; // dimensions for input cones
-        // work.socs->qcx[0] = 3; // dimensions for state cones - disabled since NUM_STATE_CONES = 0
+        work.socs->qcx[0] = 3; // dimensions for state cones
 
         //////// Settings
         settings.abs_pri_tol = 0.01;
