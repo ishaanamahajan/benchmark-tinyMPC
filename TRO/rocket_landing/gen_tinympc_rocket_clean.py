@@ -11,7 +11,7 @@ import scipy.linalg
 # ROCKET LANDING PROBLEM PARAMETERS (matching gen_rocket.py and run_ecos.py)
 NSTATES = 6
 NINPUTS = 3  
-NHORIZON = 32  # MATCH SCS/ECOS horizon for fair comparison
+NHORIZON = 2 # MATCH SCS/ECOS horizon for fair comparison
 NTOTAL = 301
 
 # Rocket landing dynamics (copied exactly from gen_rocket.py/run_ecos.py)
@@ -64,7 +64,7 @@ def generate_glob_opts_header(output_path, NSTATES, NINPUTS, NHORIZON):
         f.write('#define NUM_INPUT_CONES 1  // One thrust cone constraint\n')
         f.write('#define NUM_STATE_CONES 0  // No state cone constraints\n')
 
-def generate_problem_data_header(output_path, Ad, Bd, Q, R, fdyn, rho, NSTATES, NINPUTS, NHORIZON, NTOTAL):
+def generate_problem_data_header(output_path, Ad, Bd, Q, R, fdyn, rho, NSTATES, NINPUTS, NHORIZON, NTOTAL, types_include_path="../types.hpp"):
     """Generate problem data header matching existing structure"""
     
     # Compute LQR/ADMM precomputes (Kinf, Pinf, Quu_inv, AmBKt, APf, BPf)
@@ -93,7 +93,7 @@ def generate_problem_data_header(output_path, Ad, Bd, Q, R, fdyn, rho, NSTATES, 
 
     with open(output_path, 'w') as f:
         f.write('#pragma once\n\n')
-        f.write('#include "types.hpp"\n\n')
+        f.write(f'#include "{types_include_path}"\n\n')
         
         # Dynamics matrices
         f.write('tinytype Adyn_data[NSTATES * NSTATES] = {\n\t')
@@ -204,13 +204,13 @@ if __name__ == "__main__":
     # 4. Generate problem data for teensy
     teensy_params = os.path.join(teensy_dir, 'src', 'problem_data', 'rocket_landing_params_20hz.hpp')
     os.makedirs(os.path.dirname(teensy_params), exist_ok=True)
-    generate_problem_data_header(teensy_params, Ad, Bd, Q, R, fdyn, rho, NSTATES, NINPUTS, NHORIZON, NTOTAL)
+    generate_problem_data_header(teensy_params, Ad, Bd, Q, R, fdyn, rho, NSTATES, NINPUTS, NHORIZON, NTOTAL, "../types.hpp")
     print(f"Generated: {teensy_params}")
     
     # 5. Generate problem data for stm32
     stm32_params = os.path.join(stm32_dir, 'problem_data', 'rocket_landing_params_20hz.hpp')
     os.makedirs(os.path.dirname(stm32_params), exist_ok=True)
-    generate_problem_data_header(stm32_params, Ad, Bd, Q, R, fdyn, rho, NSTATES, NINPUTS, NHORIZON, NTOTAL)
+    generate_problem_data_header(stm32_params, Ad, Bd, Q, R, fdyn, rho, NSTATES, NINPUTS, NHORIZON, NTOTAL, "types.hpp")
     print(f"Generated: {stm32_params}")
 
     print("\n=== TinyMPC Generation Complete ===")
