@@ -25,17 +25,20 @@ Eigen::IOFormat SaveData(4, 0, ", ", "\n");
 
 static int i = 0;
 
+// Move the big structs to global scope to avoid stack overflow
+static TinyBounds bounds;
+static TinySocs socs;
+static TinyWorkspace work;
+
 extern "C"
 {
 
     int main()
     {
+        Serial.begin(9600);
         delay(500);
-        Serial.println("Start TinyMPC Rocket Landing");
-        Serial.println("============================");
-        TinyBounds bounds;
-        TinySocs socs;
-        TinyWorkspace work;
+        // Serial.println("Start TinyMPC Rocket Landing");
+        // Serial.println("============================");
         work.bounds = &bounds;
         work.socs = &socs;
 
