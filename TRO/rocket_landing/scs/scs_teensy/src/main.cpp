@@ -5,12 +5,30 @@ Content: Example program for updating parameters, solving, and inspecting the re
 */
 #include "Arduino.h"
 #include "cpp_compat.h"
-#include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
+#include <string.h>
+#include <stdint.h>
+
+// Forward declaration for freeRam helper
+static uint32_t freeRam();
+
+// System call stubs for Teensy
+extern "C" {
+  int _open(const char *name, int flags, int mode) { return -1; }
+  int _close(int fd) { return -1; }
+  int _read(int fd, void *buf, size_t count) { return -1; }
+  int _write(int fd, const void *buf, size_t count) { return -1; }
+  int _lseek(int fd, int offset, int whence) { return -1; }
+  int _fstat(int fd, void *st) { return -1; }
+  int _isatty(int fd) { return 0; }
+}
+
+extern "C" {
 #include "cpg_workspace.h"
 #include "cpg_solve.h"
 #include "cpg_problem.h"
-#include "math.h"
+}
 
 static int i;
 
@@ -27,16 +45,16 @@ void print_vector(float xn[], int n)
 {
   for (int i = 0; i < n; ++i)
   {
-    // Serial.println(xn[i]);
-    printf("%f, ", xn[i]);
+    Serial.print(xn[i]);
+    Serial.print(", ");
   }
-  printf("\n");
+  Serial.println();
 }
 
 void matrix_vector_mult(int n1,
                         int n2,
-                        float matrix[],
-                        float vector[],
+                        const float matrix[],
+                        const float vector[],
                         float result_vector[])
 {
   // n1 is rows of matrix
@@ -53,8 +71,8 @@ void matrix_vector_mult(int n1,
 
 void matrix_vector_reset_mult(int n1,
                               int n2,
-                              float matrix[],
-                              float vector[],
+                              const float matrix[],
+                              const float vector[],
                               float result_vector[])
 {
   // n1 is rows of matrix
@@ -70,7 +88,7 @@ void matrix_vector_reset_mult(int n1,
   }
 }
 
-void system_dynamics(float xn[], float x[], float u[], float A[], float B[], float f[])
+void system_dynamics(float xn[], const float x[], const float u[], const float A[], const float B[], const float f[])
 {
   matrix_vector_reset_mult(NSTATES, NSTATES, A, x, xn);
   matrix_vector_mult(NSTATES, NINPUTS, B, u, xn);
@@ -80,7 +98,7 @@ void system_dynamics(float xn[], float x[], float u[], float A[], float B[], flo
   }
 }
 
-float compute_norm(float x[], float x_bar[])
+float compute_norm(const float x[], const float x_bar[])
 {
   float res = 0.0f;
   for (int i = 0; i < NSTATES; ++i)
@@ -96,13 +114,17 @@ float xn[NSTATES] = {0};
 float x[NSTATES] = {4.4, 2.2, 22, -3.3, 2.2, -4.95};
 float u[NINPUTS] = {0};
 float temp = 0;
+// Variables to record free RAM around solver allocations
+static uint32_t free_ram_before = 0;
+static uint32_t free_ram_after = 0;
 
-int main(int argc, char *argv[]){
-  // delay for 4 seconds
+int main(){
+  Serial.begin(9600);
+  delay(1000);
+  Serial.print("Horizon: ");
+  Serial.println(NHORIZON);
   delay(500);
-  printf("Start SCS Rocket Landing\n");
-  printf("========================\n");
-
+  
   // for scs
   cpg_set_solver_eps_abs(1e-2);
   cpg_set_solver_eps_rel(1e-3);
@@ -110,13 +132,17 @@ int main(int argc, char *argv[]){
 
   srand(1);
   for (int k = 0; k < NTOTAL; ++k) {
+    // Record free RAM just before the very first solve
+    if (k == 0) {
+      free_ram_before = freeRam();
+      Serial.print("# Free RAM before first solve: ");
+      Serial.println(free_ram_before);
+    }
     //// Update current measurement
     for (int i = 0; i < NSTATES; ++i)
     {
       cpg_update_param1(i, x[i]);
     }
-    // printf("x = ");
-    // print_vector(x, NSTATES);
 
     //// Update references
     for (int i = 0; i < NHORIZON; ++i)
@@ -131,34 +157,48 @@ int main(int argc, char *argv[]){
         {
           temp = xref0[j] + (0-xref0[j]) * (float)(k+i) / (NTOTAL);
         }
-        // printf("temp = %f\n", temp);
         cpg_update_param3(i*(NSTATES+NINPUTS) + j, -Q_single * temp);
       }
     }
     
     // Solve the problem instance
     unsigned long start = micros();
-    // printf("%d\n", start);
     cpg_solve();
     unsigned long end = micros();
-    printf("%d %d\n", CPG_Info.iter, (int)(end - start));
+    Serial.print(CPG_Info.iter); 
+    Serial.print(" "); 
+    Serial.println((int)(end - start));
 
     // Get data from the result
     for (i=0; i<NINPUTS; i++) {
       u[i] = CPG_Result.prim->var2[i+NSTATES];
     }
-    // printf("u = ");
-    // print_vector(u, NINPUTS);
 
     // Simulate the system
     system_dynamics(xn, x, u, A, B, f);
-    // printf("xn = ");
-    // print_vector(xn, NSTATES);
 
     // Update the state
     memcpy(x, xn, NSTATES * (sizeof(float)));
     add_noise(x, 0.01);
-
   }
+
+  // Record free RAM after all solves are finished
+  free_ram_after = freeRam();
+  Serial.print("# Free RAM after last solve: ");
+  Serial.println(free_ram_after);
+  Serial.print("# Heap allocated by solver: ");
+  Serial.println(free_ram_before - free_ram_after);
+  
+  Serial.println("# Benchmark completed");
   return 0;
+}
+
+// Return an estimate of free RAM by measuring gap between heap and stack
+static uint32_t freeRam() {
+  uint32_t stack_top;
+  stack_top = (uint32_t)&stack_top;    // current stack pointer
+  void *heap_ptr = malloc(4);          // current heap end after small alloc
+  uint32_t heap_top = (uint32_t)heap_ptr;
+  free(heap_ptr);
+  return stack_top - heap_top;         // remaining free RAM
 }
