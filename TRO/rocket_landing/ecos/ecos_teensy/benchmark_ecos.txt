@@ -45,6 +45,26 @@
 34    89657
 
 
+# Horizon: 16, RAM/Static: 58.5 KB
+# Starting ECOS benchmark...
+# Format: [solver_iter] [solve_time_us]
+# Dynamic memory allocated by ECOS: 44408 bytes (43.37 KB)
+33   224173
+35   246253
+33   227657
+35   249867
+33   231383
+34   235355
+35   245429
+34   238087
+33   227693
+34   239888
+
+
+
+
+
+
 
 
 
