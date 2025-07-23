@@ -55,7 +55,7 @@ fd = np.array([0.0, 0.0, -0.0122625, 0.0, 0.0, -0.4905])
 
 NSTATES = 6
 NINPUTS = 3
-NHORIZON = 16 # horizon length, short for MPC
+NHORIZON = 64 # horizon length, short for MPC
 NTOTAL = 301
 dt = 0.05
 t_vec = dt * np.arange(NTOTAL)
