@@ -263,7 +263,7 @@ def main():
     if scs_positions:
         scs_yerr_array = np.array(scs_yerr).T
         ax1.errorbar(scs_positions, scs_means, yerr=scs_yerr_array, fmt='o', color='blue', 
-                    markersize=8, capsize=5, elinewidth=2, linewidth=0, markeredgecolor='black', label='SCS')
+                    markersize=12, capsize=12, capthick=2, elinewidth=2, linewidth=0, markeredgecolor='black', label='SCS')
     
     # ECOS error bars  
     ecos_positions = []
@@ -278,14 +278,14 @@ def main():
     if ecos_positions:
         ecos_yerr_array = np.array(ecos_yerr).T
         ax1.errorbar(ecos_positions, ecos_means, yerr=ecos_yerr_array, fmt='s', color='green',
-                    markersize=8, capsize=5, elinewidth=2, linewidth=0, markeredgecolor='black', label='ECOS')
+                    markersize=12, capsize=12, capthick=2, elinewidth=2, linewidth=0, markeredgecolor='black', label='ECOS')
     
     # TinyMPC error bars
     tinympc_yerr = [[avg - min_t for avg, min_t in zip(tinympc_avg_times, tinympc_min_times)],
                    [max_t - avg for avg, max_t in zip(tinympc_avg_times, tinympc_max_times)]]
     
     ax1.errorbar(horizon_positions, tinympc_avg_times, yerr=tinympc_yerr, fmt='^', color='red',
-                markersize=8, capsize=5, elinewidth=2, linewidth=0, markeredgecolor='black', label='TinyMPC')
+                markersize=12, capsize=12, elinewidth=2, linewidth=0, markeredgecolor='black', label='TinyMPC')
     
     # Force legend to show all three solvers even if some have no data
     from matplotlib.patches import Rectangle

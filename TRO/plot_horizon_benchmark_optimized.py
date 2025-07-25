@@ -113,7 +113,7 @@ def plot_comparison(tinympc_data, osqp_data):
     
     # Plot 1: Time comparison
     if tinympc_data:
-        ax1.plot(all_tinympc_horizons, tinympc_times, 'o-', label='TinyMPC (Optimized)', linewidth=2, markersize=8)
+        ax1.plot(all_tinympc_horizons, tinympc_times, 'o-', label='TinyMPC (Optimized)', linewidth=5, markersize=6)
     if osqp_data:
         ax1.plot(all_osqp_horizons, osqp_times, 's-', label='OSQP (Optimized)', linewidth=2, markersize=8)
     
@@ -141,7 +141,7 @@ def plot_comparison(tinympc_data, osqp_data):
     osqp_overflow_values = [osqp_memory[h] / 1024 for h in osqp_overflow_horizons]
     
     # Plot TinyMPC
-    ax2.plot(tinympc_mem_horizons, tinympc_mem_values, 'o-', label='TinyMPC (Optimized)', linewidth=2, markersize=8, color='blue')
+    ax2.plot(tinympc_mem_horizons, tinympc_mem_values, 'o-', label='TinyMPC (Optimized)', linewidth=5, markersize=6, color='blue')
     
     # Plot OSQP successful compilations
     if osqp_successful_horizons:

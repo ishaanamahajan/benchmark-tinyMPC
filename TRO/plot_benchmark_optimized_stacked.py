@@ -258,12 +258,12 @@ def plot_benchmark_comparison_bars(states_data, horizon_data):
     ax1.errorbar(
         states_tinympc_x_offset, states_tinympc_timing_y, yerr=states_tinympc_yerr,
         fmt='D', color=TINYMPC_COLOR, markersize=10,
-        capsize=5, elinewidth=2, linewidth=0, markeredgecolor='black'
+        capsize=15, capthick=1, elinewidth=1, linewidth=0, markeredgecolor='black'
     )
     ax1.errorbar(
         states_osqp_x_offset, states_osqp_timing_y, yerr=states_osqp_yerr,
         fmt='o', color=OSQP_COLOR, markersize=10,
-        capsize=5, elinewidth=2, linewidth=0, markeredgecolor='black'
+        capsize=8, capthick=2, elinewidth=2, linewidth=0, markeredgecolor='black'
     )
     
     ax1.set_xlabel('State dimension (n)', fontweight = 'bold')
@@ -312,12 +312,12 @@ def plot_benchmark_comparison_bars(states_data, horizon_data):
     ax2.errorbar(
         horizon_tinympc_x_offset, horizon_tinympc_timing_y, yerr=horizon_tinympc_yerr,
         fmt='D', color=TINYMPC_COLOR, markersize=10,
-        capsize=5, elinewidth=2, linewidth=0, markeredgecolor='black'
+        capsize=15, capthick=1, elinewidth=1, linewidth=0, markeredgecolor='black'
     )
     ax2.errorbar(
         horizon_osqp_x_offset, horizon_osqp_timing_y, yerr=horizon_osqp_yerr,
         fmt='o', color=OSQP_COLOR, markersize=10,
-        capsize=5, elinewidth=2, linewidth=0, markeredgecolor='black'
+        capsize=8, capthick=2, elinewidth=2, linewidth=0, markeredgecolor='black'
     )
     
     ax2.set_xlabel('Time horizon (N)', fontweight = 'bold')
