@@ -294,7 +294,7 @@ def main():
         Rectangle((0,0),1,1, facecolor='green', edgecolor='black', alpha=0.8),
         Rectangle((0,0),1,1, facecolor='red', edgecolor='black', alpha=0.8)
     ]
-    ax1.legend(legend_elements, ['SCS', 'ECOS', 'TinyMPC'], frameon=True, framealpha=0.9, edgecolor='black')
+    ax1.legend(legend_elements, ['SCS', 'ECOS', 'TinyMPC'], loc='upper right', fontsize=14, frameon=True, framealpha=0.9, edgecolor='black')
     ax1.grid(True, alpha=0.3)
     # Use log scale for better readability when values span large range
     ax1.set_yscale('log')

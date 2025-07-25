@@ -12,7 +12,7 @@ def create_tikz_comparison_plot():
     
     # Set plotting parameters to match reference style
     plt.rcParams.update({
-        'font.size': 12,
+        'font.size': 14,
         'axes.linewidth': 1.5,
         'grid.alpha': 0.3,
         'grid.linewidth': 1.0,
@@ -21,11 +21,11 @@ def create_tikz_comparison_plot():
         'legend.frameon': True,
         'legend.framealpha': 0.9,
         'legend.edgecolor': 'black',
-        'legend.fontsize': 11,
-        'axes.labelsize': 12,
-        'axes.titlesize': 14,
-        'xtick.labelsize': 11,
-        'ytick.labelsize': 11
+        'legend.fontsize': 12,
+        'axes.labelsize': 14,
+        'axes.titlesize': 16,
+        'xtick.labelsize': 12,
+        'ytick.labelsize': 12
     })
     
     # Parsed data from TikZ
@@ -203,7 +203,7 @@ def create_tikz_comparison_plot():
     ax.set_xlabel('(b) Input dimension (m)', fontweight='bold')
     ax.set_ylim(300, 600)
     ax.grid(True, alpha=0.3)
-    ax.text(0.5, 525, 'Memory Limit', ha='left', va='bottom', fontweight='bold', fontsize=14,
+    ax.text(0.5, 525, 'MEMORY LIMIT', ha='left', va='bottom', fontweight='bold', fontsize=14,
             bbox=dict(boxstyle='round,pad=0.3', facecolor='white', alpha=0.8))
     
     # Plot 6: Time horizon memory (bottom right)
@@ -220,7 +220,7 @@ def create_tikz_comparison_plot():
     ax.set_xlabel('(c) Time horizon (N)', fontweight='bold')
     ax.set_ylim(300, 600)
     ax.grid(True, alpha=0.3)
-    ax.legend(loc='upper left', frameon=True, framealpha=0.9, edgecolor='black')
+    ax.legend(loc='upper left', fontsize=14, frameon=True, framealpha=0.9, edgecolor='black')
     
     # Save and show the plot
     plt.savefig('teensy_tinympc_osqp_comparison_plot.pdf', dpi=300, bbox_inches='tight',
