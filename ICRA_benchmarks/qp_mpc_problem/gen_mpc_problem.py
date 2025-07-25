@@ -1,6 +1,6 @@
 def generate_mpc_data():
     # Match your dimensions
-    nx = 12  # states
+    nx = 4  # states
     nu = 4   # inputs
     Nh = 10  # horizon
     Nsim = 200

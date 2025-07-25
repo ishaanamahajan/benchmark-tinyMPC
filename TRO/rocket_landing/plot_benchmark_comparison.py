@@ -209,43 +209,95 @@ def main():
     
     # Plot 1: Time per iteration (line plot)
     
-    # Filter out None values for SCS plotting
-    scs_horizons_filtered = []
-    scs_times_filtered = []
-    for horizon, time_val in zip(all_horizons, scs_avg_times):
-        if time_val is not None and time_val > 0:
-            scs_horizons_filtered.append(horizon)
-            scs_times_filtered.append(time_val)
+    # Calculate min/max times for error bars
+    scs_min_times = []
+    scs_max_times = []
+    ecos_min_times = []
+    ecos_max_times = []
+    tinympc_min_times = []
+    tinympc_max_times = []
     
-    # Filter out None values for ECOS plotting
-    ecos_horizons_filtered = []
-    ecos_times_filtered = []
-    for horizon, time_val in zip(all_horizons, ecos_avg_times):
-        if time_val is not None and time_val > 0:
-            ecos_horizons_filtered.append(horizon)
-            ecos_times_filtered.append(time_val)
+    for horizon in all_horizons:
+        # SCS min/max
+        if horizon in scs_data and scs_data[horizon]['times']:
+            times = scs_data[horizon]['times'][10:]  # Skip first 10 for warm-up
+            scs_min_times.append(np.min(times) if times else None)
+            scs_max_times.append(np.max(times) if times else None)
+        else:
+            scs_min_times.append(None)
+            scs_max_times.append(None)
+            
+        # ECOS min/max
+        if horizon in ecos_data and ecos_data[horizon]['times']:
+            times = ecos_data[horizon]['times']
+            ecos_min_times.append(np.min(times) if times else None)
+            ecos_max_times.append(np.max(times) if times else None)
+        else:
+            ecos_min_times.append(None)
+            ecos_max_times.append(None)
+            
+        # TinyMPC min/max
+        times = tinympc_data[horizon]['times'][10:]  # Skip first 10 for warm-up
+        tinympc_min_times.append(np.min(times) if times else 0)
+        tinympc_max_times.append(np.max(times) if times else 0)
     
-    
-    ax1.set_xlabel('Horizon')
-    ax1.set_ylabel('Time per Iteration (μs)')
-    ax1.set_title('Solver Performance Comparison')
+    ax1.set_xlabel('Time horizon (N)', fontweight='bold')
+    ax1.set_ylabel('Time per Iteration (μs)', fontweight='bold')
     # Set uniform x-axis spacing - use positions 0,1,2,3... for horizons 2,4,8,16...
     horizon_positions = list(range(len(all_horizons)))
     ax1.set_xticks(horizon_positions)
     ax1.set_xticklabels(all_horizons)
-    # Update plot calls to use positions instead of actual horizon values
-    if scs_times_filtered:
-        scs_positions = [all_horizons.index(h) for h in scs_horizons_filtered]
-        ax1.plot(scs_positions, scs_times_filtered, 'o-', label='SCS', linewidth=2.5, markersize=8, color='blue', markeredgecolor='black')
-    if ecos_times_filtered:
-        ecos_positions = [all_horizons.index(h) for h in ecos_horizons_filtered]
-        ax1.plot(ecos_positions, ecos_times_filtered, 's-', label='ECOS', linewidth=2.5, markersize=8, color='green', markeredgecolor='black')
-    # TinyMPC for all horizons
-    ax1.plot(horizon_positions, tinympc_avg_times, '^-', label='TinyMPC', linewidth=2.5, markersize=8, color='red', markeredgecolor='black')
-    ax1.legend(frameon=True, framealpha=0.9, edgecolor='black')
+    
+    # Plot with error bars showing min/max range - all centered on tick positions
+    
+    # SCS error bars
+    scs_positions = []
+    scs_means = []
+    scs_yerr = []
+    for i, (horizon, avg_time, min_time, max_time) in enumerate(zip(all_horizons, scs_avg_times, scs_min_times, scs_max_times)):
+        if avg_time is not None and avg_time > 0 and min_time is not None and max_time is not None:
+            scs_positions.append(i)
+            scs_means.append(avg_time)
+            scs_yerr.append([avg_time - min_time, max_time - avg_time])
+    
+    if scs_positions:
+        scs_yerr_array = np.array(scs_yerr).T
+        ax1.errorbar(scs_positions, scs_means, yerr=scs_yerr_array, fmt='o', color='blue', 
+                    markersize=8, capsize=5, elinewidth=2, linewidth=0, markeredgecolor='black', label='SCS')
+    
+    # ECOS error bars  
+    ecos_positions = []
+    ecos_means = []
+    ecos_yerr = []
+    for i, (horizon, avg_time, min_time, max_time) in enumerate(zip(all_horizons, ecos_avg_times, ecos_min_times, ecos_max_times)):
+        if avg_time is not None and avg_time > 0 and min_time is not None and max_time is not None:
+            ecos_positions.append(i)
+            ecos_means.append(avg_time)
+            ecos_yerr.append([avg_time - min_time, max_time - avg_time])
+    
+    if ecos_positions:
+        ecos_yerr_array = np.array(ecos_yerr).T
+        ax1.errorbar(ecos_positions, ecos_means, yerr=ecos_yerr_array, fmt='s', color='green',
+                    markersize=8, capsize=5, elinewidth=2, linewidth=0, markeredgecolor='black', label='ECOS')
+    
+    # TinyMPC error bars
+    tinympc_yerr = [[avg - min_t for avg, min_t in zip(tinympc_avg_times, tinympc_min_times)],
+                   [max_t - avg for avg, max_t in zip(tinympc_avg_times, tinympc_max_times)]]
+    
+    ax1.errorbar(horizon_positions, tinympc_avg_times, yerr=tinympc_yerr, fmt='^', color='red',
+                markersize=8, capsize=5, elinewidth=2, linewidth=0, markeredgecolor='black', label='TinyMPC')
+    
+    # Force legend to show all three solvers even if some have no data
+    from matplotlib.patches import Rectangle
+    legend_elements = [
+        Rectangle((0,0),1,1, facecolor='blue', edgecolor='black', alpha=0.8),
+        Rectangle((0,0),1,1, facecolor='green', edgecolor='black', alpha=0.8),
+        Rectangle((0,0),1,1, facecolor='red', edgecolor='black', alpha=0.8)
+    ]
+    ax1.legend(legend_elements, ['SCS', 'ECOS', 'TinyMPC'], frameon=True, framealpha=0.9, edgecolor='black')
     ax1.grid(True, alpha=0.3)
-    # Use linear scale for time iterations as requested
-    # ax1.set_yscale('log')
+    # Use log scale for better readability when values span large range
+    ax1.set_yscale('log')
     
     # Plot 2: Memory usage with 1024 KB limit line
     x2 = np.arange(len(all_horizons))
@@ -274,48 +326,45 @@ def main():
     # SCS stacked bar (static + dynamic) only where data exists
     if scs_static_filtered:
         x_scs = [all_horizons.index(h) for h in scs_horizons_mem]
-        # Use light blue for static, dark blue for dynamic
-        bars1 = ax2.bar(np.array(x_scs) - width2, scs_static_filtered, width2, color='#87CEEB', alpha=0.9, edgecolor='black', linewidth=1.0)
-        bars2 = ax2.bar(np.array(x_scs) - width2, scs_dynamic_filtered, width2, bottom=scs_static_filtered, color='#0000FF', alpha=0.9, edgecolor='black', linewidth=1.0)
+        # Use solid blue for static, lighter blue with pattern for dynamic
+        bars1 = ax2.bar(np.array(x_scs) - width2, scs_static_filtered, width2, color='blue', alpha=0.8, edgecolor='black', linewidth=1.0)
+        bars2 = ax2.bar(np.array(x_scs) - width2, scs_dynamic_filtered, width2, bottom=scs_static_filtered, color='lightblue', alpha=0.7, edgecolor='black', linewidth=1.0, hatch='///')
     
     # ECOS stacked bar (static + dynamic) only where data exists
     if ecos_static_filtered:
         x_ecos = [all_horizons.index(h) for h in ecos_horizons_mem]
-        # Use light green for static, dark green for dynamic
-        bars3 = ax2.bar(np.array(x_ecos), ecos_static_filtered, width2, color='#90EE90', alpha=0.9, edgecolor='black', linewidth=1.0)
-        bars4 = ax2.bar(np.array(x_ecos), ecos_dynamic_filtered, width2, bottom=ecos_static_filtered, color='#008000', alpha=0.9, edgecolor='black', linewidth=1.0)
+        # Use solid green for static, lighter green with pattern for dynamic
+        bars3 = ax2.bar(np.array(x_ecos), ecos_static_filtered, width2, color='green', alpha=0.8, edgecolor='black', linewidth=1.0)
+        bars4 = ax2.bar(np.array(x_ecos), ecos_dynamic_filtered, width2, bottom=ecos_static_filtered, color='lightgreen', alpha=0.7, edgecolor='black', linewidth=1.0, hatch='///')
     
     # TinyMPC bar for all horizons
-    ax2.bar(x2 + width2, tinympc_mem, width2, color='red', alpha=0.9, edgecolor='black', linewidth=1.0)
+    ax2.bar(x2 + width2, tinympc_mem, width2, color='red', alpha=0.8, edgecolor='black', linewidth=1.0)
     
     # Add 1024 KB limit line
     ax2.axhline(y=1024, color='black', linestyle='--', linewidth=2, alpha=0.8, label='1024 KB Limit')
     
-    ax2.set_xlabel('Horizon')
-    ax2.set_ylabel('Memory Usage (KB)')
-    ax2.set_title('Memory Usage Comparison')
+    ax2.set_xlabel('Time horizon (N)', fontweight='bold')
+    ax2.set_ylabel('Memory Usage (kB)', fontweight='bold')
     ax2.set_xticks(x2)
     ax2.set_xticklabels(all_horizons)
     
-    # Create legend with static/dynamic explanation
+    # Simple pattern legend for right plot
     from matplotlib.patches import Rectangle
-    from matplotlib.lines import Line2D
-    legend_elements = [
-        Rectangle((0,0),1,1, facecolor='#87CEEB', edgecolor='black', label='SCS Static'),
-        Rectangle((0,0),1,1, facecolor='#0000FF', edgecolor='black', label='SCS Dynamic'),
-        Rectangle((0,0),1,1, facecolor='#90EE90', edgecolor='black', label='ECOS Static'),
-        Rectangle((0,0),1,1, facecolor='#008000', edgecolor='black', label='ECOS Dynamic'),
-        Rectangle((0,0),1,1, facecolor='red', edgecolor='black', label='TinyMPC'),
-        Line2D([0], [0], color='black', linestyle='--', label='Memory Limit')
-    ]
-    ax2.legend(handles=legend_elements, frameon=True, framealpha=0.9, edgecolor='black', 
-               ncol=2, fontsize=10)
+    pattern_element = Rectangle((0,0),1,1, facecolor='lightgray', edgecolor='black', alpha=0.7, hatch='///')
+    ax2.legend([pattern_element], ['Dynamic Memory'], loc='upper right', fontsize=12, 
+               frameon=True, framealpha=0.9, edgecolor='black')
+              
+    # Add memory limit text to the right plot - elevated above the line
+    horizon_x_left = len(all_horizons) / 3 - 0.5  # One-third from the left
+    ax2.text(horizon_x_left, 1200, 'MEMORY LIMIT', 
+             ha='center', va='bottom', fontweight='bold', fontsize=14, 
+             color='black', bbox=dict(boxstyle='round,pad=0.3', facecolor='white', alpha=0.8))
     ax2.grid(True, alpha=0.3)
     # Use log scale for memory as requested
     ax2.set_yscale('log')
     
     # Save with high quality settings
-    plt.savefig('benchmark_comparison.png', dpi=300, bbox_inches='tight', 
+    plt.savefig('rocket_landing_benchmark_comparison.pdf', dpi=300, bbox_inches='tight', 
                 facecolor='white', edgecolor='none')
     plt.show()
     

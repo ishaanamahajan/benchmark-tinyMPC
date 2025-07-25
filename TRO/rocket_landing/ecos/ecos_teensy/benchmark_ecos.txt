@@ -79,7 +79,7 @@
 # Horizon: 64, RAM/Static: 160.4 KB
 # Starting ECOS benchmark...
 # Format: [solver_iter] [solve_time_us]
-# Dynamic memory allocated by ECOS: 4392.71 KB
+# Dynamic memory allocated by ECOS: 1543.50 KB
 
 
 

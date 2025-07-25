@@ -1,0 +1,24 @@
+\begin{tikzpicture}
+\begin{axis}[
+  width=6in,
+  height=4in,
+  ybar,
+  bar width=8pt,
+  symbolic x coords={4,8,16,32,64,100},
+  xtick=data,
+  xlabel={Time horizon ($N$)},
+  ylabel={Time per Iteration (\SI{}{\micro\second})},
+  enlarge x limits=0.2,
+  legend style={at={(0.5,-0.2)},anchor=north,legend columns=3,font=\small},
+  ymode=log,
+  log origin=infty
+]
+  \addplot+[red,fill=red!30] coordinates {(4,82.8) (8,186.9) (16,397.3) (32,769.8) (64,1578.6) (100,2491.9) };
+
+  \addplot+[blue,fill=blue!30] coordinates {(4,597.7) (8,1044.5) (16,2012.1) (32,0.0) (64,0.0) (100,0.0) };
+
+  \addplot+[black,thick,dashed] coordinates {(4,128) (8,128) (16,128) (32,128) (64,128) (100,128) };
+
+  \legend{TinyMPC, OSQP, RAM Limit}
+\end{axis}
+\end{tikzpicture}

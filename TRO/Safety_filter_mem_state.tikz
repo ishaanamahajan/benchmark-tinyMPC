@@ -1,0 +1,10 @@
+\begin{tikzpicture}
+\begin{axis}[
+  ybar, symbolic x coords={}, xtick=data,
+  xlabel={State dimension ($n$)}, ylabel={Memory (kB)}, enlarge x limits=0.2,
+  legend style={at={(0.5,-0.2)},anchor=north,legend columns=2},\n]\n  \addplot+[red,fill=red!30] coordinates {};
+  \addplot+[blue,fill=blue!30] coordinates {};
+  \addplot+[black,thick,dashed] coordinates {};
+  \legend{TinyMPC, OSQP, RAM Limit}
+\end{axis}
+\end{tikzpicture}

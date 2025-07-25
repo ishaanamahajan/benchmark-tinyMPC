@@ -1,0 +1,43 @@
+% This file was created by Python TikZ generator
+\begin{tikzpicture}
+\begin{axis}[%
+width=6.611in,
+height=4.792in,
+scale only axis,
+xmin=0,
+xmax=6,
+xtick={1,2,3,4,5},
+xticklabels={{2},{4},{8},{16},{32}},
+xlabel style={font=\fontsize{38}{40}\selectfont, text=black},
+% xlabel={State dimension (n)},
+ymin=0,
+ymax=148,
+ylabel style={font=\color{white!15!black}},
+tick label style={font=\fontsize{38}{40}\selectfont},
+axis background/.style={fill=white},
+xmajorgrids,
+ymajorgrids,
+legend pos=south east,
+legend style={legend cell align=left, align=left, draw=white!15!black ,font=\fontsize{38}{40}\selectfont},
+]
+\addplot [color=black!40!blue, line width=5.0pt, mark size=7pt, mark=*, mark options={solid, black!40!blue},only marks]
+  table[row sep=crcr]{%
+1	6.17\n2	7.39\n3	10.29\n4	17.73\n5	38.98\\
+};
+% \addlegendentry{TinyMPC}
+
+\addplot [color=red, dashdotted, line width=5.0pt, mark size=9pt, mark=diamond*, mark options={solid, red},only marks]
+  table[row sep=crcr]{%
+1	14.11\n2	23.03\n3	37.61\n4	69.48\n5	134.73\\
+};
+% \addlegendentry{OSQP}
+
+\addplot [color=black, dashed, line width=7.0pt, dash pattern=on 20pt off 20pt,forget plot]
+  table[row sep=crcr]{%
+0	128\\
+6	128\\
+};
+\node [anchor=south west,font=\fontsize{28}{30}\selectfont\bfseries] at (axis cs: 0, 138) {Memory Limit};
+
+\end{axis}
+\end{tikzpicture}%

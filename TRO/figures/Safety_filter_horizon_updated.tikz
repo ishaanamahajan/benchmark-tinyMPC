@@ -1,0 +1,37 @@
+% This file was created by Python TikZ generator
+\begin{tikzpicture}
+\begin{axis}[%
+width=6.611in,
+height=4.792in,
+scale only axis,
+xmin=0,
+xmax=7,
+xtick={1,2,3,4,5,6},
+xticklabels={{4},{8},{16},{32},{64},{100}},
+xlabel style={font=\fontsize{38}{40}\selectfont, text=black},
+% xlabel={Time horizon (N)},
+ymin=0,
+ymax=2990,
+ylabel style={font=\color{white!15!black}},
+tick label style={font=\fontsize{38}{40}\selectfont},
+axis background/.style={fill=white},
+xmajorgrids,
+ymajorgrids,
+legend pos=south east,
+legend style={legend cell align=left, align=left, draw=white!15!black ,font=\fontsize{38}{40}\selectfont},
+ymode=log,
+]
+\addplot [color=black!40!blue, line width=5.0pt, mark size=7pt, mark=*, mark options={solid, black!40!blue},only marks]
+  table[row sep=crcr]{%
+1	82.78\n2	186.93\n3	397.32\n4	769.81\n5	1578.61\n6	2491.88\\
+};
+% \addlegendentry{TinyMPC}
+
+\addplot [color=red, dashdotted, line width=5.0pt, mark size=9pt, mark=diamond*, mark options={solid, red},only marks]
+  table[row sep=crcr]{%
+1	597.70\n2	1044.54\n3	2012.06\\
+};
+% \addlegendentry{OSQP}
+
+\end{axis}
+\end{tikzpicture}%

@@ -1,0 +1,37 @@
+% This file was created by Python TikZ generator
+\begin{tikzpicture}
+\begin{axis}[%
+width=6.611in,
+height=4.792in,
+scale only axis,
+xmin=0,
+xmax=6,
+xtick={1,2,3,4,5},
+xticklabels={{2},{4},{8},{16},{32}},
+xlabel style={font=\fontsize{38}{40}\selectfont, text=black},
+% xlabel={State dimension (n)},
+ymin=0,
+ymax=2436,
+ylabel style={font=\color{white!15!black}},
+tick label style={font=\fontsize{38}{40}\selectfont},
+axis background/.style={fill=white},
+xmajorgrids,
+ymajorgrids,
+legend pos=south east,
+legend style={legend cell align=left, align=left, draw=white!15!black ,font=\fontsize{38}{40}\selectfont},
+ymode=log,
+]
+\addplot [color=black!40!blue, line width=5.0pt, mark size=7pt, mark=*, mark options={solid, black!40!blue},only marks]
+  table[row sep=crcr]{%
+1	16.543036272342672\n2	50.31086340682088\n3	164.51007360287701\n4	512.3679089396871\n5	1897.062920459406\\
+};
+% \addlegendentry{TinyMPC}
+
+\addplot [color=red, dashdotted, line width=5.0pt, mark size=9pt, mark=diamond*, mark options={solid, red},only marks]
+  table[row sep=crcr]{%
+1	338.0678743286461\n2	604.3989151290642\n3	1036.5144308359231\n4	2030.051197055827\\
+};
+% \addlegendentry{OSQP}
+
+\end{axis}
+\end{tikzpicture}%
