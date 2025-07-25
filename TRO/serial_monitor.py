@@ -7,7 +7,7 @@ import os
 # Configuration
 SERIAL_PORT = '/dev/ttyACM0'
 BAUD_RATE = 9600
-OUTPUT_FILE = 'data_optimized/states/osqp_benchmark_H10.txt'
+OUTPUT_FILE = 'data_optimized/horizon/benchmark_H75.txt'
 
 os.makedirs(os.path.dirname(OUTPUT_FILE), exist_ok=True)
 

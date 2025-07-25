@@ -35,7 +35,7 @@ tinympc_generic.load_lib(lib_dir)  # Load the library
 # %%
 NSTATES = 10 # may vary this
 NINPUTS = NSTATES//2
-NHORIZON = 30  # may vary this
+NHORIZON = 75  # may vary this
 NTOTAL = 201
 NPOS = NINPUTS 
 
