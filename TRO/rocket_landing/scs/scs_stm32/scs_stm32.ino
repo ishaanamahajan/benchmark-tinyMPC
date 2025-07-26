@@ -7,7 +7,8 @@ Content: Example program for updating parameters, solving, and inspecting the re
 #include <stdio.h>
 #include <stdlib.h>
 #include "math.h"
-#include "time.h"
+// Remove problematic time.h include that causes _times undefined reference
+// #include "time.h"
 
 #include "Arduino.h"
 
@@ -160,16 +161,16 @@ extern "C" {
       // }
 
       // Solve the problem instance
-      clock_t start = clock();
-      // printf("%d\n", start);
+      // Use Arduino's millis() instead of clock() for timing
+      unsigned long start = millis();
       cpg_solve();
-      clock_t end = clock();
-      // printf("%d\n", end-start);
-      float cpu_time_used = ((float)(end - start)) / CLOCKS_PER_SEC;
+      unsigned long end = millis();
+      float cpu_time_used = (end - start) / 1000.0;  // Convert to seconds
 
-      // Get data from the result
-      for (i = NSTATES; i < NSTATES + NHORIZON; i++) {
-        u[i - NSTATES] = CPG_Result.prim->var2[i];
+      // Get data from the result - Fix bounds issue
+      // Extract only NINPUTS control inputs, not NHORIZON inputs
+      for (i = 0; i < NINPUTS; i++) {
+        u[i] = CPG_Result.prim->var2[NSTATES + i];
       }
       printf("u = ");
       print_vector(u, NINPUTS);

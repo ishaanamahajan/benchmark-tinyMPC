@@ -4,27 +4,36 @@ import time
 import sys
 import os
 
-# Configuration
-SERIAL_PORT = '/dev/ttyACM0'
-BAUD_RATE = 9600
-OUTPUT_FILE = 'data_optimized/horizon/benchmark_H75.txt'
+# Configuration  
+SERIAL_PORT = '/dev/ttyACM0'  # Change this for your system
+BAUD_RATE = 115200
+OUTPUT_FILE = 'data/tinympc_h2.txt'  # Change this filename for each test
 
-os.makedirs(os.path.dirname(OUTPUT_FILE), exist_ok=True)
+# Create output directory if it doesn't exist
+os.makedirs(os.path.dirname(OUTPUT_FILE) if os.path.dirname(OUTPUT_FILE) else '.', exist_ok=True)
 
-
-# Configuration header
-header = f"""# Safety Filter Benchmark Results
+# Header for the data file
+header = f"""# Rocket Landing Horizon Sweep Data
 # Generated: {time.strftime('%Y-%m-%d %H:%M:%S')}
-# Hardware: Adafruit Feather STM32
+# File: {OUTPUT_FILE}
+# Serial Port: {SERIAL_PORT}
 # 
-# Serial Monitor Output:
-# ======================
+# Data Format:
+# [timestamp] tracking error: X.XXXX
+# [timestamp] time step: N
+# [timestamp] iterations: N  
+# [timestamp] controls: X.XXXX Y.YYYY Z.ZZZZ
+# [timestamp] solve time: NNNN us
+# 
+# Raw Serial Output:
+# ==================
 """
 
-print("Starting serial monitor...")
-print(f"Port: {SERIAL_PORT}")
-print(f"Baud Rate: {BAUD_RATE}")
-print(f"Output File: {OUTPUT_FILE}")
+print("Rocket Landing Data Logger")
+print("=========================")
+print(f"Output file: {OUTPUT_FILE}")
+print(f"Serial port: {SERIAL_PORT}")
+print(f"Baud rate: {BAUD_RATE}")
 print("Waiting for device connection...")
 
 ser = None
@@ -40,24 +49,25 @@ try:
             pass
         time.sleep(1)
     
-    # Open output file
+    # Open output file and start logging
     with open(OUTPUT_FILE, 'w') as f:
         f.write(header)
         f.flush()
         
-        print("Monitoring serial data... Press Ctrl+C to stop")
+        print("Logging rocket landing data... Press Ctrl+C to stop")
         
         while True:
             try:
                 if ser.in_waiting > 0:
                     line = ser.readline().decode('utf-8', errors='ignore').strip()
                     if line:
-                        timestamp = time.strftime('%H:%M:%S')
+                        timestamp = time.strftime('%H:%M:%S.%f')[:-3]  # Include milliseconds
                         output = f"[{timestamp}] {line}"
                         print(output)
                         f.write(output + '\n')
                         f.flush()
-                time.sleep(0.01)
+                time.sleep(0.001)  # Faster polling for better timing accuracy
+                
             except serial.SerialException:
                 print("Device disconnected, waiting for reconnection...")
                 ser.close()
@@ -71,9 +81,10 @@ try:
                     except (serial.SerialException, OSError):
                         pass
                     time.sleep(1)
-            
+
 except KeyboardInterrupt:
-    print("\nSerial monitoring stopped.")
+    print(f"\nData collection stopped.")
+    print(f"Results saved to: {OUTPUT_FILE}")
 except Exception as e:
     print(f"Error: {e}")
 finally:

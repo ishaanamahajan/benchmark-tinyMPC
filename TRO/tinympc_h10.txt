@@ -1,0 +1,14 @@
+# Rocket Landing Horizon Sweep Data
+# Generated: 2025-07-17 10:22:18
+# File: tinympc_h10.txt
+# Serial Port: /dev/ttyACM0
+# 
+# Data Format:
+# [timestamp] tracking error: X.XXXX
+# [timestamp] time step: N
+# [timestamp] iterations: N  
+# [timestamp] controls: X.XXXX Y.YYYY Z.ZZZZ
+# [timestamp] solve time: NNNN us
+# 
+# Raw Serial Output:
+# ==================
