@@ -5,9 +5,9 @@ import matplotlib.pyplot as plt
 def create_tikz_comparison_plot():
     """Create comparison plots from the provided TikZ data."""
     
-    # Colors matching the reference design
-    TINYMPC_COLOR = '#FF0000'  # Red
-    OSQP_COLOR = '#0000FF'     # Blue
+    # Colors matching TikZ style: mycolor1=RGB(0,0,0.6), mycolor2=RGB(1,0,0), mycolor3=RGB(0.46667,0.67451,0.18824)
+    TINYMPC_COLOR = (0, 0, 0.6)     # mycolor1 - Dark blue for TinyMPC
+    OSQP_COLOR = (1.0, 0.0, 0.0)    # mycolor2 - Red for OSQP
     MEMORY_LIMIT_COLOR = 'black'
     
     # Set plotting parameters to match reference style
@@ -119,19 +119,21 @@ def create_tikz_comparison_plot():
     x_pos = np.arange(len(tinympc_states_timing['x']))
     ax.errorbar(x_pos, tinympc_states_timing['y'], 
                 yerr=[tinympc_states_timing['yerr_minus'], tinympc_states_timing['yerr_plus']],
-                fmt='o', color=TINYMPC_COLOR, markersize=8, markeredgecolor='black',
+                fmt='o', color=TINYMPC_COLOR, markersize=8, markeredgecolor='black', markerfacecolor=TINYMPC_COLOR,
                 capsize=8, capthick=2, elinewidth=2, linewidth=0)
     # Only plot OSQP where data exists
     osqp_x_pos = [tinympc_states_timing['x'].index(x) for x in osqp_states_timing['x']]
     ax.errorbar(osqp_x_pos, osqp_states_timing['y'],
                 yerr=[osqp_states_timing['yerr_minus'], osqp_states_timing['yerr_plus']],
-                fmt='o', color=OSQP_COLOR, markersize=8, markeredgecolor='black',
+                fmt='o', color=OSQP_COLOR, markersize=8, markeredgecolor='black', markerfacecolor=OSQP_COLOR,
                 capsize=8, capthick=2, elinewidth=2, linewidth=0)
     ax.set_ylim(0, 650)
     ax.set_xticks(x_pos)
     ax.set_xticklabels(tinympc_states_timing['x'])
     ax.set_ylabel('Time per Iteration (μs)', fontweight='bold')
     ax.grid(True, alpha=0.3)
+    # Add solver legend to top left plot
+    ax.legend(['TinyMPC', 'OSQP'], loc='upper left', fontsize=14, frameon=True, framealpha=0.9, edgecolor='black')
     
     # Plot 2: Input dimension timing (top middle)
     ax = axes[0, 1]
@@ -139,13 +141,13 @@ def create_tikz_comparison_plot():
     x_pos = np.arange(len(tinympc_inputs_timing['x']))
     ax.errorbar(x_pos, tinympc_inputs_timing['y'],
                 yerr=[tinympc_inputs_timing['yerr_minus'], tinympc_inputs_timing['yerr_plus']],
-                fmt='o', color=TINYMPC_COLOR, markersize=8, markeredgecolor='black',
+                fmt='o', color=TINYMPC_COLOR, markersize=8, markeredgecolor='black', markerfacecolor=TINYMPC_COLOR,
                 capsize=8, capthick=2, elinewidth=2, linewidth=0)
     # Only plot OSQP where data exists
     osqp_x_pos = [tinympc_inputs_timing['x'].index(x) for x in osqp_inputs_timing['x']]
     ax.errorbar(osqp_x_pos, osqp_inputs_timing['y'],
                 yerr=[osqp_inputs_timing['yerr_minus'], osqp_inputs_timing['yerr_plus']],
-                fmt='o', color=OSQP_COLOR, markersize=8, markeredgecolor='black',
+                fmt='o', color=OSQP_COLOR, markersize=8, markeredgecolor='black', markerfacecolor=OSQP_COLOR,
                 capsize=8, capthick=2, elinewidth=2, linewidth=0)
     ax.set_ylim(0, 650)
     ax.set_xticks(x_pos)
@@ -158,13 +160,13 @@ def create_tikz_comparison_plot():
     x_pos = np.arange(len(tinympc_horizon_timing['x']))
     ax.errorbar(x_pos, tinympc_horizon_timing['y'],
                 yerr=[tinympc_horizon_timing['yerr_minus'], tinympc_horizon_timing['yerr_plus']],
-                fmt='o', color=TINYMPC_COLOR, markersize=8, markeredgecolor='black',
+                fmt='o', color=TINYMPC_COLOR, markersize=8, markeredgecolor='black', markerfacecolor=TINYMPC_COLOR,
                 capsize=8, capthick=2, elinewidth=2, linewidth=0)
     # Only plot OSQP where data exists
     osqp_x_pos = [tinympc_horizon_timing['x'].index(x) for x in osqp_horizon_timing['x']]
     ax.errorbar(osqp_x_pos, osqp_horizon_timing['y'],
                 yerr=[osqp_horizon_timing['yerr_minus'], osqp_horizon_timing['yerr_plus']],
-                fmt='o', color=OSQP_COLOR, markersize=8, markeredgecolor='black',
+                fmt='o', color=OSQP_COLOR, markersize=8, markeredgecolor='black', markerfacecolor=OSQP_COLOR,
                 capsize=8, capthick=2, elinewidth=2, linewidth=0)
     ax.set_ylim(0, 650)
     ax.set_xticks(x_pos)
@@ -188,6 +190,9 @@ def create_tikz_comparison_plot():
     ax.set_ylabel('Memory Usage (kB)', fontweight='bold')
     ax.set_ylim(300, 600)
     ax.grid(True, alpha=0.3)
+    # Add memory limit legend to leftmost memory plot - right above the line, extreme left
+    ax.text(0, MEMORY_LIMIT + 15, 'MEMORY LIMIT', ha='left', va='bottom', fontweight='bold', fontsize=14,
+            bbox=dict(boxstyle='round,pad=0.3', facecolor='white', alpha=0.8))
     
     # Plot 5: Input dimension memory (bottom middle)
     ax = axes[1, 1]
@@ -203,8 +208,6 @@ def create_tikz_comparison_plot():
     ax.set_xlabel('(b) Input dimension (m)', fontweight='bold')
     ax.set_ylim(300, 600)
     ax.grid(True, alpha=0.3)
-    ax.text(0.5, 525, 'MEMORY LIMIT', ha='left', va='bottom', fontweight='bold', fontsize=14,
-            bbox=dict(boxstyle='round,pad=0.3', facecolor='white', alpha=0.8))
     
     # Plot 6: Time horizon memory (bottom right)
     ax = axes[1, 2]
@@ -220,7 +223,6 @@ def create_tikz_comparison_plot():
     ax.set_xlabel('(c) Time horizon (N)', fontweight='bold')
     ax.set_ylim(300, 600)
     ax.grid(True, alpha=0.3)
-    ax.legend(loc='upper left', fontsize=14, frameon=True, framealpha=0.9, edgecolor='black')
     
     # Save and show the plot
     plt.savefig('teensy_tinympc_osqp_comparison_plot.pdf', dpi=300, bbox_inches='tight',

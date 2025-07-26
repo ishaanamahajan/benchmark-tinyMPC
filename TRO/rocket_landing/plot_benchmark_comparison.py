@@ -127,6 +127,12 @@ def parse_ecos_log(file_path):
     return horizon_data
 
 def main():
+    # Colors matching TikZ style: mycolor1=RGB(0,0,0.6), mycolor2=RGB(1,0,0), mycolor3=RGB(0.46667,0.67451,0.18824)
+    TINYMPC_COLOR = (0, 0, 0.6)                    # mycolor1 - Dark blue for TinyMPC
+    OSQP_COLOR = (1.0, 0.0, 0.0)                   # mycolor2 - Red for OSQP
+    SCS_COLOR = 'green'                           # Bright green for SCS
+    ECOS_COLOR = (1.0, 0.0, 0.0)                  # mycolor2 - Red for ECOS
+    
     # Set high quality plotting parameters
     plt.rcParams.update({
         'font.size': 14,
@@ -204,8 +210,8 @@ def main():
             ecos_static_mem.append(None)
             ecos_dynamic_mem.append(None)
     
-    # Create plots with constrained layout for better spacing
-    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(16, 6), layout='constrained')
+    # Create plots with constrained layout for better spacing - swapped order
+    fig, (ax2, ax1) = plt.subplots(1, 2, figsize=(16, 6), layout='constrained')
     
     # Plot 1: Time per iteration (line plot)
     
@@ -262,7 +268,7 @@ def main():
     
     if scs_positions:
         scs_yerr_array = np.array(scs_yerr).T
-        ax1.errorbar(scs_positions, scs_means, yerr=scs_yerr_array, fmt='o', color='blue', 
+        ax1.errorbar(scs_positions, scs_means, yerr=scs_yerr_array, fmt='o', color=SCS_COLOR, 
                     markersize=12, capsize=12, capthick=2, elinewidth=2, linewidth=0, markeredgecolor='black', label='SCS')
     
     # ECOS error bars  
@@ -277,24 +283,24 @@ def main():
     
     if ecos_positions:
         ecos_yerr_array = np.array(ecos_yerr).T
-        ax1.errorbar(ecos_positions, ecos_means, yerr=ecos_yerr_array, fmt='s', color='green',
+        ax1.errorbar(ecos_positions, ecos_means, yerr=ecos_yerr_array, fmt='s', color=ECOS_COLOR,
                     markersize=12, capsize=12, capthick=2, elinewidth=2, linewidth=0, markeredgecolor='black', label='ECOS')
     
     # TinyMPC error bars
     tinympc_yerr = [[avg - min_t for avg, min_t in zip(tinympc_avg_times, tinympc_min_times)],
                    [max_t - avg for avg, max_t in zip(tinympc_avg_times, tinympc_max_times)]]
     
-    ax1.errorbar(horizon_positions, tinympc_avg_times, yerr=tinympc_yerr, fmt='^', color='red',
+    ax1.errorbar(horizon_positions, tinympc_avg_times, yerr=tinympc_yerr, fmt='^', color=TINYMPC_COLOR,
                 markersize=12, capsize=12, elinewidth=2, linewidth=0, markeredgecolor='black', label='TinyMPC')
     
     # Force legend to show all three solvers even if some have no data
     from matplotlib.patches import Rectangle
     legend_elements = [
-        Rectangle((0,0),1,1, facecolor='blue', edgecolor='black', alpha=0.8),
-        Rectangle((0,0),1,1, facecolor='green', edgecolor='black', alpha=0.8),
-        Rectangle((0,0),1,1, facecolor='red', edgecolor='black', alpha=0.8)
+        Rectangle((0,0),1,1, facecolor=SCS_COLOR, edgecolor='black', alpha=0.8),
+        Rectangle((0,0),1,1, facecolor=ECOS_COLOR, edgecolor='black', alpha=0.8),
+        Rectangle((0,0),1,1, facecolor=TINYMPC_COLOR, edgecolor='black', alpha=0.8)
     ]
-    ax1.legend(legend_elements, ['SCS', 'ECOS', 'TinyMPC'], loc='upper right', fontsize=14, frameon=True, framealpha=0.9, edgecolor='black')
+    # Solver legend will be added to ax1 (now the timing plot) below
     ax1.grid(True, alpha=0.3)
     # Use log scale for better readability when values span large range
     ax1.set_yscale('log')
@@ -326,19 +332,19 @@ def main():
     # SCS stacked bar (static + dynamic) only where data exists
     if scs_static_filtered:
         x_scs = [all_horizons.index(h) for h in scs_horizons_mem]
-        # Use solid blue for static, lighter blue with pattern for dynamic
-        bars1 = ax2.bar(np.array(x_scs) - width2, scs_static_filtered, width2, color='blue', alpha=0.8, edgecolor='black', linewidth=1.0)
-        bars2 = ax2.bar(np.array(x_scs) - width2, scs_dynamic_filtered, width2, bottom=scs_static_filtered, color='lightblue', alpha=0.7, edgecolor='black', linewidth=1.0, hatch='///')
+        # Use solid green for static, lighter green with pattern for dynamic
+        bars1 = ax2.bar(np.array(x_scs) - width2, scs_static_filtered, width2, color=SCS_COLOR, alpha=0.8, edgecolor='black', linewidth=1.0)
+        bars2 = ax2.bar(np.array(x_scs) - width2, scs_dynamic_filtered, width2, bottom=scs_static_filtered, color='lightgreen', alpha=0.7, edgecolor='black', linewidth=1.0, hatch='///')
     
     # ECOS stacked bar (static + dynamic) only where data exists
     if ecos_static_filtered:
         x_ecos = [all_horizons.index(h) for h in ecos_horizons_mem]
-        # Use solid green for static, lighter green with pattern for dynamic
-        bars3 = ax2.bar(np.array(x_ecos), ecos_static_filtered, width2, color='green', alpha=0.8, edgecolor='black', linewidth=1.0)
-        bars4 = ax2.bar(np.array(x_ecos), ecos_dynamic_filtered, width2, bottom=ecos_static_filtered, color='lightgreen', alpha=0.7, edgecolor='black', linewidth=1.0, hatch='///')
+        # Use solid red for static, lighter red with pattern for dynamic
+        bars3 = ax2.bar(np.array(x_ecos), ecos_static_filtered, width2, color=ECOS_COLOR, alpha=0.8, edgecolor='black', linewidth=1.0)
+        bars4 = ax2.bar(np.array(x_ecos), ecos_dynamic_filtered, width2, bottom=ecos_static_filtered, color=[c*0.7 for c in ECOS_COLOR], alpha=0.7, edgecolor='black', linewidth=1.0, hatch='///')
     
     # TinyMPC bar for all horizons
-    ax2.bar(x2 + width2, tinympc_mem, width2, color='red', alpha=0.8, edgecolor='black', linewidth=1.0)
+    ax2.bar(x2 + width2, tinympc_mem, width2, color=TINYMPC_COLOR, alpha=0.8, edgecolor='black', linewidth=1.0)
     
     # Add 1024 KB limit line
     ax2.axhline(y=1024, color='black', linestyle='--', linewidth=2, alpha=0.8, label='1024 KB Limit')
@@ -348,13 +354,17 @@ def main():
     ax2.set_xticks(x2)
     ax2.set_xticklabels(all_horizons)
     
-    # Simple pattern legend for right plot
+    # Add solver legend to timing plot (now ax1 - right side)
+    ax1.legend(legend_elements, ['SCS', 'ECOS', 'TinyMPC'], loc='upper left', fontsize=14, frameon=True, framealpha=0.9, edgecolor='black')
+    
+    # Legend for memory types in top right of memory plot (now ax2 - left side)
     from matplotlib.patches import Rectangle
+    static_element = Rectangle((0,0),1,1, facecolor='lightgray', edgecolor='black', alpha=0.8)
     pattern_element = Rectangle((0,0),1,1, facecolor='lightgray', edgecolor='black', alpha=0.7, hatch='///')
-    ax2.legend([pattern_element], ['Dynamic Memory'], loc='upper right', fontsize=12, 
+    ax2.legend([static_element, pattern_element], ['Static Memory', 'Dynamic Memory'], loc='upper right', fontsize=12, 
                frameon=True, framealpha=0.9, edgecolor='black')
               
-    # Add memory limit text to the right plot - elevated above the line
+    # Add memory limit text to memory plot (now ax2 - left side)
     horizon_x_left = len(all_horizons) / 3 - 0.5  # One-third from the left
     ax2.text(horizon_x_left, 1200, 'MEMORY LIMIT', 
              ha='center', va='bottom', fontweight='bold', fontsize=14, 

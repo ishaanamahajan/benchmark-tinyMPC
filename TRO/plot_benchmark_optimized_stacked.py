@@ -79,8 +79,8 @@ def parse_horizon_memory_data():
         8: 38228,   # Global variables use 38228 bytes
         16: 71988,  # Global variables use 71988 bytes
         32: RAM_LIMIT + 9976,  # RAM overflowed by 9976 bytes
-        64: RAM_LIMIT + 145016, # RAM overflowed by 145016 bytes
-        100: RAM_LIMIT + 296936, # RAM overflowed by 296936 bytes
+        # 64: RAM_LIMIT + 145016, # RAM overflowed by 145016 bytes
+        # 100: RAM_LIMIT + 296936, # RAM overflowed by 296936 bytes
     }
     
     # TinyMPC memory data (in bytes) - optimized benchmark results  
@@ -193,9 +193,9 @@ def collect_horizon_benchmark_data(data_dir):
 
 def plot_benchmark_comparison_bars(states_data, horizon_data):
     """Create a 2x2 benchmark comparison plot with bar charts for memory (fig_draft2)."""
-    # Colors matching reference plot - classic primaries
-    TINYMPC_COLOR = '#FF0000'  # Fully-saturated RGB red
-    OSQP_COLOR = '#0000FF'     # Fully-saturated RGB blue
+    # Colors matching TikZ style: mycolor1=RGB(0,0,0.6), mycolor2=RGB(1,0,0), mycolor3=RGB(0.46667,0.67451,0.18824)
+    TINYMPC_COLOR = (0, 0, 0.6)     # mycolor1 - Dark blue for TinyMPC
+    OSQP_COLOR = (1.0, 0.0, 0.0)    # mycolor2 - Red for OSQP
     RAM_LIMIT_COLOR = 'black'  # Black for limit line
     
     # Define offset for x-values to prevent marker overlap
@@ -270,6 +270,12 @@ def plot_benchmark_comparison_bars(states_data, horizon_data):
     ax1.set_ylabel('Time per Iteration (μs)', fontweight = 'bold')
     ax1.grid(True, alpha=0.3)
     ax1.set_xticks(states_timing_x)
+    # Add solver legend to top left plot
+    handles = [
+        plt.Rectangle((0,0),1,1, color=TINYMPC_COLOR, label='TinyMPC'),
+        plt.Rectangle((0,0),1,1, color=OSQP_COLOR, label='OSQP')
+    ]
+    ax1.legend(handles=handles, loc='upper left', fontsize=14)
     
     # Top right: Horizon Time (mean values only)
     horizon_timing_x = sorted(horizon_tinympc_timing.keys())
@@ -325,10 +331,10 @@ def plot_benchmark_comparison_bars(states_data, horizon_data):
     ax2.grid(True, alpha=0.3)
     ax2.set_xticks(horizon_timing_x)
     
-    # Bottom left: States Memory with bar charts
-    states_x = sorted(states_tinympc_memory.keys())
+    # Bottom left: States Memory with bar charts (only plot up to 32 states)
+    states_x = [s for s in sorted(states_tinympc_memory.keys()) if s <= 32]
     states_tinympc_mem_y = [states_tinympc_memory[s] / 1024 for s in states_x]
-    states_osqp_mem_y = [states_osqp_memory.get(s, 0) / 1024 for s in states_x]
+    states_osqp_mem_y = [states_osqp_memory.get(s, 0) / 1024 for s in states_x if s <= 32]
     
     # Create bar chart with same x positions as timing plot
     x_pos = np.arange(len(states_x))
@@ -343,6 +349,10 @@ def plot_benchmark_comparison_bars(states_data, horizon_data):
     ax3.set_xticks(x_pos)
     ax3.set_xticklabels(states_x)
     ax3.grid(True, alpha=0.3)
+    # Add memory limit text label to the leftmost memory plot - right above the line, extreme left
+    ax3.text(0, (states_ram_limit / 1024) + 5, 'MEMORY LIMIT', 
+             ha='left', va='bottom', fontweight='bold', fontsize=14, 
+             color='black', bbox=dict(boxstyle='round,pad=0.3', facecolor='white', alpha=0.8))
     
     # Bottom right: Horizon Memory with bar charts
     horizon_x = sorted(horizon_tinympc_memory.keys())
@@ -362,19 +372,9 @@ def plot_benchmark_comparison_bars(states_data, horizon_data):
     ax4.set_xticklabels(horizon_x)
     ax4.grid(True, alpha=0.3)
     
-    # Add legend to the bottom left plot (states memory) with larger size, positioned lower
-    handles = [
-        plt.Rectangle((0,0),1,1, color=TINYMPC_COLOR, label='TinyMPC'),
-        plt.Rectangle((0,0),1,1, color=OSQP_COLOR, label='OSQP')
-    ]
-    ax3.legend(handles=handles, loc='center left', fontsize=14)
+    # Legend removed from memory plot (moved to top left timing plot)
     
-    # Add memory limit text label only to the horizon plot (right plot)
-    # Position it more towards the left side of the plot and just above the line
-    horizon_x_left = len(horizon_x) / 3 - 0.5  # One-third from the left
-    ax4.text(horizon_x_left, (horizon_ram_limit / 1024) + 15, 'MEMORY LIMIT', 
-             ha='center', va='bottom', fontweight='bold', fontsize=14, 
-             color='black', bbox=dict(boxstyle='round,pad=0.3', facecolor='white', alpha=0.8))
+    # Memory limit text moved to leftmost plot (ax3)
     
     plt.savefig('fig_draft2.pdf', dpi=300, bbox_inches='tight', 
                 facecolor='white', edgecolor='none')
