@@ -92,8 +92,8 @@ def create_tikz_comparison_plot():
     }
     
     osqp_inputs_memory = {
-        'x': [4, 8, 12, 16, 24, 28],
-        'y': [453.28, 466.176, 479.072, 492.992, 505.888, 518.784]
+        'x': [4, 8, 12, 16, 24],
+        'y': [453.28, 466.176, 479.072, 492.992, 505.888]
     }
     
     # Memory data - Time horizon
@@ -111,7 +111,7 @@ def create_tikz_comparison_plot():
     fig, axes = plt.subplots(2, 3, figsize=(18, 8), layout='constrained')
     
     # Memory limit
-    MEMORY_LIMIT = 512
+    MEMORY_LIMIT = 495.98
     
     # Plot 1: State dimension timing (top left)
     ax = axes[0, 0]
@@ -132,8 +132,13 @@ def create_tikz_comparison_plot():
     ax.set_xticklabels(tinympc_states_timing['x'])
     ax.set_ylabel('Time per Iteration (μs)', fontweight='bold')
     ax.grid(True, alpha=0.3)
-    # Add solver legend to top left plot
-    ax.legend(['TinyMPC', 'OSQP'], loc='upper left', fontsize=14, frameon=True, framealpha=0.9, edgecolor='black')
+    # Add solver legend to top left plot with colored boxes
+    from matplotlib.patches import Rectangle
+    handles = [
+        Rectangle((0,0),1,1, facecolor=TINYMPC_COLOR, edgecolor='black', alpha=0.8),
+        Rectangle((0,0),1,1, facecolor=OSQP_COLOR, edgecolor='black', alpha=0.8)
+    ]
+    ax.legend(handles, ['TinyMPC', 'OSQP'], loc='upper left', fontsize=14, frameon=True, framealpha=0.9, edgecolor='black')
     
     # Plot 2: Input dimension timing (top middle)
     ax = axes[0, 1]

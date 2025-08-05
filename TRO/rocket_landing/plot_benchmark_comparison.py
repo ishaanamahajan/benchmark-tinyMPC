@@ -129,9 +129,9 @@ def parse_ecos_log(file_path):
 def main():
     # Colors matching TikZ style: mycolor1=RGB(0,0,0.6), mycolor2=RGB(1,0,0), mycolor3=RGB(0.46667,0.67451,0.18824)
     TINYMPC_COLOR = (0, 0, 0.6)                    # mycolor1 - Dark blue for TinyMPC
-    OSQP_COLOR = (1.0, 0.0, 0.0)                   # mycolor2 - Red for OSQP
+    OSQP_COLOR = 'red'                             # Bright red for OSQP
     SCS_COLOR = 'green'                           # Bright green for SCS
-    ECOS_COLOR = (1.0, 0.0, 0.0)                  # mycolor2 - Red for ECOS
+    ECOS_COLOR = 'red'                            # Bright red for ECOS
     
     # Set high quality plotting parameters
     plt.rcParams.update({
@@ -341,7 +341,7 @@ def main():
         x_ecos = [all_horizons.index(h) for h in ecos_horizons_mem]
         # Use solid red for static, lighter red with pattern for dynamic
         bars3 = ax2.bar(np.array(x_ecos), ecos_static_filtered, width2, color=ECOS_COLOR, alpha=0.8, edgecolor='black', linewidth=1.0)
-        bars4 = ax2.bar(np.array(x_ecos), ecos_dynamic_filtered, width2, bottom=ecos_static_filtered, color=[c*0.7 for c in ECOS_COLOR], alpha=0.7, edgecolor='black', linewidth=1.0, hatch='///')
+        bars4 = ax2.bar(np.array(x_ecos), ecos_dynamic_filtered, width2, bottom=ecos_static_filtered, color='lightcoral', alpha=0.7, edgecolor='black', linewidth=1.0, hatch='///')
     
     # TinyMPC bar for all horizons
     ax2.bar(x2 + width2, tinympc_mem, width2, color=TINYMPC_COLOR, alpha=0.8, edgecolor='black', linewidth=1.0)
@@ -364,10 +364,9 @@ def main():
     ax2.legend([static_element, pattern_element], ['Static Memory', 'Dynamic Memory'], loc='upper right', fontsize=12, 
                frameon=True, framealpha=0.9, edgecolor='black')
               
-    # Add memory limit text to memory plot (now ax2 - left side)
-    horizon_x_left = len(all_horizons) / 3 - 0.5  # One-third from the left
-    ax2.text(horizon_x_left, 1200, 'MEMORY LIMIT', 
-             ha='center', va='bottom', fontweight='bold', fontsize=14, 
+    # Add memory limit text to memory plot (now ax2 - left side) - same position as Figure 5
+    ax2.text(0, 1024 + 80, 'MEMORY LIMIT', 
+             ha='left', va='bottom', fontweight='bold', fontsize=14, 
              color='black', bbox=dict(boxstyle='round,pad=0.3', facecolor='white', alpha=0.8))
     ax2.grid(True, alpha=0.3)
     # Use log scale for memory as requested

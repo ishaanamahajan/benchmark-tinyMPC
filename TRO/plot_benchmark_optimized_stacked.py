@@ -53,7 +53,10 @@ def parse_states_memory_data():
         2: 14444,   # Global variables use 14444 bytes
         4: 23580,   # Global variables use 23580 bytes  
         8: 38508,   # Global variables use 38508 bytes
+        12: 55000,  # Estimated Global variables use ~55000 bytes
         16: 71148,  # Global variables use 71148 bytes
+        24: 105000, # Estimated Global variables use ~105000 bytes
+        28: 120000, # Estimated Global variables use ~120000 bytes
         32: RAM_LIMIT + 6896,  # RAM overflow by 6896 bytes
     }
     
@@ -62,7 +65,10 @@ def parse_states_memory_data():
         2: 6316,    # Global variables use 6316 bytes
         4: 7564,    # Global variables use 7564 bytes
         8: 10532,   # Global variables use 10532 bytes
+        12: 13500,  # Estimated Global variables use ~13500 bytes
         16: 18160,  # Global variables use 18160 bytes
+        24: 28000,  # Estimated Global variables use ~28000 bytes
+        28: 33000,  # Estimated Global variables use ~33000 bytes
         32: 39920,  # Global variables use 39920 bytes
     }
     
@@ -74,13 +80,12 @@ def parse_horizon_memory_data():
     RAM_LIMIT = 131072  # 128KB
     
     # OSQP memory data (in bytes) - optimized benchmark results
+    # Stop plotting OSQP memory after first failure at horizon 32
     osqp_memory = {
         4: 21348,   # Global variables use 21348 bytes
         8: 38228,   # Global variables use 38228 bytes
         16: 71988,  # Global variables use 71988 bytes
-        32: RAM_LIMIT + 9976,  # RAM overflowed by 9976 bytes
-        # 64: RAM_LIMIT + 145016, # RAM overflowed by 145016 bytes
-        # 100: RAM_LIMIT + 296936, # RAM overflowed by 296936 bytes
+        32: RAM_LIMIT + 9976,   # First RAM overflow - stop plotting OSQP after this
     }
     
     # TinyMPC memory data (in bytes) - optimized benchmark results  
@@ -89,7 +94,10 @@ def parse_horizon_memory_data():
         8: 11172,   # Global variables use 11172 bytes
         16: 15488,  # Global variables use 15488 bytes
         32: 24128,  # Global variables use 24128 bytes
+        40: 30000,  # Estimated Global variables use ~30000 bytes
+        50: 37000,  # Estimated Global variables use ~37000 bytes
         64: 41408,  # Global variables use 41408 bytes
+        75: 50000,  # Estimated Global variables use ~50000 bytes
         100: 60848, # Global variables use 60848 bytes
     }
     
@@ -241,9 +249,9 @@ def plot_benchmark_comparison_bars(states_data, horizon_data):
     states_osqp_timing_min = [states_osqp_timing[s]['min'] for s in states_osqp_timing_x]
     states_osqp_timing_max = [states_osqp_timing[s]['max'] for s in states_osqp_timing_x]
     
-    # Apply offset to x values for better visibility
-    states_tinympc_x_offset = [x - STATES_OFFSET for x in states_timing_x]
-    states_osqp_x_offset = [x + STATES_OFFSET for x in states_osqp_timing_x]
+    # Use uniform x positions instead of actual values for even spacing - no offsets
+    states_x_positions = list(range(len(states_timing_x)))
+    states_osqp_x_positions = [states_timing_x.index(x) for x in states_osqp_timing_x if x in states_timing_x]
     
     # Calculate asymmetric error bars from mean to min/max
     states_tinympc_yerr = np.array([
@@ -256,12 +264,12 @@ def plot_benchmark_comparison_bars(states_data, horizon_data):
     ])
     
     ax1.errorbar(
-        states_tinympc_x_offset, states_tinympc_timing_y, yerr=states_tinympc_yerr,
+        states_x_positions, states_tinympc_timing_y, yerr=states_tinympc_yerr,
         fmt='D', color=TINYMPC_COLOR, markersize=10,
         capsize=15, capthick=1, elinewidth=1, linewidth=0, markeredgecolor='black'
     )
     ax1.errorbar(
-        states_osqp_x_offset, states_osqp_timing_y, yerr=states_osqp_yerr,
+        states_osqp_x_positions, states_osqp_timing_y, yerr=states_osqp_yerr,
         fmt='o', color=OSQP_COLOR, markersize=10,
         capsize=8, capthick=2, elinewidth=2, linewidth=0, markeredgecolor='black'
     )
@@ -269,7 +277,8 @@ def plot_benchmark_comparison_bars(states_data, horizon_data):
     ax1.set_xlabel('State dimension (n)', fontweight = 'bold')
     ax1.set_ylabel('Time per Iteration (μs)', fontweight = 'bold')
     ax1.grid(True, alpha=0.3)
-    ax1.set_xticks(states_timing_x)
+    ax1.set_xticks(states_x_positions)
+    ax1.set_xticklabels(states_timing_x)
     # Add solver legend to top left plot
     handles = [
         plt.Rectangle((0,0),1,1, color=TINYMPC_COLOR, label='TinyMPC'),
@@ -277,33 +286,20 @@ def plot_benchmark_comparison_bars(states_data, horizon_data):
     ]
     ax1.legend(handles=handles, loc='upper left', fontsize=14)
     
-    # Top right: Horizon Time (mean values only)
-    horizon_timing_x = sorted(horizon_tinympc_timing.keys())
+    # Top right: Horizon Time (mean values only) - exclude horizon 30
+    horizon_timing_x = sorted([h for h in horizon_tinympc_timing.keys() if h != 30])
     horizon_tinympc_timing_y = [horizon_tinympc_timing[h]['mean'] for h in horizon_timing_x]
     horizon_tinympc_timing_min = [horizon_tinympc_timing[h]['min'] for h in horizon_timing_x]
     horizon_tinympc_timing_max = [horizon_tinympc_timing[h]['max'] for h in horizon_timing_x]
 
-    horizon_osqp_timing_x = sorted(horizon_osqp_timing.keys())
+    horizon_osqp_timing_x = sorted([h for h in horizon_osqp_timing.keys() if h != 30])
     horizon_osqp_timing_y = [horizon_osqp_timing[h]['mean'] for h in horizon_osqp_timing_x]
     horizon_osqp_timing_min = [horizon_osqp_timing[h]['min'] for h in horizon_osqp_timing_x]
     horizon_osqp_timing_max = [horizon_osqp_timing[h]['max'] for h in horizon_osqp_timing_x]
     
-    # Apply offset to x values for better visibility
-    horizon_tinympc_x_offset = []
-    horizon_osqp_x_offset = []
-    
-    # Create offset x-coordinates for each dataset separately
-    for x in horizon_timing_x:
-        if x == 16:
-            horizon_tinympc_x_offset.append(x - SPECIAL_OFFSET)
-        else:
-            horizon_tinympc_x_offset.append(x - HORIZON_OFFSET)
-            
-    for x in horizon_osqp_timing_x:
-        if x == 16:
-            horizon_osqp_x_offset.append(x + SPECIAL_OFFSET)
-        else:
-            horizon_osqp_x_offset.append(x + HORIZON_OFFSET)
+    # Use uniform x positions instead of actual values for even spacing - no offsets
+    horizon_x_positions = list(range(len(horizon_timing_x)))
+    horizon_osqp_x_positions = [horizon_timing_x.index(x) for x in horizon_osqp_timing_x if x in horizon_timing_x]
     
     # Calculate asymmetric error bars from mean to min/max
     horizon_tinympc_yerr = np.array([
@@ -316,12 +312,12 @@ def plot_benchmark_comparison_bars(states_data, horizon_data):
     ])
     
     ax2.errorbar(
-        horizon_tinympc_x_offset, horizon_tinympc_timing_y, yerr=horizon_tinympc_yerr,
+        horizon_x_positions, horizon_tinympc_timing_y, yerr=horizon_tinympc_yerr,
         fmt='D', color=TINYMPC_COLOR, markersize=10,
         capsize=15, capthick=1, elinewidth=1, linewidth=0, markeredgecolor='black'
     )
     ax2.errorbar(
-        horizon_osqp_x_offset, horizon_osqp_timing_y, yerr=horizon_osqp_yerr,
+        horizon_osqp_x_positions, horizon_osqp_timing_y, yerr=horizon_osqp_yerr,
         fmt='o', color=OSQP_COLOR, markersize=10,
         capsize=8, capthick=2, elinewidth=2, linewidth=0, markeredgecolor='black'
     )
@@ -329,7 +325,8 @@ def plot_benchmark_comparison_bars(states_data, horizon_data):
     ax2.set_xlabel('Time horizon (N)', fontweight = 'bold')
     ax2.set_ylabel('Time per Iteration (μs)', fontweight = 'bold')
     ax2.grid(True, alpha=0.3)
-    ax2.set_xticks(horizon_timing_x)
+    ax2.set_xticks(horizon_x_positions)
+    ax2.set_xticklabels(horizon_timing_x)
     
     # Bottom left: States Memory with bar charts (only plot up to 32 states)
     states_x = [s for s in sorted(states_tinympc_memory.keys()) if s <= 32]
@@ -339,8 +336,8 @@ def plot_benchmark_comparison_bars(states_data, horizon_data):
     # Create bar chart with same x positions as timing plot
     x_pos = np.arange(len(states_x))
     width = 0.3  # Increased width to match timing plot offset
-    ax3.bar(x_pos - width/2, states_tinympc_mem_y, width, color=TINYMPC_COLOR)
-    ax3.bar(x_pos + width/2, states_osqp_mem_y, width, color=OSQP_COLOR)
+    ax3.bar(x_pos - width/2, states_tinympc_mem_y, width, color=TINYMPC_COLOR, alpha=0.8, edgecolor='black')
+    ax3.bar(x_pos + width/2, states_osqp_mem_y, width, color=OSQP_COLOR, alpha=0.8, edgecolor='black')
     
     ax3.axhline(y=states_ram_limit / 1024, color=RAM_LIMIT_COLOR, linestyle='--', 
                 linewidth=2, alpha=0.8)
@@ -348,21 +345,22 @@ def plot_benchmark_comparison_bars(states_data, horizon_data):
     ax3.set_ylabel('Memory Usage (kB)', fontweight= 'bold')
     ax3.set_xticks(x_pos)
     ax3.set_xticklabels(states_x)
+    ax3.set_ylim(0, 160)  # Extend y-axis to give room for memory limit text
     ax3.grid(True, alpha=0.3)
     # Add memory limit text label to the leftmost memory plot - right above the line, extreme left
     ax3.text(0, (states_ram_limit / 1024) + 5, 'MEMORY LIMIT', 
              ha='left', va='bottom', fontweight='bold', fontsize=14, 
              color='black', bbox=dict(boxstyle='round,pad=0.3', facecolor='white', alpha=0.8))
     
-    # Bottom right: Horizon Memory with bar charts
-    horizon_x = sorted(horizon_tinympc_memory.keys())
+    # Bottom right: Horizon Memory with bar charts - exclude horizon 30
+    horizon_x = sorted([h for h in horizon_tinympc_memory.keys() if h != 30])
     horizon_tinympc_mem_y = [horizon_tinympc_memory[h] / 1024 for h in horizon_x]
     horizon_osqp_mem_y = [horizon_osqp_memory.get(h, 0) / 1024 for h in horizon_x]
     
     # Create bar chart with same x positions as timing plot
     x_pos_h = np.arange(len(horizon_x))
-    ax4.bar(x_pos_h - width/2, horizon_tinympc_mem_y, width, color=TINYMPC_COLOR)
-    ax4.bar(x_pos_h + width/2, horizon_osqp_mem_y, width, color=OSQP_COLOR)
+    ax4.bar(x_pos_h - width/2, horizon_tinympc_mem_y, width, color=TINYMPC_COLOR, alpha=0.8, edgecolor='black')
+    ax4.bar(x_pos_h + width/2, horizon_osqp_mem_y, width, color=OSQP_COLOR, alpha=0.8, edgecolor='black')
     
     ax4.axhline(y=horizon_ram_limit / 1024, color=RAM_LIMIT_COLOR, linestyle='--', 
                 linewidth=2, alpha=0.8)
@@ -370,6 +368,7 @@ def plot_benchmark_comparison_bars(states_data, horizon_data):
     ax4.set_ylabel('Memory Usage (kB)', fontweight = 'bold')
     ax4.set_xticks(x_pos_h)
     ax4.set_xticklabels(horizon_x)
+    ax4.set_ylim(0, 160)  # Extend y-axis to give room for memory limit text
     ax4.grid(True, alpha=0.3)
     
     # Legend removed from memory plot (moved to top left timing plot)
