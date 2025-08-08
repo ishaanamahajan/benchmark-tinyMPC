@@ -93,7 +93,7 @@ def create_tikz_comparison_plot():
     
     osqp_inputs_memory = {
         'x': [4, 8, 12, 16, 24],
-        'y': [453.28, 466.176, 479.072, 492.992, 505.888]
+        'y': [453.28, 466.176, 479.072, 492.992, 523.69]
     }
     
     # Memory data - Time horizon
@@ -111,7 +111,7 @@ def create_tikz_comparison_plot():
     fig, axes = plt.subplots(2, 3, figsize=(18, 8), layout='constrained')
     
     # Memory limit
-    MEMORY_LIMIT = 495.98
+    MEMORY_LIMIT = 512
     
     # Plot 1: State dimension timing (top left)
     ax = axes[0, 0]
