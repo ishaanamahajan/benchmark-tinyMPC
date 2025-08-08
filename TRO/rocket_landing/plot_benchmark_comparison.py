@@ -349,6 +349,9 @@ def main():
     # Add 1024 KB limit line
     ax2.axhline(y=1024, color='black', linestyle='--', linewidth=2, alpha=0.8, label='1024 KB Limit')
     
+    # Add 512 KB static memory line
+    ax2.axhline(y=512, color='black', linestyle='--', linewidth=2, alpha=0.8, label='512 KB Static')
+    
     ax2.set_xlabel('Time horizon (N)', fontweight='bold')
     ax2.set_ylabel('Memory Usage (kB)', fontweight='bold')
     ax2.set_xticks(x2)
@@ -365,8 +368,13 @@ def main():
                frameon=True, framealpha=0.9, edgecolor='black')
               
     # Add memory limit text to memory plot (now ax2 - left side) - same position as Figure 5
-    ax2.text(0, 1024 + 80, 'MEMORY LIMIT', 
+    ax2.text(0, 1024 + 120, 'TOTAL MEMORY LIMIT', 
              ha='left', va='bottom', fontweight='bold', fontsize=14, 
+             color='black', bbox=dict(boxstyle='round,pad=0.3', facecolor='white', alpha=0.8))
+    
+    # Add 512 KB static memory text
+    ax2.text(0, 512 + 60, 'STATIC MEMORY LIMIT', 
+             ha='left', va='bottom', fontweight='bold', fontsize=12, 
              color='black', bbox=dict(boxstyle='round,pad=0.3', facecolor='white', alpha=0.8))
     ax2.grid(True, alpha=0.3)
     # Use log scale for memory as requested
