@@ -210,8 +210,9 @@ def main():
             ecos_static_mem.append(None)
             ecos_dynamic_mem.append(None)
     
-    # Create plots with constrained layout for better spacing - swapped order
-    fig, (ax2, ax1) = plt.subplots(1, 2, figsize=(16, 6), layout='constrained')
+    # Create plots with constrained layout for better spacing - vertical stack
+    # Balanced aspect ratio for 2x1 layout - wider than tall for better proportions
+    fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(10, 8), layout='constrained')
     
     # Plot 1: Time per iteration (line plot)
     
@@ -357,17 +358,17 @@ def main():
     ax2.set_xticks(x2)
     ax2.set_xticklabels(all_horizons)
     
-    # Add solver legend to timing plot (now ax1 - right side)
+    # Add solver legend to timing plot (top plot)
     ax1.legend(legend_elements, ['SCS', 'ECOS', 'TinyMPC'], loc='upper left', fontsize=14, frameon=True, framealpha=0.9, edgecolor='black')
     
-    # Legend for memory types in top right of memory plot (now ax2 - left side)
+    # Legend for memory types in memory plot (bottom plot)
     from matplotlib.patches import Rectangle
     static_element = Rectangle((0,0),1,1, facecolor='lightgray', edgecolor='black', alpha=0.8)
     pattern_element = Rectangle((0,0),1,1, facecolor='lightgray', edgecolor='black', alpha=0.7, hatch='///')
     ax2.legend([static_element, pattern_element], ['Static Memory', 'Dynamic Memory'], loc='upper right', fontsize=12, 
                frameon=True, framealpha=0.9, edgecolor='black')
               
-    # Add memory limit text to memory plot (now ax2 - left side) - same position as Figure 5
+    # Add memory limit text to memory plot (bottom plot)
     ax2.text(0, 1024 + 120, 'TOTAL MEMORY LIMIT', 
              ha='left', va='bottom', fontweight='bold', fontsize=14, 
              color='black', bbox=dict(boxstyle='round,pad=0.3', facecolor='white', alpha=0.8))
