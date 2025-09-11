@@ -21,6 +21,15 @@ extern "C"
     void update_slack(TinySolver *solver);
     void update_dual(TinySolver *solver);
     void update_linear_cost(TinySolver *solver);
+    
+    // SDP constraint functions
+    void project_sdp_constraints(TinySolver *solver);
+    
+    #ifdef ENABLE_SDP_PROJECTION
+    void project_moment_matrix_at_step(TinySolver *solver, int k);
+    void project_terminal_matrix_at_step(TinySolver *solver, int k);
+    void project_obstacle_constraint_at_step(TinySolver *solver, int k);
+    #endif
 
 #ifdef __cplusplus
 }

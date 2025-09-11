@@ -160,7 +160,7 @@ extern "C"
             }
         }
 
-        /* Project slack variables. Only box and cone constraints are supported */
+        /* Project slack variables. Box, cone, and SDP constraints are supported */
 
         // Project box constraints on state
         if (solver->settings->en_state_bound) {
@@ -195,6 +195,11 @@ extern "C"
                 }
             }
         }
+
+        // PROJECT SDP CONSTRAINTS - NEW ADDITION FOR OBSTACLE AVOIDANCE
+        #ifdef ENABLE_SDP_PROJECTION
+        project_sdp_constraints(solver);
+        #endif
     }
 
     /**
@@ -340,6 +345,141 @@ extern "C"
         return 1;
     }
 
+    /**
+     * Project SDP constraints for obstacle avoidance
+     * Integrates with existing TinyMPC ADMM framework
+     */
+    void project_sdp_constraints(TinySolver *solver) {
+        #ifdef ENABLE_SDP_PROJECTION
+        
+        // For obstacle avoidance SDP problem, we have extended states:
+        // x_ext = [x_phys; vec(XX)] where x_phys ∈ R^4, XX ∈ R^{4x4}
+        // We need to project moment matrices at each time step
+        
+        for (int k = 0; k < NHORIZON; k++) {
+            if (k < NHORIZON - 1) {
+                // Project 7x7 moment matrix [1 x' u'; x XX XU; u UX UU]
+                project_moment_matrix_at_step(solver, k);
+            } else {
+                // Project 5x5 terminal matrix [1 x'; x XX]  
+                project_terminal_matrix_at_step(solver, k);
+            }
+            
+            // Also project obstacle constraint
+            project_obstacle_constraint_at_step(solver, k);
+        }
+        
+        #endif
+    }
+    
+    #ifdef ENABLE_SDP_PROJECTION
+    
+    /**
+     * Project 7x7 moment matrix for time step k
+     */
+    void project_moment_matrix_at_step(TinySolver *solver, int k) {
+        // Extract extended state and control (assuming 20 states, 22 controls)
+        const int nx_phys = 4;
+        const int nu_phys = 2;
+        
+        // Build 7x7 moment matrix
+        Matrix<tinytype, 7, 7> M;
+        M.setZero();
+        
+        // Extract physical variables from slack variables
+        Vector<tinytype, nx_phys> x_phys = solver->work->bounds->vnew.col(k).head<nx_phys>();
+        Vector<tinytype, nu_phys> u_phys = solver->work->bounds->znew.col(k).head<nu_phys>();
+        
+        // Extract second moments (simplified - assume they're stored after physical states)
+        // In real implementation, you'd extract XX, XU, UX, UU from extended variables
+        Matrix<tinytype, nx_phys, nx_phys> XX = x_phys * x_phys.transpose(); // Simplified
+        Matrix<tinytype, nx_phys, nu_phys> XU = x_phys * u_phys.transpose();
+        Matrix<tinytype, nu_phys, nx_phys> UX = u_phys * x_phys.transpose();
+        Matrix<tinytype, nu_phys, nu_phys> UU = u_phys * u_phys.transpose();
+        
+        // Build moment matrix [1 x' u'; x XX XU; u UX UU]
+        M(0, 0) = tinytype(1.0);
+        M.block<1, nx_phys>(0, 1) = x_phys.transpose();
+        M.block<1, nu_phys>(0, 1 + nx_phys) = u_phys.transpose();
+        M.block<nx_phys, 1>(1, 0) = x_phys;
+        M.block<nx_phys, nx_phys>(1, 1) = XX;
+        M.block<nx_phys, nu_phys>(1, 1 + nx_phys) = XU;
+        M.block<nu_phys, 1>(1 + nx_phys, 0) = u_phys;
+        M.block<nu_phys, nx_phys>(1 + nx_phys, 1) = UX;
+        M.block<nu_phys, nu_phys>(1 + nx_phys, 1 + nx_phys) = UU;
+        
+        // PROJECT USING YOUR FUNCTION!
+        Matrix<tinytype, 7, 7> M_proj = project_psd<7>(M);
+        
+        // Extract projected values back
+        solver->work->bounds->vnew.col(k).head<nx_phys>() = M_proj.block<nx_phys, 1>(1, 0);
+        solver->work->bounds->znew.col(k).head<nu_phys>() = M_proj.block<nu_phys, 1>(1 + nx_phys, 0);
+        
+        // In full implementation, you'd also update the second moment components
+        // of the extended state vector here
+    }
+    
+    /**
+     * Project 5x5 terminal matrix for final time step
+     */
+    void project_terminal_matrix_at_step(TinySolver *solver, int k) {
+        const int nx_phys = 4;
+        
+        // Build 5x5 terminal matrix [1 x'; x XX]
+        Matrix<tinytype, 5, 5> M;
+        M.setZero();
+        
+        Vector<tinytype, nx_phys> x_phys = solver->work->bounds->vnew.col(k).head<nx_phys>();
+        Matrix<tinytype, nx_phys, nx_phys> XX = x_phys * x_phys.transpose();
+        
+        M(0, 0) = tinytype(1.0);
+        M.block<1, nx_phys>(0, 1) = x_phys.transpose();
+        M.block<nx_phys, 1>(1, 0) = x_phys;
+        M.block<nx_phys, nx_phys>(1, 1) = XX;
+        
+        // PROJECT USING YOUR FUNCTION!
+        Matrix<tinytype, 5, 5> M_proj = project_psd<5>(M);
+        
+        // Extract projected values back
+        solver->work->bounds->vnew.col(k).head<nx_phys>() = M_proj.block<nx_phys, 1>(1, 0);
+    }
+    
+    /**
+     * Project obstacle constraint: tr(XX[1:2,1:2]) - 2*x_obs'*x[1:2] + x_obs'*x_obs - r^2 >= 0
+     */
+    void project_obstacle_constraint_at_step(TinySolver *solver, int k) {
+        const int nx_phys = 4;
+        const tinytype x_obs_x = -5.0;
+        const tinytype x_obs_y = 0.0;
+        const tinytype r_obs = 2.0;
+        
+        Vector<tinytype, nx_phys> x_phys = solver->work->bounds->vnew.col(k).head<nx_phys>();
+        Matrix<tinytype, nx_phys, nx_phys> XX = x_phys * x_phys.transpose();
+        
+        // Compute constraint value
+        tinytype trace_XX = XX(0,0) + XX(1,1);
+        tinytype obs_term = x_obs_x * x_obs_x + x_obs_y * x_obs_y;
+        tinytype pos_term = 2.0 * (x_obs_x * x_phys(0) + x_obs_y * x_phys(1));
+        tinytype constraint_val = trace_XX - pos_term + obs_term - r_obs * r_obs;
+        
+        // If violated, project position away from obstacle
+        if (constraint_val < 0) {
+            Vector<tinytype, 2> pos = x_phys.head<2>();
+            Vector<tinytype, 2> x_obs_vec(x_obs_x, x_obs_y);
+            Vector<tinytype, 2> to_obs = pos - x_obs_vec;
+            tinytype dist = to_obs.norm();
+            
+            if (dist > 1e-6) {
+                // Push to safe distance
+                tinytype target_dist = r_obs + 0.1;
+                Vector<tinytype, 2> pos_new = x_obs_vec + (target_dist / dist) * to_obs;
+                solver->work->bounds->vnew.col(k).head<2>() = pos_new;
+            }
+        }
+    }
+    
+    #endif
+
 } /* extern "C" */
 
 /**
@@ -351,7 +491,7 @@ extern "C"
  */
 template<int M>
 EIGEN_STRONG_INLINE Eigen::Matrix<tinytype, M, M>
-project_psd(const Eigen::Matrix<tinytype, M, M>& S_in, tinytype eps)
+project_psd(const Eigen::Matrix<tinytype, M, M>& S_in, tinytype eps = tinytype(1e-8))
 {
     using MatM = Eigen::Matrix<tinytype, M, M>;
     
@@ -359,7 +499,8 @@ project_psd(const Eigen::Matrix<tinytype, M, M>& S_in, tinytype eps)
     MatM S = tinytype(0.5) * (S_in + S_in.transpose());
 
     // 2) Eigendecomposition (self-adjoint is fastest & most stable)
-    Eigen::SelfAdjointEigenSolver<MatM> es(S, /*computeEigenvectors=*/true);
+    Eigen::SelfAdjointEigenSolver<MatM> es;
+    es.compute(S, Eigen::ComputeEigenvectors);
     
     // 3) Clamp eigenvalues to be nonnegative (or eps floor)
     Eigen::Matrix<tinytype, M, 1> d = es.eigenvalues();

@@ -4,8 +4,7 @@ Pkg.activate(".")
 using LinearAlgebra 
 using Plots 
 using Convex 
-using Mosek 
-using MosekTools 
+using SCS 
 
 # ------------------------------- Problem setup ------------------------------ #
 #problem parameters
@@ -52,7 +51,7 @@ r = [zeros(nu + nxu + nux); vec(r_xx*Matrix(I, nu, nu))]
 x_bar = Variable(nx + nxx, N)
 u_bar = Variable(nu + nxu + nux + nuu, N-1) 
 
-obj = 0
+global obj = 0
 constraints = []
 for k=1:N
 
@@ -86,16 +85,16 @@ for k=1:N
     push!(constraints, tr(XX[1:2, 1:2])- 2*x_obs'*x[1:2] + x_obs'*x_obs - r_obs^2 >= 0)
 
     # cost function
-    obj += quadform(x_bar[:,k], Q) + q'*x_bar[:,k]
+    global obj += quadform(x_bar[:,k], Q) + q'*x_bar[:,k]
     if k < N
-        obj += quadform(u_bar[:,k], R) + r'*u_bar[:,k] 
+        global obj += quadform(u_bar[:,k], R) + r'*u_bar[:,k] 
     end
 
 end
 
 #solve problem
 problem = minimize(obj, constraints)
-solve!(problem, () -> Mosek.Optimizer())
+solve!(problem, SCS.Optimizer)
 println("Problem Status: ", problem.status)
 
 # --------------------------------- Analysis --------------------------------- #

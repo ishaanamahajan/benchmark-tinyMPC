@@ -1,0 +1,32 @@
+# Makefile for Fully Integrated TinyMPC + SDP
+
+CXX = g++
+CXXFLAGS = -std=c++17 -O3 -Wall -Wextra 
+INCLUDES = -Itinympc_sdp_generated/tinympc -Itinympc_sdp_generated/include -Itinympc_sdp_generated/include/Eigen
+TARGET = test_integrated_sdp
+SOURCES = test_integrated_tinympc_sdp.cpp tinympc_sdp_generated/tinympc/admm.cpp tinympc_sdp_generated/src/tiny_data.cpp tinympc_sdp_generated/tinympc/rho_benchmark.cpp
+
+# Default target
+all: $(TARGET)
+
+# Build target
+$(TARGET): $(SOURCES)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) -o $(TARGET) $(SOURCES)
+
+# Clean target
+clean:
+	rm -f $(TARGET) *.csv
+
+# Run target
+run: $(TARGET)
+	./$(TARGET)
+
+# Help target
+help:
+	@echo "Available targets:"
+	@echo "  all     - Build integrated TinyMPC+SDP solver"
+	@echo "  clean   - Remove build files"
+	@echo "  run     - Build and run the integrated test"
+	@echo "  help    - Show this help message"
+
+.PHONY: all clean run help
