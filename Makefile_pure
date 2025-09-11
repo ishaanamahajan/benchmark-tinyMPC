@@ -1,0 +1,25 @@
+# Makefile for Pure SDP Projection Test
+
+CXX = g++
+CXXFLAGS = -std=c++17 -O3 -Wall -Wextra
+INCLUDES = -I../tinympc/tinympc_teensy/src
+TARGET = test_pure_projection
+SOURCES = test_pure_projection.cpp
+
+# Default target
+all: $(TARGET)
+
+# Build target
+$(TARGET): $(SOURCES)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) -o $(TARGET) $(SOURCES)
+
+# Clean target
+clean:
+	rm -f $(TARGET)
+
+# Run target
+run: $(TARGET)
+	./$(TARGET)
+
+.PHONY: all clean run
+

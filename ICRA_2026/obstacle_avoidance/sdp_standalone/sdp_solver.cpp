@@ -148,57 +148,84 @@ void SDPSolver::admm_iteration() {
 }
 
 void SDPSolver::update_primal() {
-    // Much simpler approach: just enforce dynamics and smooth trajectory
-    // Skip the full optimization for now - focus on testing SDP projection
+    // PROPER ADMM: Use projected variables from previous iteration
+    // This respects the SDP projections instead of overwriting them
     
-    // Forward simulate with simple control law
-    for (int k = 0; k < NHORIZON - 1; k++) {
-        // Simple control: move towards origin, avoid obstacle
-        Vector4d x_phys = x.col(k).head<nx>();
-        Vector2d pos = x_phys.head<2>();
-        Vector2d vel = x_phys.tail<2>();
+    if (iteration == 0) {
+        std::cout << "Initial iteration: generating baseline trajectory..." << std::endl;
         
-        // Goal attraction
-        Vector2d u_goal = -0.1 * pos - 0.05 * vel;
+        // Only for first iteration: generate initial trajectory
+        for (int k = 0; k < NHORIZON - 1; k++) {
+            Vector4d x_phys = x.col(k).head<nx>();
+            Vector2d pos = x_phys.head<2>();
+            Vector2d vel = x_phys.tail<2>();
+            
+            // Simple goal attraction for initial guess
+            Vector2d u_total = -0.15 * pos - 0.08 * vel;
+            u_total = u_total.cwiseMax(-1.0).cwiseMin(1.0);
+            
+            // Set physical control
+            u.col(k).head<nu>() = u_total;
+            
+            // Forward dynamics for physical states
+            Vector4d x_next = Ad * x_phys + Bd * u_total;
+            x.col(k+1).head<nx>() = x_next;
+            
+            // Debug: Check if this trajectory violates obstacle
+            Vector2d next_pos = x_next.head<2>();
+            double dist_to_obs = (next_pos - x_obs).norm();
+            if (dist_to_obs < r_obs) {
+                std::cout << "  VIOLATION CREATED at step " << k+1 << ": pos=[" 
+                         << next_pos.transpose() << "], dist=" << dist_to_obs 
+                         << " < " << r_obs << std::endl;
+            }
+            
+            // Update second moments (simplified)
+            Matrix4d XX_current = x_next * x_next.transpose();
+            Map<Vector<double, 16>>(x.col(k+1).data() + nx) = Map<Vector<double, 16>>(XX_current.data());
+            
+            // Set cross terms (simplified)
+            Matrix<double, 4, 2> XU = x_next * u_total.transpose();
+            Matrix<double, 2, 4> UX = u_total * x_next.transpose();
+            Matrix2d UU = u_total * u_total.transpose();
+            
+            Map<Matrix<double, 4, 2>>(u.col(k).data() + nu) = XU;
+            Map<Matrix<double, 2, 4>>(u.col(k).data() + nu + 8) = UX;
+            Map<Matrix2d>(u.col(k).data() + nu + 16) = UU;
+        }
+    } else {
+        // For subsequent iterations: USE PROJECTED VARIABLES
+        // This is the key fix - respect the SDP projections!
+        std::cout << "Iteration " << iteration << ": using projected variables from previous iteration..." << std::endl;
         
-        // Strong obstacle avoidance
-        Vector2d to_obs = pos - x_obs;
-        double dist = to_obs.norm();
-        Vector2d u_avoid = Vector2d::Zero();
+        // Update primal variables toward projected slack variables (standard ADMM)
+        double step_size = 0.8;  // Aggressive step toward projections
         
-        // Much stronger avoidance force
-        if (dist < 4.0 * r_obs && dist > 0.1) {
-            double force_strength = 2.0 / (dist - r_obs + 0.1);  // Stronger near boundary
-            u_avoid = force_strength * to_obs / dist;
+        for (int k = 0; k < NHORIZON; k++) {
+            // Move primal variables toward projected slack variables
+            x.col(k) = (1.0 - step_size) * x.col(k) + step_size * v.col(k);
         }
         
-        // Emergency avoidance if too close
-        if (dist < r_obs + 0.5) {
-            u_avoid = 5.0 * to_obs / (dist + 0.01);  // Very strong repulsion
+        for (int k = 0; k < NHORIZON - 1; k++) {
+            // Move primal variables toward projected slack variables  
+            u.col(k) = (1.0 - step_size) * u.col(k) + step_size * z.col(k);
         }
         
-        Vector2d u_total = u_goal + u_avoid;
-        u_total = u_total.cwiseMax(-1.0).cwiseMin(1.0);  // Clamp
+        // Verify that we're respecting projections
+        int current_violations = 0;
+        for (int k = 0; k < NHORIZON; k++) {
+            Vector2d pos = x.col(k).head<2>();
+            double dist = (pos - x_obs).norm();
+            if (dist < r_obs) {
+                current_violations++;
+            }
+        }
         
-        // Set physical control
-        u.col(k).head<nu>() = u_total;
-        
-        // Forward dynamics for physical states
-        Vector4d x_next = Ad * x_phys + Bd * u_total;
-        x.col(k+1).head<nx>() = x_next;
-        
-        // Update second moments (simplified)
-        Matrix4d XX_current = x_next * x_next.transpose();
-        Map<Vector<double, 16>>(x.col(k+1).data() + nx) = Map<Vector<double, 16>>(XX_current.data());
-        
-        // Set cross terms (simplified)
-        Matrix<double, 4, 2> XU = x_next * u_total.transpose();
-        Matrix<double, 2, 4> UX = u_total * x_next.transpose();
-        Matrix2d UU = u_total * u_total.transpose();
-        
-        Map<Matrix<double, 4, 2>>(u.col(k).data() + nu) = XU;
-        Map<Matrix<double, 2, 4>>(u.col(k).data() + nu + 8) = UX;
-        Map<Matrix2d>(u.col(k).data() + nu + 16) = UU;
+        if (current_violations > 0) {
+            std::cout << "  Still " << current_violations << " violations after using projected variables" << std::endl;
+        } else {
+            std::cout << "  ✅ No violations - projections are being respected!" << std::endl;
+        }
     }
 }
 
@@ -327,10 +354,15 @@ void SDPSolver::project_obstacle_constraint(int k) {
     
     // If constraint is violated (< 0), project to make it feasible
     if (constraint_val < 0) {
+        std::cout << "  SDP PROJECTION fixing violation at step " << k 
+                 << ": constraint=" << constraint_val << std::endl;
+        
         // Simple projection: push position away from obstacle center
         Vector2d pos = x_phys.head<2>();
         Vector2d to_obs = pos - x_obs;
         double dist = to_obs.norm();
+        
+        std::cout << "    Original pos=[" << pos.transpose() << "], dist=" << dist << std::endl;
         
         if (dist > 1e-8) {  // Avoid division by zero
             // Push position to obstacle boundary + small margin
@@ -351,11 +383,15 @@ void SDPSolver::project_obstacle_constraint(int k) {
             Matrix4d XX_new = x_new * x_new.transpose();
             Map<Matrix4d>(v.col(k).data() + nx) = XX_new;
             
+            std::cout << "    PROJECTED to pos=[" << pos_new.transpose() 
+                     << "], new_dist=" << (pos_new - x_obs).norm() << std::endl;
+            
             // Verify constraint is now satisfied
             double new_constraint_val = obstacle_constraint_value(x_new, XX_new);
             if (new_constraint_val < 0) {
-                std::cout << "Warning: obstacle projection failed at step " << k 
-                         << ", constraint value: " << new_constraint_val << std::endl;
+                std::cout << "    ❌ Projection failed! Still violated: " << new_constraint_val << std::endl;
+            } else {
+                std::cout << "    ✅ Projection successful! New constraint: " << new_constraint_val << std::endl;
             }
         }
     }
